@@ -38,7 +38,20 @@ lookup' :: Table -> Id -> Maybe Int
 lookup' table name = snd <$> find (\(a, b) -> a == name) table 
 
 interpStm :: Stm -> Table -> IO (Table)
-interpStm (PrintStm es) = return undefined 
+interpStm (AssignStm name exp) t =
+  do (val, t') <- interpExp exp t
+     case val of
+       Nothing -> return undefined 
+       Just r  -> return $ update t' name r
+interpStm (CompoundStm s1 s2) t = interpStm s1 t >>= interpStm s2
+interpStm (PrintStm es) t = printStm es t
+
+printStm :: [Exp] -> Table -> IO (Table)
+printStm [] t = putStr "\n" >> return t
+printStm (e:es) t =
+  do (v, t') <- interpExp e t
+     putStr $ show v ++ " "
+     printStm es t'
 
 interpExp :: Exp -> Table -> IO (Maybe Int, Table)
 interpExp (IdExp name) t     = return (lookup' t name, t)
@@ -46,8 +59,7 @@ interpExp (NumExp num) t     = return (Just num, t)
 interpExp (OpExp e1 op e2) t = do (r1, t')  <- interpExp e1 t
                                   (r2, t'') <- interpExp e2 t'
                                   return (binOp op <$> r1 <*> r2, t'')
-interpExp (EseqExp s e) t    = do t' <- interpStm s t
-                                  return (interpExp e t')
+interpExp (EseqExp s e) t    = interpStm s t >>= interpExp e
 
 binOp :: BinOp -> (Int -> Int -> Int)
 binOp Plus  = (+)
@@ -55,7 +67,10 @@ binOp Minus = (-)
 binOp Times = (*)
 binOp Div   = (div)
 
-
+interp :: Stm -> IO ()
+interp stm =
+  do table <- interpStm stm []
+     return () 
 
 
 
