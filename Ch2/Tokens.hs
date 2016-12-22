@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeFamilies, TypeSynonymInstances, FlexibleInstances #-}
-module Tokens where
+module Tokens (Tokens(..)) where
 
 -- Interface for representing a Token in the Tiger Grammar.
 class Tokens a where
