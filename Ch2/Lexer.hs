@@ -1,7 +1,7 @@
 {-# LANGUAGE CPP #-}
 {-# LINE 1 "Lexer.x" #-}
 
-module Lexer (main) where
+module Lexer (main, alexScanTokens) where
 
 import Tokens
 

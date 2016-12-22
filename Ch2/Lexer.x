@@ -1,5 +1,5 @@
 {
-module Lexer (main) where
+module Lexer (main, alexScanTokens) where
 
 import Tokens
 }
