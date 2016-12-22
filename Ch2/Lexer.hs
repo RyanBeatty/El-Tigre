@@ -3,6 +3,8 @@
 
 module Lexer (main) where
 
+import Tokens
+
 #if __GLASGOW_HASKELL__ >= 603
 #include "ghcconfig.h"
 #elif defined(__GLASGOW_HASKELL__)
@@ -175,25 +177,73 @@ alex_deflt :: Array Int Int
 alex_deflt = listArray (0,2) [-1,-1,-1]
 
 alex_accept = listArray (0::Int,2) [[],[(AlexAccSkip)],[(AlexAcc (alex_action_1))]]
-{-# LINE 17 "Lexer.x" #-}
+{-# LINE 19 "Lexer.x" #-}
 
+---------------------------
 -- Some action helpers.
 offset :: AlexPosn -> Int
-offset (AlexPosn o _ _) = o
+offset (AlexPn o _ _) = o
 
 line :: AlexPosn -> Int
-line (AlexPosn _ l _) = l
+line (AlexPn _ l _) = l
 
 col :: AlexPosn -> Int
-col (AlexPosn _ _ c) = c
+col (AlexPn _ _ c) = c
+----------------------------
 
-data Token = Let Int
+
+data TigerToken =
+      Type AlexPosn
+    | Var AlexPosn
+    | Function AlexPosn
+    | Break AlexPosn
+    | Of AlexPosn
+    | End AlexPosn
+    | In AlexPosn
+    | Nil AlexPosn
+    | Let AlexPosn
+    | Do AlexPosn
+    | To AlexPosn
+    | For AlexPosn
+    | While AlexPosn
+    | Else AlexPosn
+    | Then AlexPosn
+    | If AlexPosn
+    | Array AlexPosn
+    | Assign AlexPosn
+    | Or AlexPosn
+    | And AlexPosn
+    | GE AlexPosn
+    | GT AlexPosn
+    | LE AlexPosn
+    | LT AlexPosn
+    | NEQ AlexPosn
+    | EQ AlexPosn
+    | Divide AlexPosn
+    | Times AlexPosn
+    | Minus AlexPosn
+    | Plus AlexPosn
+    | Dot AlexPosn
+    | RBrace AlexPosn
+    | LBrace AlexPosn
+    | RBrack AlexPosn
+    | LBrack AlexPosn
+    | RParen AlexPosn
+    | LParen AlexPosn
+    | SemiColon AlexPosn
+    | Colon AlexPosn
+    | Comma AlexPosn
+    | StrTok String AlexPosn
+    | IntTok Int AlexPosn
+    | ID String AlexPosn
+    | EOF AlexPosn
+    deriving (Eq, Show)
 
 main = do
     s <- getContents
     print (alexScanTokens s)
 
-alex_action_1 = \pos s -> Let $ line pos
+alex_action_1 = \pos s -> idToken (s, (line pos) :: LineNum String, (col pos) :: LineNum String) :: Tokens String 
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
