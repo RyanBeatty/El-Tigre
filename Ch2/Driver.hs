@@ -13,3 +13,5 @@ parseFile filename = do
 parse :: String -> String
 parse contents = intercalate "\n" $ Lexer.alexScanTokens contents
 
+interactParse :: IO ()
+interactParse = interact parse
