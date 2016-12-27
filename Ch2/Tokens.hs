@@ -3,55 +3,53 @@ module Tokens (Tokens(..)) where
 
 -- Interface for representing a Token in the Tiger Grammar.
 class Tokens a where
-    type LineNum a
 
-    typeToken :: (LineNum a, LineNum a) -> a
-    varToken :: (LineNum a, LineNum a) -> a
-    functionToken :: (LineNum a, LineNum a) -> a
-    breakToken :: (LineNum a, LineNum a) -> a
-    ofToken :: (LineNum a, LineNum a) -> a
-    endToken :: (LineNum a, LineNum a) -> a
-    inToken :: (LineNum a, LineNum a) -> a
-    nilToken :: (LineNum a, LineNum a) -> a
-    letToken :: (LineNum a, LineNum a) -> a
-    doToken :: (LineNum a, LineNum a) -> a
-    toToken :: (LineNum a, LineNum a) -> a
-    forToken :: (LineNum a, LineNum a) -> a
-    whileToken :: (LineNum a, LineNum a) -> a
-    elseToken :: (LineNum a, LineNum a) -> a
-    thenToken :: (LineNum a, LineNum a) -> a
-    ifToken :: (LineNum a, LineNum a) -> a
-    arrayToken :: (LineNum a, LineNum a) -> a
-    assignToken :: (LineNum a, LineNum a) -> a
-    orToken :: (LineNum a, LineNum a) -> a
-    andToken :: (LineNum a, LineNum a) -> a
-    geToken :: (LineNum a, LineNum a) -> a
-    gtToken :: (LineNum a, LineNum a) -> a
-    leToken :: (LineNum a, LineNum a) -> a
-    ltToken :: (LineNum a, LineNum a) -> a
-    neqToken :: (LineNum a, LineNum a) -> a
-    eqToken :: (LineNum a, LineNum a) -> a
-    divideToken :: (LineNum a, LineNum a) -> a
-    timesToken :: (LineNum a, LineNum a) -> a
-    minusToken :: (LineNum a, LineNum a) -> a
-    plusToken :: (LineNum a, LineNum a) -> a
-    dotToken :: (LineNum a, LineNum a) -> a
-    rbraceToken :: (LineNum a, LineNum a) -> a
-    lbraceToken :: (LineNum a, LineNum a) -> a
-    rbrackToken :: (LineNum a, LineNum a) -> a
-    lbrackToken :: (LineNum a, LineNum a) -> a
-    rparenToken :: (LineNum a, LineNum a) -> a
-    lparenToken :: (LineNum a, LineNum a) -> a
-    semicolonToken :: (LineNum a, LineNum a) -> a
-    colonToken :: (LineNum a, LineNum a) -> a
-    commaToken :: (LineNum a, LineNum a) -> a
-    stringToken :: (String, LineNum a, LineNum a) -> a
-    intToken :: (Int, LineNum a, LineNum a) -> a
-    idToken :: (String, LineNum a, LineNum a) -> a
-    eofToken :: (LineNum a, LineNum a) -> a
+    typeToken :: (Int, Int) -> a
+    varToken :: (Int, Int) -> a
+    functionToken :: (Int, Int) -> a
+    breakToken :: (Int, Int) -> a
+    ofToken :: (Int, Int) -> a
+    endToken :: (Int, Int) -> a
+    inToken :: (Int, Int) -> a
+    nilToken :: (Int, Int) -> a
+    letToken :: (Int, Int) -> a
+    doToken :: (Int, Int) -> a
+    toToken :: (Int, Int) -> a
+    forToken :: (Int, Int) -> a
+    whileToken :: (Int, Int) -> a
+    elseToken :: (Int, Int) -> a
+    thenToken :: (Int, Int) -> a
+    ifToken :: (Int, Int) -> a
+    arrayToken :: (Int, Int) -> a
+    assignToken :: (Int, Int) -> a
+    orToken :: (Int, Int) -> a
+    andToken :: (Int, Int) -> a
+    geToken :: (Int, Int) -> a
+    gtToken :: (Int, Int) -> a
+    leToken :: (Int, Int) -> a
+    ltToken :: (Int, Int) -> a
+    neqToken :: (Int, Int) -> a
+    eqToken :: (Int, Int) -> a
+    divideToken :: (Int, Int) -> a
+    timesToken :: (Int, Int) -> a
+    minusToken :: (Int, Int) -> a
+    plusToken :: (Int, Int) -> a
+    dotToken :: (Int, Int) -> a
+    rbraceToken :: (Int, Int) -> a
+    lbraceToken :: (Int, Int) -> a
+    rbrackToken :: (Int, Int) -> a
+    lbrackToken :: (Int, Int) -> a
+    rparenToken :: (Int, Int) -> a
+    lparenToken :: (Int, Int) -> a
+    semicolonToken :: (Int, Int) -> a
+    colonToken :: (Int, Int) -> a
+    commaToken :: (Int, Int) -> a
+    stringToken :: (String, Int, Int) -> a
+    intToken :: (Int, Int, Int) -> a
+    idToken :: (String, Int, Int) -> a
+    eofToken :: (Int, Int) -> a
 
 instance Tokens String where
-    type LineNum String = Int
 
     typeToken (i, j) = "TYPE   " ++ show i
     varToken (i, j) = "VAR   " ++ show i
