@@ -18,7 +18,7 @@ $alpha = [a-zA-Z]       -- alphabetic characters
 tokens :-
 
   $white+         ;
-  type            {\ainput n -> Alex $ \s@AlexState {alex_pos=pos} -> Right (s, typeToken (line pos, col pos) :: String)}
+  type            {action typeToken}
 --  type            {\pos s -> typeToken (line pos, col pos) :: String}
 --  function        {\pos s -> functionToken (line pos, col pos) :: String}
 --  break           {\pos s -> breakToken (line pos, col pos) :: String}
@@ -78,6 +78,8 @@ col (AlexPn _ _ c) = c
 
 tok :: (Tokens a) => ((Int, Int) -> a) -> Alex a
 tok f = Alex $ \s@AlexState {alex_pos=pos} -> return (s, f (line pos, col pos))
+
+action f _ _ = tok f
 ----------------------------
 
 alexEOF :: Alex String

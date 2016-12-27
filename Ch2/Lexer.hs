@@ -271,6 +271,8 @@ col (AlexPn _ _ c) = c
 
 tok :: (Tokens a) => ((Int, Int) -> a) -> Alex a
 tok f = Alex $ \s@AlexState {alex_pos=pos} -> return (s, f (line pos, col pos))
+
+action f _ _ = tok f
 ----------------------------
 
 alexEOF :: Alex String
@@ -289,7 +291,7 @@ main = do
                     Right ts -> intercalate "\n" ts
     print tokens
 
-alex_action_1 = \ainput n -> Alex $ \s@AlexState {alex_pos=pos} -> Right (s, typeToken (line pos, col pos) :: String)
+alex_action_1 = action typeToken
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
