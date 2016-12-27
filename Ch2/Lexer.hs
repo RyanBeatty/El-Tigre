@@ -273,7 +273,8 @@ tok :: (Tokens a) => ((Int, Int) -> a) -> Alex a
 tok f = Alex $ \s@AlexState {alex_pos=pos} -> return (s, f (line pos, col pos))
 ----------------------------
 
-alexEOF = Alex $ \s@AlexState {alex_pos=pos} -> Right (s, eofToken (line pos, col pos) :: String)
+alexEOF :: Alex String
+alexEOF = tok eofToken
 
 lexer str = runAlex str accTokens
 
