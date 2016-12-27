@@ -1,7 +1,9 @@
 {
-module Lexer () where
+module Lexer (main) where
 
 import Tokens
+
+import Control.Monad
 }
 
 %wrapper "monad"
@@ -76,8 +78,33 @@ col (AlexPn _ _ c) = c
 
 alexEOF = Alex $ \s@AlexState {alex_pos=pos} -> Right (s, eofToken (line pos, col pos) :: String)
 
---main = do
---    s <- getContents
---    ss <- alexMonadScan s
---    print ss
+scanner str = runAlex str $ do
+  let loop i = do tok <- alexMonadScan
+                  if tok == "stopped." || tok == "error."
+                    then return i
+                    else do let i' = i+1 in i' `seq` loop i'
+  loop 0
+
+--alexEOF = return "stopped."
+
+--alexBind ma mb = Alex $ \as -> unAlex ma as>>= \(as', s) -> unAlex mb as'
+
+--pushAlex :: Alex [a]
+pushAlex s = Alex $ \as -> unAlex alexMonadScan as >>= \(as', ss) -> return (as', s++ss)
+
+acc = Alex $ \as -> unAlex alexMonadScan as >>= \(as', s) -> case unAlex alexEOF as of
+    Left msg -> Left msg
+    Right (as'', s')  -> if s' == s then return (as', [s]) else unAlex acc as' >>= \(as''', ss) -> return (as''', s:ss)
+
+
+--if unAlex alexEOF as == s then return [s] else liftM2 (:) s acc
+
+accAlex f n
+    | n > 1     = f >>= \tok -> liftM2 (:) (return tok) (accAlex f (n-1))
+    | otherwise = f >>= \tok' -> return ([tok'])
+
+
+main = do
+    s <- getContents
+    print (scanner s)
 }

@@ -1,9 +1,11 @@
 {-# LANGUAGE CPP #-}
 {-# LINE 1 "Lexer.x" #-}
 
-module Lexer () where
+module Lexer (main) where
 
 import Tokens
+
+import Control.Monad
 
 #if __GLASGOW_HASKELL__ >= 603
 #include "ghcconfig.h"
@@ -253,7 +255,7 @@ alex_deflt :: Array Int Int
 alex_deflt = listArray (0,5) [-1,-1,-1,-1,-1,-1]
 
 alex_accept = listArray (0::Int,5) [[],[],[],[],[(AlexAccSkip)],[(AlexAcc (alex_action_1))]]
-{-# LINE 64 "Lexer.x" #-}
+{-# LINE 66 "Lexer.x" #-}
 
 ---------------------------
 -- Some action helpers.
@@ -269,10 +271,35 @@ col (AlexPn _ _ c) = c
 
 alexEOF = Alex $ \s@AlexState {alex_pos=pos} -> Right (s, eofToken (line pos, col pos) :: String)
 
---main = do
---    s <- getContents
---    ss <- alexMonadScan s
---    print ss
+scanner str = runAlex str $ do
+  let loop i = do tok <- alexMonadScan
+                  if tok == "stopped." || tok == "error."
+                    then return i
+                    else do let i' = i+1 in i' `seq` loop i'
+  loop 0
+
+--alexEOF = return "stopped."
+
+--alexBind ma mb = Alex $ \as -> unAlex ma as>>= \(as', s) -> unAlex mb as'
+
+--pushAlex :: Alex [a]
+pushAlex s = Alex $ \as -> unAlex alexMonadScan as >>= \(as', ss) -> return (as', s++ss)
+
+acc = Alex $ \as -> unAlex alexMonadScan as >>= \(as', s) -> case unAlex alexEOF as of
+    Left msg -> Left msg
+    Right (as'', s')  -> if s' == s then return (as', [s]) else unAlex acc as' >>= \(as''', ss) -> return (as''', s:ss)
+
+
+--if unAlex alexEOF as == s then return [s] else liftM2 (:) s acc
+
+accAlex f n
+    | n > 1     = f >>= \tok -> liftM2 (:) (return tok) (accAlex f (n-1))
+    | otherwise = f >>= \tok' -> return ([tok'])
+
+
+main = do
+    s <- getContents
+    print (scanner s)
 
 alex_action_1 = \ainput n -> Alex $ \s@AlexState {alex_pos=pos} -> Right (s, typeToken (line pos, col pos) :: String)
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
