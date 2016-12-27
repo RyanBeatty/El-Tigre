@@ -76,6 +76,7 @@ line (AlexPn _ l _) = l
 col :: AlexPosn -> Int
 col (AlexPn _ _ c) = c
 
+tok :: (Tokens a) => ((Int, Int) -> a) -> Alex a
 tok f = Alex $ \s@AlexState {alex_pos=pos} -> return (s, f (line pos, col pos))
 ----------------------------
 
