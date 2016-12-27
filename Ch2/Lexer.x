@@ -75,6 +75,8 @@ line (AlexPn _ l _) = l
 
 col :: AlexPosn -> Int
 col (AlexPn _ _ c) = c
+
+tok f = Alex $ \s@AlexState {alex_pos=pos} -> return (s, f (line pos, col pos))
 ----------------------------
 
 alexEOF = Alex $ \s@AlexState {alex_pos=pos} -> Right (s, eofToken (line pos, col pos) :: String)
