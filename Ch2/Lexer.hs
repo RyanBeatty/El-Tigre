@@ -256,7 +256,7 @@ alex_deflt :: Array Int Int
 alex_deflt = listArray (0,78) [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
 alex_accept = listArray (0::Int,78) [[],[(AlexAccSkip)],[(AlexAcc (alex_action_1))],[(AlexAcc (alex_action_2))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_4))],[(AlexAcc (alex_action_5))],[(AlexAcc (alex_action_6))],[(AlexAcc (alex_action_7))],[(AlexAcc (alex_action_8))],[(AlexAcc (alex_action_9))],[(AlexAcc (alex_action_10))],[(AlexAcc (alex_action_11))],[(AlexAcc (alex_action_12))],[(AlexAcc (alex_action_13))],[(AlexAcc (alex_action_14))],[(AlexAcc (alex_action_15))],[(AlexAcc (alex_action_16))],[(AlexAcc (alex_action_17))],[(AlexAcc (alex_action_18))],[(AlexAcc (alex_action_19))],[(AlexAcc (alex_action_20))],[(AlexAcc (alex_action_21))],[(AlexAcc (alex_action_22))],[(AlexAcc (alex_action_23))],[(AlexAcc (alex_action_24))],[(AlexAcc (alex_action_25))],[(AlexAcc (alex_action_26))],[(AlexAcc (alex_action_27))],[(AlexAcc (alex_action_28))],[(AlexAcc (alex_action_29))],[(AlexAcc (alex_action_30))],[(AlexAcc (alex_action_31))],[(AlexAcc (alex_action_32))],[(AlexAcc (alex_action_33))],[(AlexAcc (alex_action_34))],[(AlexAcc (alex_action_35))],[(AlexAcc (alex_action_36))],[(AlexAcc (alex_action_37))],[(AlexAcc (alex_action_38))],[(AlexAcc (alex_action_39))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_41))]]
-{-# LINE 65 "Lexer.x" #-}
+{-# LINE 69 "Lexer.x" #-}
 
 ---------------------------
 -- Some action helpers.
@@ -269,21 +269,20 @@ line (AlexPn _ l _) = l
 col :: AlexPosn -> Int
 col (AlexPn _ _ c) = c
 
-tok :: (Tokens a) => ((Int, Int) -> a) -> Alex a
-tok f = Alex $ \s@AlexState {alex_pos=pos} -> return (s, f (line pos, col pos))
-
---action :: (Tokens a) => a -> AlexInput -> Int -> Alex a
 action f (pos, _, _) _ = return $ f (line pos, col pos)
 ----------------------------
 
 alexEOF :: Alex String
-alexEOF = tok eofToken
+alexEOF = return eofToken
 
-lexer str = runAlex str accTokens
+lexer str = runAlex str getTokens
 
-accTokens = Alex $ \as -> unAlex alexMonadScan as >>= \(as', s) -> case unAlex alexEOF as of
-    Left msg -> Left msg
-    Right (as'', s')  -> if s' == s then return (as', [s]) else unAlex accTokens as' >>= \(as''', ss) -> return (as''', s:ss)
+getTokens = do
+  tok <- alexMonadScan
+  if tok == eofToken
+  then return [tok]
+  else do toks <- getTokens
+          return $ tok : toks
 
 main = do
     s <- getContents

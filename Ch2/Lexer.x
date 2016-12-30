@@ -62,6 +62,10 @@ tokens :-
 
   @intLiteral     {\(pos, _, s) len -> return (intToken (read (take len s) :: Int, line pos, col pos) :: String)}
 
+  --<0> \"          {begin string}
+  --<string> [^\"]  {\(pos, _, s) len -> return (stringToken (take len s, line pos, col pos)) :: String}
+  --<string> \"     {begin 0}
+
 {
 ---------------------------
 -- Some action helpers.
@@ -78,13 +82,16 @@ action f (pos, _, _) _ = return $ f (line pos, col pos)
 ----------------------------
 
 alexEOF :: Alex String
-alexEOF = tok eofToken
+alexEOF = return eofToken
 
-lexer str = runAlex str accTokens
+lexer str = runAlex str getTokens
 
-accTokens = Alex $ \as -> unAlex alexMonadScan as >>= \(as', s) -> case unAlex alexEOF as of
-    Left msg -> Left msg
-    Right (as'', s')  -> if s' == s then return (as', [s]) else unAlex accTokens as' >>= \(as''', ss) -> return (as''', s:ss)
+getTokens = do
+  tok <- alexMonadScan
+  if tok == eofToken
+  then return [tok]
+  else do toks <- getTokens
+          return $ tok : toks
 
 main = do
     s <- getContents

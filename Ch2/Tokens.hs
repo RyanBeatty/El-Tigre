@@ -47,7 +47,7 @@ class Tokens a where
     stringToken :: (String, Int, Int) -> a
     intToken :: (Int, Int, Int) -> a
     idToken :: (String, Int, Int) -> a
-    eofToken :: (Int, Int) -> a
+    eofToken :: a
 
 instance Tokens String where
 
@@ -94,7 +94,7 @@ instance Tokens String where
     stringToken (s, i, j) = "STRING(" ++ s ++ ")     " ++ show i
     intToken (n, i, j) = "INT(" ++ show n ++ ")   " ++ show i
     idToken (s, i, j) = "ID(" ++ s ++ ")     " ++ show i
-    eofToken (i, j) = "EOF   " ++ show i
+    eofToken = "EOF"
 
 
 
