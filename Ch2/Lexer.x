@@ -60,7 +60,7 @@ tokens :-
 
   @id             {\(pos, _, s) len -> return (idToken (take len s, line pos, col pos) :: String)}
 
-  @intLiteral     {\_ _ -> Alex $ \as@AlexState {alex_pos=pos, alex_inp=s} -> return (as, intToken (read s :: Int, line pos, col pos) :: String)}
+  @intLiteral     {\(pos, _, s) len -> return (intToken (read (take len s) :: Int, line pos, col pos) :: String)}
 
 {
 ---------------------------

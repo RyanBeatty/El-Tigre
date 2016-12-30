@@ -331,7 +331,7 @@ alex_action_37 = action semicolonToken
 alex_action_38 = action colonToken
 alex_action_39 = action commaToken
 alex_action_40 = \(pos, _, s) len -> return (idToken (take len s, line pos, col pos) :: String)
-alex_action_41 = \_ _ -> Alex $ \as@AlexState {alex_pos=pos, alex_inp=s} -> return (as, intToken (read s :: Int, line pos, col pos) :: String)
+alex_action_41 = \(pos, _, s) len -> return (intToken (read (take len s) :: Int, line pos, col pos) :: String)
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
