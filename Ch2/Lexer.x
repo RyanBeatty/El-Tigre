@@ -7,7 +7,7 @@ import Control.Monad
 import Data.List (intercalate)
 }
 
-%wrapper "monad"
+%wrapper "monadUserState"
 
 $digit = 0-9            -- digits
 $alpha = [a-zA-Z]       -- alphabetic characters
@@ -81,6 +81,32 @@ action f (pos, _, _) _ = return $ f (line pos, col pos)
 -- Things that need to be defined for alex to work.
 alexEOF :: Alex String
 alexEOF = return eofToken
+
+data AlexUserState = AlexUserState {
+    lexerCommentDepth  :: Int
+  , lexerStringValue   :: String
+}
+
+alexInitUserState :: AlexUserState
+alexInitUserState = AlexUserState {
+    lexerCommentDepth  = 0
+  , lexerStringValue   = ""
+}
+
+getLexerCommentDepth :: Alex Int
+getLexerCommentDepth = Alex $ \s@AlexState{alex_ust=ust} -> Right (s, lexerCommentDepth ust)
+
+setLexerCommentDepth :: Int -> Alex ()
+setLexerCommentDepth ss = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerCommentDepth=ss}}, ())
+
+getLexerStringValue :: Alex String
+getLexerStringValue = Alex $ \s@AlexState{alex_ust=ust} -> Right (s, lexerStringValue ust)
+
+setLexerStringValue :: String -> Alex ()
+setLexerStringValue ss = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerStringValue=ss}}, ())
+
+addCharToLexerStringValue :: Char -> Alex ()
+addCharToLexerStringValue c = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerStringValue=c:lexerStringValue (alex_ust s)}}, ())
 
 -----------------------------------------------------------
 -- Lexing helpers.
