@@ -17,61 +17,58 @@ $alpha = [a-zA-Z]       -- alphabetic characters
 
 tokens :-
 
-  $white+         ;
-  type            {action typeToken}
-  function        {action functionToken}
-  break           {action breakToken}
-  of              {action ofToken}
-  end             {action endToken}
-  in              {action inToken}
-  nil             {action nilToken}
-  let             {action letToken}
-  do              {action doToken}
-  to              {action toToken}
-  for             {action forToken}
-  while           {action whileToken}
-  else            {action elseToken}
-  then            {action thenToken}
-  if              {action ifToken}
-  array           {action arrayToken}
-  ":="            {action assignToken}
-  or              {action orToken}
-  "&"             {action andToken}
-  ">="            {action geToken}
-  ">"             {action gtToken}
-  "<="            {action leToken}
-  "<"             {action ltToken}
-  "<>"            {action neqToken}
-  "="             {action eqToken}
-  "/"             {action divideToken}
-  "*"             {action timesToken}
-  "-"             {action minusToken}
-  "+"             {action plusToken}
-  "."             {action dotToken}
-  "{"             {action lbraceToken}
-  "}"             {action rbraceToken}
-  "["             {action lbrackToken}     
-  "]"             {action rbrackToken}
-  "("             {action lparenToken}
-  ")"             {action rparenToken}
-  ";"             {action semicolonToken}
-  ":"             {action colonToken}
-  ","             {action commaToken}
+  <0>$white+         ;
+  <0>type            {action typeToken}
+  <0>function        {action functionToken}
+  <0>break           {action breakToken}
+  <0>of              {action ofToken}
+  <0>end             {action endToken}
+  <0>in              {action inToken}
+  <0>nil             {action nilToken}
+  <0>let             {action letToken}
+  <0>do              {action doToken}
+  <0>to              {action toToken}
+  <0>for             {action forToken}
+  <0>while           {action whileToken}
+  <0>else            {action elseToken}
+  <0>then            {action thenToken}
+  <0>if              {action ifToken}
+  <0>array           {action arrayToken}
+  <0>":="            {action assignToken}
+  <0>or              {action orToken}
+  <0>"&"             {action andToken}
+  <0>">="            {action geToken}
+  <0>">"             {action gtToken}
+  <0>"<="            {action leToken}
+  <0>"<"             {action ltToken}
+  <0>"<>"            {action neqToken}
+  <0>"="             {action eqToken}
+  <0>"/"             {action divideToken}
+  <0>"*"             {action timesToken}
+  <0>"-"             {action minusToken}
+  <0>"+"             {action plusToken}
+  <0>"."             {action dotToken}
+  <0>"{"             {action lbraceToken}
+  <0>"}"             {action rbraceToken}
+  <0>"["             {action lbrackToken}     
+  <0>"]"             {action rbrackToken}
+  <0>"("             {action lparenToken}
+  <0>")"             {action rparenToken}
+  <0>";"             {action semicolonToken}
+  <0>":"             {action colonToken}
+  <0>","             {action commaToken}
 
-  @id             {\(pos, _, s) len -> return (idToken (take len s, line pos, col pos) :: String)}
+  <0>@id             {\(pos, _, s) len -> return (idToken (take len s, line pos, col pos) :: String)}
 
-  @intLiteral     {\(pos, _, s) len -> return (intToken (read (take len s) :: Int, line pos, col pos) :: String)}
+  <0>@intLiteral     {\(pos, _, s) len -> return (intToken (read (take len s) :: Int, line pos, col pos) :: String)}
 
-  --<0> \"          {begin string}
-  --<string> [^\"]  {\(pos, _, s) len -> return (stringToken (take len s, line pos, col pos)) :: String}
-  --<string> \"     {begin 0}
+  --<0> \"             {begin string}
+  --<string> [^\"]     {\(pos, _, s) len -> return (stringToken (take len s, line pos, col pos) :: String) }
+  --<string> \"        {begin 0}
 
 {
 ---------------------------
 -- Some action helpers.
-offset :: AlexPosn -> Int
-offset (AlexPn o _ _) = o
-
 line :: AlexPosn -> Int
 line (AlexPn _ l _) = l
 

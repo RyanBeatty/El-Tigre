@@ -260,9 +260,6 @@ alex_accept = listArray (0::Int,78) [[],[(AlexAccSkip)],[(AlexAcc (alex_action_1
 
 ---------------------------
 -- Some action helpers.
-offset :: AlexPosn -> Int
-offset (AlexPn o _ _) = o
-
 line :: AlexPosn -> Int
 line (AlexPn _ l _) = l
 
