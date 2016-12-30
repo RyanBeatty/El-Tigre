@@ -256,7 +256,7 @@ alex_deflt :: Array Int Int
 alex_deflt = listArray (0,78) [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
 alex_accept = listArray (0::Int,78) [[],[(AlexAccSkip)],[(AlexAcc (alex_action_1))],[(AlexAcc (alex_action_2))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_4))],[(AlexAcc (alex_action_5))],[(AlexAcc (alex_action_6))],[(AlexAcc (alex_action_7))],[(AlexAcc (alex_action_8))],[(AlexAcc (alex_action_9))],[(AlexAcc (alex_action_10))],[(AlexAcc (alex_action_11))],[(AlexAcc (alex_action_12))],[(AlexAcc (alex_action_13))],[(AlexAcc (alex_action_14))],[(AlexAcc (alex_action_15))],[(AlexAcc (alex_action_16))],[(AlexAcc (alex_action_17))],[(AlexAcc (alex_action_18))],[(AlexAcc (alex_action_19))],[(AlexAcc (alex_action_20))],[(AlexAcc (alex_action_21))],[(AlexAcc (alex_action_22))],[(AlexAcc (alex_action_23))],[(AlexAcc (alex_action_24))],[(AlexAcc (alex_action_25))],[(AlexAcc (alex_action_26))],[(AlexAcc (alex_action_27))],[(AlexAcc (alex_action_28))],[(AlexAcc (alex_action_29))],[(AlexAcc (alex_action_30))],[(AlexAcc (alex_action_31))],[(AlexAcc (alex_action_32))],[(AlexAcc (alex_action_33))],[(AlexAcc (alex_action_34))],[(AlexAcc (alex_action_35))],[(AlexAcc (alex_action_36))],[(AlexAcc (alex_action_37))],[(AlexAcc (alex_action_38))],[(AlexAcc (alex_action_39))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_41))]]
-{-# LINE 66 "Lexer.x" #-}
+{-# LINE 65 "Lexer.x" #-}
 
 ---------------------------
 -- Some action helpers.
@@ -330,7 +330,7 @@ alex_action_36 = action rparenToken
 alex_action_37 = action semicolonToken
 alex_action_38 = action colonToken
 alex_action_39 = action commaToken
-alex_action_40 = \_ _ -> Alex $ \as@AlexState {alex_pos=pos, alex_inp=s} -> return (as, idToken (s, line pos, col pos) :: String)
+alex_action_40 = \(pos, _, s) len -> return (idToken (take len s, line pos, col pos) :: String)
 alex_action_41 = \_ _ -> Alex $ \as@AlexState {alex_pos=pos, alex_inp=s} -> return (as, intToken (read s :: Int, line pos, col pos) :: String)
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}

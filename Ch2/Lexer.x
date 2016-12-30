@@ -58,7 +58,7 @@ tokens :-
   ":"             {action colonToken}
   ","             {action commaToken}
 
-  @id             {\_ _ -> Alex $ \as@AlexState {alex_pos=pos, alex_inp=s} -> return (as, idToken (s, line pos, col pos) :: String)}
+  @id             {\(pos, _, s) len -> return (idToken (take len s, line pos, col pos) :: String)}
 
   @intLiteral     {\_ _ -> Alex $ \as@AlexState {alex_pos=pos, alex_inp=s} -> return (as, intToken (read s :: Int, line pos, col pos) :: String)}
 
