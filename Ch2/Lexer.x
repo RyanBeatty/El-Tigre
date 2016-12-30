@@ -67,7 +67,7 @@ tokens :-
   --<string> \"        {begin 0}
 
 {
----------------------------
+-----------------------------------------------------------
 -- Some action helpers.
 line :: AlexPosn -> Int
 line (AlexPn _ l _) = l
@@ -76,19 +76,22 @@ col :: AlexPosn -> Int
 col (AlexPn _ _ c) = c
 
 action f (pos, _, _) _ = return $ f (line pos, col pos)
-----------------------------
 
+-----------------------------------------------------------
+-- Things that need to be defined for alex to work.
 alexEOF :: Alex String
 alexEOF = return eofToken
 
-lexer str = runAlex str getTokens
-
+-----------------------------------------------------------
+-- Lexing helpers.
 getTokens = do
   tok <- alexMonadScan
   if tok == eofToken
   then return [tok]
   else do toks <- getTokens
           return $ tok : toks
+
+lexer str = runAlex str getTokens
 
 main = do
     s <- getContents
