@@ -62,14 +62,10 @@ tokens :-
 
   <0>@intLiteral     {intLiteralAction}
 
-  --<0> \"             {beginNewStringValue `andBegin` string}
-  --<string> [^\"]     {\(pos, _, s) len -> return (stringToken (take len s, line pos, col pos) :: String) }
+  <0> \"             {beginNewStringValue `andBegin` string}
+  <string> [^\"]     {addCurrentToString}  
+  <string> \"        {endStringValue `andBegin` 0}
 
-  --<string> [^\"]     {addCurrentToString}
-  
-  --<string> \"        {begin 0}
-
-  --<string> \"        {(\(pos, _, _) _ -> getLexerStringValue >>= \s -> return (stringToken (s, line pos, col pos) :: String)) `andBegin` 0}
 
 {
 -----------------------------------------------------------
@@ -118,17 +114,23 @@ addCharToLexerStringValue :: Char -> Alex ()
 addCharToLexerStringValue c = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerStringValue=c:lexerStringValue (alex_ust s)}}, ())
 
 
-beginNewStringValue _ _ = setLexerStringValue ""
+beginNewStringValue _ _ =
+  do setLexerStringValue ""
+     alexMonadScan
 
 addCharToString c _  _  =
     do addCharToLexerStringValue c
        alexMonadScan
 
-addCurrentToString i@(_, _, input) len = addCharToString c input len
+addCurrentToString i@(_, _, _, input) len = addCharToString c input len
   where
     c = if (len == 1)
            then head input
            else error "Invalid call to addCurrentToString"
+
+endStringValue (pos, _, _, _) _ =
+  do s <- getLexerStringValue
+     return (stringToken (reverse s, line pos, col pos) :: String)
 
 -----------------------------------------------------------
 -- Lexing helpers.
