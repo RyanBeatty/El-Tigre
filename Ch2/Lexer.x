@@ -66,7 +66,6 @@ tokens :-
   <string> [^\"]     {addCurrentToString}  
   <string> \"        {endStringValue `andBegin` 0}
 
-
 {
 -----------------------------------------------------------
 -- Some action helpers.
@@ -83,7 +82,8 @@ identifierAction (pos, _, _, s) len = return (idToken (take len s, line pos, col
 intLiteralAction (pos, _, _, s) len = return (intToken (read (take len s) :: Int, line pos, col pos) :: String)
 
 -----------------------------------------------------------
--- Things that need to be defined for alex to work.
+-- Things that need to be defined for alex to work as well
+-- as helper functions for changing AlexUserState.
 alexEOF :: Alex String
 alexEOF = return eofToken
 
@@ -112,7 +112,6 @@ setLexerStringValue ss = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerString
 
 addCharToLexerStringValue :: Char -> Alex ()
 addCharToLexerStringValue c = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerStringValue=c:lexerStringValue (alex_ust s)}}, ())
-
 
 beginNewStringValue _ _ =
   do setLexerStringValue ""
