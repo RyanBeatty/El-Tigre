@@ -180,7 +180,7 @@ alexMonadScan = do
         alexMonadScan
     AlexToken inp' len action -> do
         alexSetInput inp'
-        action (ignorePendingBytes inp) len
+        action inp len
 
 -- -----------------------------------------------------------------------------
 -- Useful token actions
@@ -256,7 +256,7 @@ alex_deflt :: Array Int Int
 alex_deflt = listArray (0,78) [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
 alex_accept = listArray (0::Int,78) [[],[(AlexAccSkip)],[(AlexAcc (alex_action_1))],[(AlexAcc (alex_action_2))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_4))],[(AlexAcc (alex_action_5))],[(AlexAcc (alex_action_6))],[(AlexAcc (alex_action_7))],[(AlexAcc (alex_action_8))],[(AlexAcc (alex_action_9))],[(AlexAcc (alex_action_10))],[(AlexAcc (alex_action_11))],[(AlexAcc (alex_action_12))],[(AlexAcc (alex_action_13))],[(AlexAcc (alex_action_14))],[(AlexAcc (alex_action_15))],[(AlexAcc (alex_action_16))],[(AlexAcc (alex_action_17))],[(AlexAcc (alex_action_18))],[(AlexAcc (alex_action_19))],[(AlexAcc (alex_action_20))],[(AlexAcc (alex_action_21))],[(AlexAcc (alex_action_22))],[(AlexAcc (alex_action_23))],[(AlexAcc (alex_action_24))],[(AlexAcc (alex_action_25))],[(AlexAcc (alex_action_26))],[(AlexAcc (alex_action_27))],[(AlexAcc (alex_action_28))],[(AlexAcc (alex_action_29))],[(AlexAcc (alex_action_30))],[(AlexAcc (alex_action_31))],[(AlexAcc (alex_action_32))],[(AlexAcc (alex_action_33))],[(AlexAcc (alex_action_34))],[(AlexAcc (alex_action_35))],[(AlexAcc (alex_action_36))],[(AlexAcc (alex_action_37))],[(AlexAcc (alex_action_38))],[(AlexAcc (alex_action_39))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_41))]]
-{-# LINE 69 "Lexer.x" #-}
+{-# LINE 74 "Lexer.x" #-}
 
 -----------------------------------------------------------
 -- Some action helpers.
@@ -266,7 +266,11 @@ line (AlexPn _ l _) = l
 col :: AlexPosn -> Int
 col (AlexPn _ _ c) = c
 
-action f (pos, _, _) _ = return $ f (line pos, col pos)
+action f (pos, _, _, _) _ = return $ f (line pos, col pos)
+
+identifierAction (pos, _, _, s) len = return (idToken (take len s, line pos, col pos) :: String)
+
+intLiteralAction (pos, _, _, s) len = return (intToken (read (take len s) :: Int, line pos, col pos) :: String)
 
 -----------------------------------------------------------
 -- Things that need to be defined for alex to work.
@@ -298,6 +302,19 @@ setLexerStringValue ss = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerString
 
 addCharToLexerStringValue :: Char -> Alex ()
 addCharToLexerStringValue c = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerStringValue=c:lexerStringValue (alex_ust s)}}, ())
+
+
+beginNewStringValue _ _ = setLexerStringValue ""
+
+addCharToString c _  _  =
+    do addCharToLexerStringValue c
+       alexMonadScan
+
+addCurrentToString i@(_, _, input) len = addCharToString c input len
+  where
+    c = if (len == 1)
+           then head input
+           else error "Invalid call to addCurrentToString"
 
 -----------------------------------------------------------
 -- Lexing helpers.
@@ -356,8 +373,8 @@ alex_action_36 = action rparenToken
 alex_action_37 = action semicolonToken
 alex_action_38 = action colonToken
 alex_action_39 = action commaToken
-alex_action_40 = \(pos, _, s) len -> return (idToken (take len s, line pos, col pos) :: String)
-alex_action_41 = \(pos, _, s) len -> return (intToken (read (take len s) :: Int, line pos, col pos) :: String)
+alex_action_40 = identifierAction
+alex_action_41 = intLiteralAction
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}

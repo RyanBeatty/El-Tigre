@@ -58,13 +58,18 @@ tokens :-
   <0>":"             {action colonToken}
   <0>","             {action commaToken}
 
-  <0>@id             {\(pos, _, s) len -> return (idToken (take len s, line pos, col pos) :: String)}
+  <0>@id             {identifierAction}
 
-  <0>@intLiteral     {\(pos, _, s) len -> return (intToken (read (take len s) :: Int, line pos, col pos) :: String)}
+  <0>@intLiteral     {intLiteralAction}
 
-  --<0> \"             {begin string}
+  --<0> \"             {beginNewStringValue `andBegin` string}
   --<string> [^\"]     {\(pos, _, s) len -> return (stringToken (take len s, line pos, col pos) :: String) }
+
+  --<string> [^\"]     {addCurrentToString}
+  
   --<string> \"        {begin 0}
+
+  --<string> \"        {(\(pos, _, _) _ -> getLexerStringValue >>= \s -> return (stringToken (s, line pos, col pos) :: String)) `andBegin` 0}
 
 {
 -----------------------------------------------------------
@@ -75,7 +80,11 @@ line (AlexPn _ l _) = l
 col :: AlexPosn -> Int
 col (AlexPn _ _ c) = c
 
-action f (pos, _, _) _ = return $ f (line pos, col pos)
+action f (pos, _, _, _) _ = return $ f (line pos, col pos)
+
+identifierAction (pos, _, _, s) len = return (idToken (take len s, line pos, col pos) :: String)
+
+intLiteralAction (pos, _, _, s) len = return (intToken (read (take len s) :: Int, line pos, col pos) :: String)
 
 -----------------------------------------------------------
 -- Things that need to be defined for alex to work.
@@ -107,6 +116,19 @@ setLexerStringValue ss = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerString
 
 addCharToLexerStringValue :: Char -> Alex ()
 addCharToLexerStringValue c = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerStringValue=c:lexerStringValue (alex_ust s)}}, ())
+
+
+beginNewStringValue _ _ = setLexerStringValue ""
+
+addCharToString c _  _  =
+    do addCharToLexerStringValue c
+       alexMonadScan
+
+addCurrentToString i@(_, _, input) len = addCharToString c input len
+  where
+    c = if (len == 1)
+           then head input
+           else error "Invalid call to addCurrentToString"
 
 -----------------------------------------------------------
 -- Lexing helpers.
