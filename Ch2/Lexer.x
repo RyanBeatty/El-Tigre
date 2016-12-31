@@ -3,7 +3,6 @@ module Lexer (main, lexer) where
 
 import Tokens
 
-import Control.Monad
 import Data.List (intercalate)
 }
 

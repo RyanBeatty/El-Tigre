@@ -5,7 +5,6 @@ module Lexer (main, lexer) where
 
 import Tokens
 
-import Control.Monad
 import Data.List (intercalate)
 
 #if __GLASGOW_HASKELL__ >= 603
@@ -256,7 +255,7 @@ alex_deflt :: Array Int Int
 alex_deflt = listArray (0,91) [-1,90,10,10,3,3,-1,-1,90,90,90,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
 alex_accept = listArray (0::Int,91) [[],[],[],[],[],[],[],[],[],[],[],[(AlexAccSkip)],[(AlexAcc (alex_action_1))],[(AlexAcc (alex_action_2))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_4))],[(AlexAcc (alex_action_5))],[(AlexAcc (alex_action_6))],[(AlexAcc (alex_action_7))],[(AlexAcc (alex_action_8))],[(AlexAcc (alex_action_9))],[(AlexAcc (alex_action_10))],[(AlexAcc (alex_action_11))],[(AlexAcc (alex_action_12))],[(AlexAcc (alex_action_13))],[(AlexAcc (alex_action_14))],[(AlexAcc (alex_action_15))],[(AlexAcc (alex_action_16))],[(AlexAcc (alex_action_17))],[(AlexAcc (alex_action_18))],[(AlexAcc (alex_action_19))],[(AlexAcc (alex_action_20))],[(AlexAcc (alex_action_21))],[(AlexAcc (alex_action_22))],[(AlexAcc (alex_action_23))],[(AlexAcc (alex_action_24))],[(AlexAcc (alex_action_25))],[(AlexAcc (alex_action_26))],[(AlexAcc (alex_action_27))],[(AlexAcc (alex_action_28))],[(AlexAcc (alex_action_29))],[(AlexAcc (alex_action_30))],[(AlexAcc (alex_action_31))],[(AlexAcc (alex_action_32))],[(AlexAcc (alex_action_33))],[(AlexAcc (alex_action_34))],[(AlexAcc (alex_action_35))],[(AlexAcc (alex_action_36))],[(AlexAcc (alex_action_37))],[(AlexAcc (alex_action_38))],[(AlexAcc (alex_action_39))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_41))],[(AlexAcc (alex_action_42))],[(AlexAcc (alex_action_43))],[(AlexAcc (alex_action_44))]]
-{-# LINE 74 "Lexer.x" #-}
+{-# LINE 68 "Lexer.x" #-}
 
 -----------------------------------------------------------
 -- Some action helpers.
@@ -273,7 +272,8 @@ identifierAction (pos, _, _, s) len = return (idToken (take len s, line pos, col
 intLiteralAction (pos, _, _, s) len = return (intToken (read (take len s) :: Int, line pos, col pos) :: String)
 
 -----------------------------------------------------------
--- Things that need to be defined for alex to work.
+-- Things that need to be defined for alex to work as well
+-- as helper functions for changing AlexUserState.
 alexEOF :: Alex String
 alexEOF = return eofToken
 
@@ -302,7 +302,6 @@ setLexerStringValue ss = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerString
 
 addCharToLexerStringValue :: Char -> Alex ()
 addCharToLexerStringValue c = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerStringValue=c:lexerStringValue (alex_ust s)}}, ())
-
 
 beginNewStringValue _ _ =
   do setLexerStringValue ""

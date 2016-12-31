@@ -1,6 +1,6 @@
 module Driver (parse) where
 
-import Lexer (alexScanTokens)
+import Lexer (lexer)
 import Tokens (Tokens)
 
 import Data.List (intercalate)
@@ -11,7 +11,10 @@ parseFile filename = do
     print $ parse contents
 
 parse :: String -> String
-parse contents = intercalate "\n" $ Lexer.alexScanTokens contents
+parse contents =
+    case lexer contents of
+        Left msg      -> msg
+        Right tokens -> intercalate "\n" tokens
 
 interactParse :: IO ()
 interactParse = interact parse
