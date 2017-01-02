@@ -10,7 +10,6 @@ import Data.List (intercalate)
 
 $digit = 0-9            -- digits
 $alpha = [a-zA-Z]       -- alphabetic characters
-$whitespace = [\ \t\b]
 
 @id = $alpha ($alpha | $digit | \_)*
 @intLiteral = $digit+
@@ -70,8 +69,8 @@ tokens :-
   <comment> "*/"     {endComment}
   <comment> .        ;
 
-  <0>$whitespace+    ;
-  <0> .              {error "lexer error occurred"}
+  <0>$white+         ;
+  <0> .              {\_ _ -> lexerError "lexer user error occurred"}
 
 {
 -----------------------------------------------------------
@@ -88,11 +87,17 @@ identifierAction (pos, _, _, s) len = return (idToken (take len s, line pos, col
 
 intLiteralAction (pos, _, _, s) len = return (intToken (read (take len s) :: Int, line pos, col pos) :: String)
 
+lexerError msg = Alex $ \s -> Left msg
+
 -----------------------------------------------------------
 -- Things that need to be defined for alex to work as well
 -- as helper functions for changing AlexUserState.
 alexEOF :: Alex String
-alexEOF = return eofToken
+alexEOF = 
+  do scd <- getLexerStartCode
+     if scd == 0
+     then return eofToken
+     else lexerError "Lexer finished with invalid start code."
 
 data AlexUserState = AlexUserState {
     lexerCommentDepth  :: Int
@@ -104,6 +109,9 @@ alexInitUserState = AlexUserState {
     lexerCommentDepth  = 0
   , lexerStringValue   = ""
 }
+
+getLexerStartCode :: Alex Int
+getLexerStartCode = Alex $ \as -> Right (as, alex_scd as)
 
 getLexerCommentDepth :: Alex Int
 getLexerCommentDepth = Alex $ \s@AlexState{alex_ust=ust} -> Right (s, lexerCommentDepth ust)
