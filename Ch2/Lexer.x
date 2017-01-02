@@ -10,13 +10,13 @@ import Data.List (intercalate)
 
 $digit = 0-9            -- digits
 $alpha = [a-zA-Z]       -- alphabetic characters
+$whitespace = [\ \t\b]
 
 @id = $alpha ($alpha | $digit | \_)*
 @intLiteral = $digit+
 
 tokens :-
 
-  <0>$white+         ;
   <0>type            {action typeToken}
   <0>function        {action functionToken}
   <0>break           {action breakToken}
@@ -65,9 +65,13 @@ tokens :-
   <string> [^\"]     {addCurrentToString}  
   <string> \"        {endStringValue `andBegin` 0}
 
-  <0> "/*"           {beginComment `andBegin` comment}
+  <0> "/*"           {beginNewComment `andBegin` comment}
+  <comment> "/*"     {beginComment}
   <comment> "*/"     {endComment}
   <comment> .        ;
+
+  <0>$whitespace+    ;
+  <0> .              {error "lexer error occurred"}
 
 {
 -----------------------------------------------------------
@@ -134,8 +138,13 @@ endStringValue (pos, _, _, _) _ =
   do s <- getLexerStringValue
      return (stringToken (reverse s, line pos, col pos) :: String)
 
-beginComment _ _ =
+beginNewComment _ _ =
   do setLexerCommentDepth 1
+     alexMonadScan
+
+beginComment _ _ =
+  do depth <- getLexerCommentDepth
+     setLexerCommentDepth (depth + 1)
      alexMonadScan
 
 endComment inp len =
