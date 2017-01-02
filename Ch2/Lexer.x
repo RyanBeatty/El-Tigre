@@ -65,6 +65,10 @@ tokens :-
   <string> [^\"]     {addCurrentToString}  
   <string> \"        {endStringValue `andBegin` 0}
 
+  <0> "/*"           {beginComment `andBegin` comment}
+  <comment> "*/"     {endComment}
+  <comment> .        ;
+
 {
 -----------------------------------------------------------
 -- Some action helpers.
@@ -129,6 +133,20 @@ addCurrentToString i@(_, _, _, input) len = addCharToString c input len
 endStringValue (pos, _, _, _) _ =
   do s <- getLexerStringValue
      return (stringToken (reverse s, line pos, col pos) :: String)
+
+beginComment _ _ =
+  do setLexerCommentDepth 1
+     alexMonadScan
+
+endComment inp len =
+  do depth <- getLexerCommentDepth
+     if depth < 0
+     then error "Invalid call to endComment"
+     else if depth == 1
+          then do setLexerCommentDepth 0
+                  begin 0 inp len
+          else do setLexerCommentDepth (depth - 1)
+                  alexMonadScan
 
 -----------------------------------------------------------
 -- Lexing helpers.
