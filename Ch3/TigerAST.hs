@@ -7,6 +7,9 @@ data Expr =
   | StringLit String
   deriving (Show)
 
+data TyField = TyField String String
+  deriving (Show)
+
 -- Grammar for variable declarations in Tiger language.
 -- VarDecL deals with case where the type is specified.
 data VarDec =
