@@ -2,245 +2,88 @@
 module Tiger where
 import Data.Char
 import TigerAST as AST
-    --import Tokens as T
+import Tokens as Tok
 
 -- parser produced by Happy Version 1.18.9
 
-data HappyAbsSyn t5 t6 t7
-	= HappyTerminal (Token)
+data HappyAbsSyn t4
+	= HappyTerminal (Tok.TigerToken)
 	| HappyErrorToken Int
-	| HappyAbsSyn4 (Exp)
-	| HappyAbsSyn5 t5
-	| HappyAbsSyn6 t6
-	| HappyAbsSyn7 t7
+	| HappyAbsSyn4 t4
 
-action_0 (8) = happyShift action_2
-action_0 (10) = happyShift action_7
-action_0 (11) = happyShift action_8
-action_0 (17) = happyShift action_9
+action_0 (46) = happyShift action_2
 action_0 (4) = happyGoto action_3
-action_0 (5) = happyGoto action_4
-action_0 (6) = happyGoto action_5
-action_0 (7) = happyGoto action_6
 action_0 _ = happyFail
 
-action_1 (8) = happyShift action_2
+action_1 (46) = happyShift action_2
 action_1 _ = happyFail
 
-action_2 (11) = happyShift action_15
-action_2 _ = happyFail
+action_2 _ = happyReduce_1
 
-action_3 (19) = happyAccept
+action_3 (49) = happyAccept
 action_3 _ = happyFail
 
-action_4 (13) = happyShift action_13
-action_4 (14) = happyShift action_14
-action_4 _ = happyReduce_2
-
-action_5 (15) = happyShift action_11
-action_5 (16) = happyShift action_12
-action_5 _ = happyReduce_5
-
-action_6 _ = happyReduce_8
-
-action_7 _ = happyReduce_9
-
-action_8 _ = happyReduce_10
-
-action_9 (8) = happyShift action_2
-action_9 (10) = happyShift action_7
-action_9 (11) = happyShift action_8
-action_9 (17) = happyShift action_9
-action_9 (4) = happyGoto action_10
-action_9 (5) = happyGoto action_4
-action_9 (6) = happyGoto action_5
-action_9 (7) = happyGoto action_6
-action_9 _ = happyFail
-
-action_10 (18) = happyShift action_21
-action_10 _ = happyFail
-
-action_11 (10) = happyShift action_7
-action_11 (11) = happyShift action_8
-action_11 (17) = happyShift action_9
-action_11 (7) = happyGoto action_20
-action_11 _ = happyFail
-
-action_12 (10) = happyShift action_7
-action_12 (11) = happyShift action_8
-action_12 (17) = happyShift action_9
-action_12 (7) = happyGoto action_19
-action_12 _ = happyFail
-
-action_13 (10) = happyShift action_7
-action_13 (11) = happyShift action_8
-action_13 (17) = happyShift action_9
-action_13 (6) = happyGoto action_18
-action_13 (7) = happyGoto action_6
-action_13 _ = happyFail
-
-action_14 (10) = happyShift action_7
-action_14 (11) = happyShift action_8
-action_14 (17) = happyShift action_9
-action_14 (6) = happyGoto action_17
-action_14 (7) = happyGoto action_6
-action_14 _ = happyFail
-
-action_15 (12) = happyShift action_16
-action_15 _ = happyFail
-
-action_16 (8) = happyShift action_2
-action_16 (10) = happyShift action_7
-action_16 (11) = happyShift action_8
-action_16 (17) = happyShift action_9
-action_16 (4) = happyGoto action_22
-action_16 (5) = happyGoto action_4
-action_16 (6) = happyGoto action_5
-action_16 (7) = happyGoto action_6
-action_16 _ = happyFail
-
-action_17 (15) = happyShift action_11
-action_17 (16) = happyShift action_12
-action_17 _ = happyReduce_4
-
-action_18 (15) = happyShift action_11
-action_18 (16) = happyShift action_12
-action_18 _ = happyReduce_3
-
-action_19 _ = happyReduce_7
-
-action_20 _ = happyReduce_6
-
-action_21 _ = happyReduce_11
-
-action_22 (9) = happyShift action_23
-action_22 _ = happyFail
-
-action_23 (8) = happyShift action_2
-action_23 (10) = happyShift action_7
-action_23 (11) = happyShift action_8
-action_23 (17) = happyShift action_9
-action_23 (4) = happyGoto action_24
-action_23 (5) = happyGoto action_4
-action_23 (6) = happyGoto action_5
-action_23 (7) = happyGoto action_6
-action_23 _ = happyFail
-
-action_24 _ = happyReduce_1
-
-happyReduce_1 = happyReduce 6 4 happyReduction_1
-happyReduction_1 ((HappyAbsSyn4  happy_var_6) `HappyStk`
-	_ `HappyStk`
-	(HappyAbsSyn4  happy_var_4) `HappyStk`
-	_ `HappyStk`
-	(HappyTerminal (TokenVar happy_var_2)) `HappyStk`
-	_ `HappyStk`
-	happyRest)
-	 = HappyAbsSyn4
-		 (AST.Let happy_var_2 happy_var_4 happy_var_6
-	) `HappyStk` happyRest
-
-happyReduce_2 = happySpecReduce_1  4 happyReduction_2
-happyReduction_2 (HappyAbsSyn5  happy_var_1)
+happyReduce_1 = happySpecReduce_1  4 happyReduction_1
+happyReduction_1 (HappyTerminal (IntToken happy_var_1))
 	 =  HappyAbsSyn4
-		 (AST.Exp1 happy_var_1
-	)
-happyReduction_2 _  = notHappyAtAll 
-
-happyReduce_3 = happySpecReduce_3  5 happyReduction_3
-happyReduction_3 (HappyAbsSyn6  happy_var_3)
-	_
-	(HappyAbsSyn5  happy_var_1)
-	 =  HappyAbsSyn5
-		 (AST.Plus happy_var_1 happy_var_3
-	)
-happyReduction_3 _ _ _  = notHappyAtAll 
-
-happyReduce_4 = happySpecReduce_3  5 happyReduction_4
-happyReduction_4 (HappyAbsSyn6  happy_var_3)
-	_
-	(HappyAbsSyn5  happy_var_1)
-	 =  HappyAbsSyn5
-		 (AST.Minus happy_var_1 happy_var_3
-	)
-happyReduction_4 _ _ _  = notHappyAtAll 
-
-happyReduce_5 = happySpecReduce_1  5 happyReduction_5
-happyReduction_5 (HappyAbsSyn6  happy_var_1)
-	 =  HappyAbsSyn5
-		 (AST.Term happy_var_1
-	)
-happyReduction_5 _  = notHappyAtAll 
-
-happyReduce_6 = happySpecReduce_3  6 happyReduction_6
-happyReduction_6 (HappyAbsSyn7  happy_var_3)
-	_
-	(HappyAbsSyn6  happy_var_1)
-	 =  HappyAbsSyn6
-		 (AST.Times happy_var_1 happy_var_3
-	)
-happyReduction_6 _ _ _  = notHappyAtAll 
-
-happyReduce_7 = happySpecReduce_3  6 happyReduction_7
-happyReduction_7 (HappyAbsSyn7  happy_var_3)
-	_
-	(HappyAbsSyn6  happy_var_1)
-	 =  HappyAbsSyn6
-		 (AST.Div happy_var_1 happy_var_3
-	)
-happyReduction_7 _ _ _  = notHappyAtAll 
-
-happyReduce_8 = happySpecReduce_1  6 happyReduction_8
-happyReduction_8 (HappyAbsSyn7  happy_var_1)
-	 =  HappyAbsSyn6
-		 (AST.Factor happy_var_1
-	)
-happyReduction_8 _  = notHappyAtAll 
-
-happyReduce_9 = happySpecReduce_1  7 happyReduction_9
-happyReduction_9 (HappyTerminal (TokenInt happy_var_1))
-	 =  HappyAbsSyn7
 		 (AST.Int happy_var_1
 	)
-happyReduction_9 _  = notHappyAtAll 
-
-happyReduce_10 = happySpecReduce_1  7 happyReduction_10
-happyReduction_10 (HappyTerminal (TokenVar happy_var_1))
-	 =  HappyAbsSyn7
-		 (AST.Var happy_var_1
-	)
-happyReduction_10 _  = notHappyAtAll 
-
-happyReduce_11 = happySpecReduce_3  7 happyReduction_11
-happyReduction_11 _
-	(HappyAbsSyn4  happy_var_2)
-	_
-	 =  HappyAbsSyn7
-		 (AST.Brack happy_var_2
-	)
-happyReduction_11 _ _ _  = notHappyAtAll 
+happyReduction_1 _  = notHappyAtAll 
 
 happyNewToken action sts stk [] =
-	action 19 19 notHappyAtAll (HappyState action) sts stk []
+	action 49 49 notHappyAtAll (HappyState action) sts stk []
 
 happyNewToken action sts stk (tk:tks) =
 	let cont i = action i i tk (HappyState action) sts stk tks in
 	case tk of {
-	TokenLet -> cont 8;
-	TokenIn -> cont 9;
-	TokenInt happy_dollar_dollar -> cont 10;
-	TokenVar happy_dollar_dollar -> cont 11;
-	TokenEq -> cont 12;
-	TokenPlus -> cont 13;
-	TokenMinus -> cont 14;
-	TokenTimes -> cont 15;
-	TokenDiv -> cont 16;
-	TokenOB -> cont 17;
-	TokenCB -> cont 18;
+	TypeToken -> cont 5;
+	VarToken -> cont 6;
+	FunctionToken -> cont 7;
+	BreakToken -> cont 8;
+	OfToken -> cont 9;
+	EndToken -> cont 10;
+	InToken -> cont 11;
+	NilToken -> cont 12;
+	LetToken -> cont 13;
+	DoToken -> cont 14;
+	ToToken -> cont 15;
+	ForToken -> cont 16;
+	WhileToken -> cont 17;
+	ElseToken -> cont 18;
+	ThenToken -> cont 19;
+	IfToken -> cont 20;
+	ArrayToken -> cont 21;
+	AssignToken -> cont 22;
+	OrToken -> cont 23;
+	AndToken -> cont 24;
+	GeToken -> cont 25;
+	GtToken -> cont 26;
+	LeToken -> cont 27;
+	LtToken -> cont 28;
+	NeqToken -> cont 29;
+	EqToken -> cont 30;
+	DivideToken -> cont 31;
+	TimesToken -> cont 32;
+	MinusToken -> cont 33;
+	PlusToken -> cont 34;
+	DotToken -> cont 35;
+	RbraceToken -> cont 36;
+	LbraceToken -> cont 37;
+	RbrackToken -> cont 38;
+	LbrackToken -> cont 39;
+	RparenToken -> cont 40;
+	LparenToken -> cont 41;
+	SemicolonToken -> cont 42;
+	ColonToken -> cont 43;
+	CommaToken -> cont 44;
+	StringToken happy_dollar_dollar -> cont 45;
+	IntToken happy_dollar_dollar -> cont 46;
+	IdToken happy_dollar_dollar -> cont 47;
+	EofToken -> cont 48;
 	_ -> happyError' (tk:tks)
 	}
 
-happyError_ 19 tk tks = happyError' tks
+happyError_ 49 tk tks = happyError' tks
 happyError_ _ tk tks = happyError' (tk:tks)
 
 newtype HappyIdentity a = HappyIdentity a
@@ -258,7 +101,7 @@ happyReturn = (return)
 happyThen1 m k tks = (>>=) m (\a -> k a tks)
 happyReturn1 :: () => a -> b -> HappyIdentity a
 happyReturn1 = \a tks -> (return) a
-happyError' :: () => [(Token)] -> HappyIdentity a
+happyError' :: () => [(Tok.TigerToken)] -> HappyIdentity a
 happyError' = HappyIdentity . happyError
 
 tiger tks = happyRunIdentity happySomeParser where
@@ -267,47 +110,35 @@ tiger tks = happyRunIdentity happySomeParser where
 happySeq = happyDontSeq
 
 
-happyError :: [Token] -> a
+happyError :: [Tok.TigerToken] -> a
 happyError _ = error ("Parse error\n")
 
-data Token
-  = TokenLet
-  | TokenIn
-  | TokenInt Int
-  | TokenVar String
-  | TokenEq
-  | TokenPlus
-  | TokenMinus
-  | TokenTimes
-  | TokenDiv
-  | TokenOB
-  | TokenCB
 
-lexer :: String -> [Token]
-lexer [] = []
-lexer (c:cs) 
-    | isSpace c = lexer cs
-    | isAlpha c = lexVar (c:cs)
-    | isDigit c = lexNum (c:cs)
-lexer ('=':cs) = TokenEq : lexer cs
-lexer ('+':cs) = TokenPlus : lexer cs
-lexer ('-':cs) = TokenMinus : lexer cs
-lexer ('*':cs) = TokenTimes : lexer cs
-lexer ('/':cs) = TokenDiv : lexer cs
-lexer ('(':cs) = TokenOB : lexer cs
-lexer (')':cs) = TokenCB : lexer cs
+--lexer :: String -> [Token]
+--lexer [] = []
+--lexer (c:cs) 
+--    | isSpace c = lexer cs
+--    | isAlpha c = lexVar (c:cs)
+--    | isDigit c = lexNum (c:cs)
+--lexer ('=':cs) = TokenEq : lexer cs
+--lexer ('+':cs) = TokenPlus : lexer cs
+--lexer ('-':cs) = TokenMinus : lexer cs
+--lexer ('*':cs) = TokenTimes : lexer cs
+--lexer ('/':cs) = TokenDiv : lexer cs
+--lexer ('(':cs) = TokenOB : lexer cs
+--lexer (')':cs) = TokenCB : lexer cs
 
-lexNum cs = TokenInt (read num) : lexer rest
-  where (num,rest) = span isDigit cs
-
-lexVar cs =
-   case span isAlpha cs of
-  ("let",rest) -> TokenLet : lexer rest
-  ("in",rest)  -> TokenIn : lexer rest
-  (var,rest)   -> TokenVar var : lexer rest
-
-runTiger :: String -> Exp
-runTiger = tiger . lexer
+--lexNum cs = TokenInt (read num) : lexer rest
+--  where (num,rest) = span isDigit cs
+--
+--lexVar cs =
+--   case span isAlpha cs of
+--  ("let",rest) -> TokenLet : lexer rest
+--  ("in",rest)  -> TokenIn : lexer rest
+--  (var,rest)   -> TokenVar var : lexer rest
+--
+--runTiger :: String -> Exp
+--runTiger = tiger . lexer
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
