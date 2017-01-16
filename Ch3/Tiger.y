@@ -25,19 +25,19 @@ import TigerAST as AST
 
 Exp :: { Exp }
 Exp : let var '=' Exp in Exp  { AST.Let $2 $4 $6 }
-    | Exp1            { AST.Exp1 $1 }
+    | Exp1                    { AST.Exp1 $1 }
 
-Exp1 : Exp1 '+' Term      { AST.Plus $1 $3 }
-     | Exp1 '-' Term      { AST.Minus $1 $3 }
-     | Term           { AST.Term $1 }
+Exp1 : Exp1 '+' Term          { AST.Plus $1 $3 }
+     | Exp1 '-' Term          { AST.Minus $1 $3 }
+     | Term                   { AST.Term $1 }
 
-Term : Term '*' Factor    { AST.Times $1 $3 }
-     | Term '/' Factor    { AST.Div $1 $3 }
-     | Factor         { AST.Factor $1 }
+Term : Term '*' Factor        { AST.Times $1 $3 }
+     | Term '/' Factor        { AST.Div $1 $3 }
+     | Factor                 { AST.Factor $1 }
 
-Factor : int          { AST.Int $1 }
-   | var          { AST.Var $1 }
-   | '(' Exp ')'      { AST.Brack $2 }
+Factor : int                  { AST.Int $1 }
+   | var                      { AST.Var $1 }
+   | '(' Exp ')'              { AST.Brack $2 }
 
 {
 
