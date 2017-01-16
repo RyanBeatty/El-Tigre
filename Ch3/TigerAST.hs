@@ -2,25 +2,14 @@
 -- of the Tiger programming language
 module TigerAST where
 
-data Exp  = 
-      Let String Exp Exp 
-    | Exp1 Exp1 
-    deriving (Show)
+data Expr =
+    IntLit Int
+  | StringLit String
+  deriving (Show)
 
-data Exp1 = 
-      Plus Exp1 Term 
-    | Minus Exp1 Term 
-    | Term Term 
-    deriving (Show)
 
-data Term = 
-      Times Term Factor 
-    | Div Term Factor 
-    | Factor Factor 
-    deriving (Show)
+data LValue =
+    Var String
+  | RecField LValue String
 
-data Factor = 
-      Int Int 
-    | Var String 
-    | Brack Exp 
-    deriving (Show)
+  deriving (Show)

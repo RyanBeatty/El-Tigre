@@ -6,84 +6,114 @@ import Tokens as Tok
 
 -- parser produced by Happy Version 1.18.9
 
-data HappyAbsSyn t4
+data HappyAbsSyn t4 t5
 	= HappyTerminal (Tok.TigerToken)
 	| HappyErrorToken Int
 	| HappyAbsSyn4 t4
+	| HappyAbsSyn5 t5
 
-action_0 (46) = happyShift action_2
+action_0 (48) = happyShift action_2
 action_0 (4) = happyGoto action_3
 action_0 _ = happyFail
 
-action_1 (46) = happyShift action_2
+action_1 (48) = happyShift action_2
 action_1 _ = happyFail
 
 action_2 _ = happyReduce_1
 
-action_3 (49) = happyAccept
+action_3 (36) = happyShift action_4
+action_3 (50) = happyAccept
 action_3 _ = happyFail
 
+action_4 (48) = happyShift action_5
+action_4 _ = happyFail
+
+action_5 _ = happyReduce_2
+
 happyReduce_1 = happySpecReduce_1  4 happyReduction_1
-happyReduction_1 (HappyTerminal (IntToken happy_var_1))
+happyReduction_1 (HappyTerminal (IdToken happy_var_1))
 	 =  HappyAbsSyn4
-		 (AST.Int happy_var_1
+		 (AST.Var happy_var_1
 	)
 happyReduction_1 _  = notHappyAtAll 
 
+happyReduce_2 = happySpecReduce_3  4 happyReduction_2
+happyReduction_2 (HappyTerminal (IdToken happy_var_3))
+	_
+	(HappyAbsSyn4  happy_var_1)
+	 =  HappyAbsSyn4
+		 (AST.RecField happy_var_1 happy_var_3
+	)
+happyReduction_2 _ _ _  = notHappyAtAll 
+
+happyReduce_3 = happySpecReduce_1  5 happyReduction_3
+happyReduction_3 (HappyTerminal (IntToken happy_var_1))
+	 =  HappyAbsSyn5
+		 (AST.IntLit happy_var_1
+	)
+happyReduction_3 _  = notHappyAtAll 
+
+happyReduce_4 = happySpecReduce_1  5 happyReduction_4
+happyReduction_4 (HappyTerminal (StringToken happy_var_1))
+	 =  HappyAbsSyn5
+		 (AST.StringLit happy_var_1
+	)
+happyReduction_4 _  = notHappyAtAll 
+
 happyNewToken action sts stk [] =
-	action 49 49 notHappyAtAll (HappyState action) sts stk []
+	action 50 50 notHappyAtAll (HappyState action) sts stk []
 
 happyNewToken action sts stk (tk:tks) =
 	let cont i = action i i tk (HappyState action) sts stk tks in
 	case tk of {
-	TypeToken -> cont 5;
-	VarToken -> cont 6;
-	FunctionToken -> cont 7;
-	BreakToken -> cont 8;
-	OfToken -> cont 9;
-	EndToken -> cont 10;
-	InToken -> cont 11;
-	NilToken -> cont 12;
-	LetToken -> cont 13;
-	DoToken -> cont 14;
-	ToToken -> cont 15;
-	ForToken -> cont 16;
-	WhileToken -> cont 17;
-	ElseToken -> cont 18;
-	ThenToken -> cont 19;
-	IfToken -> cont 20;
-	ArrayToken -> cont 21;
-	AssignToken -> cont 22;
-	OrToken -> cont 23;
-	AndToken -> cont 24;
-	GeToken -> cont 25;
-	GtToken -> cont 26;
-	LeToken -> cont 27;
-	LtToken -> cont 28;
-	NeqToken -> cont 29;
-	EqToken -> cont 30;
-	DivideToken -> cont 31;
-	TimesToken -> cont 32;
-	MinusToken -> cont 33;
-	PlusToken -> cont 34;
-	DotToken -> cont 35;
-	RbraceToken -> cont 36;
-	LbraceToken -> cont 37;
-	RbrackToken -> cont 38;
-	LbrackToken -> cont 39;
-	RparenToken -> cont 40;
-	LparenToken -> cont 41;
-	SemicolonToken -> cont 42;
-	ColonToken -> cont 43;
-	CommaToken -> cont 44;
-	StringToken happy_dollar_dollar -> cont 45;
-	IntToken happy_dollar_dollar -> cont 46;
-	IdToken happy_dollar_dollar -> cont 47;
-	EofToken -> cont 48;
+	TypeToken -> cont 6;
+	VarToken -> cont 7;
+	FunctionToken -> cont 8;
+	BreakToken -> cont 9;
+	OfToken -> cont 10;
+	EndToken -> cont 11;
+	InToken -> cont 12;
+	NilToken -> cont 13;
+	LetToken -> cont 14;
+	DoToken -> cont 15;
+	ToToken -> cont 16;
+	ForToken -> cont 17;
+	WhileToken -> cont 18;
+	ElseToken -> cont 19;
+	ThenToken -> cont 20;
+	IfToken -> cont 21;
+	ArrayToken -> cont 22;
+	AssignToken -> cont 23;
+	OrToken -> cont 24;
+	AndToken -> cont 25;
+	GeToken -> cont 26;
+	GtToken -> cont 27;
+	LeToken -> cont 28;
+	LtToken -> cont 29;
+	NeqToken -> cont 30;
+	EqToken -> cont 31;
+	DivideToken -> cont 32;
+	TimesToken -> cont 33;
+	MinusToken -> cont 34;
+	PlusToken -> cont 35;
+	DotToken -> cont 36;
+	RbraceToken -> cont 37;
+	LbraceToken -> cont 38;
+	RbrackToken -> cont 39;
+	LbrackToken -> cont 40;
+	RparenToken -> cont 41;
+	LparenToken -> cont 42;
+	SemicolonToken -> cont 43;
+	ColonToken -> cont 44;
+	CommaToken -> cont 45;
+	StringToken happy_dollar_dollar -> cont 46;
+	IntToken happy_dollar_dollar -> cont 47;
+	IdToken happy_dollar_dollar -> cont 48;
+	EofToken -> cont 49;
 	_ -> happyError' (tk:tks)
 	}
 
-happyError_ 49 tk tks = happyError' tks
+happyError_ 50 tk tks = happyError' tks
 happyError_ _ tk tks = happyError' (tk:tks)
 
 newtype HappyIdentity a = HappyIdentity a
@@ -110,33 +140,11 @@ tiger tks = happyRunIdentity happySomeParser where
 happySeq = happyDontSeq
 
 
+-- Needs to be defined for Happy to compile
 happyError :: [Tok.TigerToken] -> a
 happyError _ = error ("Parse error\n")
 
 
---lexer :: String -> [Token]
---lexer [] = []
---lexer (c:cs) 
---    | isSpace c = lexer cs
---    | isAlpha c = lexVar (c:cs)
---    | isDigit c = lexNum (c:cs)
---lexer ('=':cs) = TokenEq : lexer cs
---lexer ('+':cs) = TokenPlus : lexer cs
---lexer ('-':cs) = TokenMinus : lexer cs
---lexer ('*':cs) = TokenTimes : lexer cs
---lexer ('/':cs) = TokenDiv : lexer cs
---lexer ('(':cs) = TokenOB : lexer cs
---lexer (')':cs) = TokenCB : lexer cs
-
---lexNum cs = TokenInt (read num) : lexer rest
---  where (num,rest) = span isDigit cs
---
---lexVar cs =
---   case span isAlpha cs of
---  ("let",rest) -> TokenLet : lexer rest
---  ("in",rest)  -> TokenIn : lexer rest
---  (var,rest)   -> TokenVar var : lexer rest
---
 --runTiger :: String -> Exp
 --runTiger = tiger . lexer
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
