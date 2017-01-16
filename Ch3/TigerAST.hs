@@ -7,19 +7,27 @@ data Expr =
   | StringLit String
   deriving (Show)
 
+data Dec =
+    TDec TypeDec
+  | VDec VarDec
+  deriving (Show)
+
+-- Type declaration
 data TypeDec = TypeDec String Type
   deriving (Show)
 
+-- The type of a type declaration
 data Type =
     Type String
   | Record [TyField]
   | Array String
   deriving (Show)
 
+-- Field in a Record
 data TyField = TyField String String
   deriving (Show)
 
--- Grammar for variable declarations in Tiger language.
+-- Variable declarations in Tiger language.
 -- VarDecL deals with case where the type is specified.
 data VarDec =
     VarDec String Expr

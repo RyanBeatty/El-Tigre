@@ -57,9 +57,11 @@ import Tokens as Tok
 
 %%
 
---Dec : TyDec       
---    | VarDec
+Dec : TypeDec  { AST.TDec $1 }       
+    | VarDec   { AST.VDec $1 }
 
+-- Type declaration in Tiger language. A type declaration
+-- can either by a built-in type, record, or array.
 TypeDec : type id '=' Type           { AST.TypeDec $2 $4 }
 Type : id                            { AST.Type $1 }
    | '{' TyFields '}'                { AST.Record $2 }
@@ -74,12 +76,11 @@ TyFields_ : id ':' id                { [AST.TyField $1 $3] }
 VarDec : var id ':=' Expr         { AST.VarDec $2 $4}
        | var id ':' id ':=' Expr  { AST.VarDecL $2 $4 $6}
 
---LValue : id               { AST.Var $1 }
---       | LValue '.' id    { AST.RecField $1 $3 }
-
 Expr : int                { AST.IntLit $1 }
      | string             { AST.StringLit $1 }
 
+--LValue : id               { AST.Var $1 }
+--       | LValue '.' id    { AST.RecField $1 $3 }
 
 {
 
