@@ -259,17 +259,11 @@ alex_accept = listArray (0::Int,120) [[],[],[],[],[],[],[],[],[],[],[],[],[],[],
 
 -----------------------------------------------------------
 -- Some action helpers.
-line :: AlexPosn -> Int
-line (AlexPn _ l _) = l
+action f _ _ = return f
 
-col :: AlexPosn -> Int
-col (AlexPn _ _ c) = c
+identifierAction (_, _, _, s) len = return $ IdToken (take len s)
 
-action f (pos, _, _, _) _ = return $ f
-
-identifierAction (pos, _, _, s) len = return (IdToken (take len s))
-
-intLiteralAction (pos, _, _, s) len = return (IntToken (read (take len s) :: Int))
+intLiteralAction (_, _, _, s) len = return $ IntToken (read (take len s) :: Int)
 
 lexerError msg = Alex $ \s -> Left msg
 
