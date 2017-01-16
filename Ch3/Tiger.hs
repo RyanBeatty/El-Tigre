@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -w #-}
 module Tiger where
 import Data.Char
+import TigerAST as AST
     --import Tokens as T
 
 -- parser produced by Happy Version 1.18.9
@@ -136,13 +137,13 @@ happyReduction_1 ((HappyAbsSyn4  happy_var_6) `HappyStk`
 	_ `HappyStk`
 	happyRest)
 	 = HappyAbsSyn4
-		 (Let happy_var_2 happy_var_4 happy_var_6
+		 (AST.Let happy_var_2 happy_var_4 happy_var_6
 	) `HappyStk` happyRest
 
 happyReduce_2 = happySpecReduce_1  4 happyReduction_2
 happyReduction_2 (HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn4
-		 (Exp1 happy_var_1
+		 (AST.Exp1 happy_var_1
 	)
 happyReduction_2 _  = notHappyAtAll 
 
@@ -151,7 +152,7 @@ happyReduction_3 (HappyAbsSyn6  happy_var_3)
 	_
 	(HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn5
-		 (Plus happy_var_1 happy_var_3
+		 (AST.Plus happy_var_1 happy_var_3
 	)
 happyReduction_3 _ _ _  = notHappyAtAll 
 
@@ -160,14 +161,14 @@ happyReduction_4 (HappyAbsSyn6  happy_var_3)
 	_
 	(HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn5
-		 (Minus happy_var_1 happy_var_3
+		 (AST.Minus happy_var_1 happy_var_3
 	)
 happyReduction_4 _ _ _  = notHappyAtAll 
 
 happyReduce_5 = happySpecReduce_1  5 happyReduction_5
 happyReduction_5 (HappyAbsSyn6  happy_var_1)
 	 =  HappyAbsSyn5
-		 (Term happy_var_1
+		 (AST.Term happy_var_1
 	)
 happyReduction_5 _  = notHappyAtAll 
 
@@ -176,7 +177,7 @@ happyReduction_6 (HappyAbsSyn7  happy_var_3)
 	_
 	(HappyAbsSyn6  happy_var_1)
 	 =  HappyAbsSyn6
-		 (Times happy_var_1 happy_var_3
+		 (AST.Times happy_var_1 happy_var_3
 	)
 happyReduction_6 _ _ _  = notHappyAtAll 
 
@@ -185,28 +186,28 @@ happyReduction_7 (HappyAbsSyn7  happy_var_3)
 	_
 	(HappyAbsSyn6  happy_var_1)
 	 =  HappyAbsSyn6
-		 (Div happy_var_1 happy_var_3
+		 (AST.Div happy_var_1 happy_var_3
 	)
 happyReduction_7 _ _ _  = notHappyAtAll 
 
 happyReduce_8 = happySpecReduce_1  6 happyReduction_8
 happyReduction_8 (HappyAbsSyn7  happy_var_1)
 	 =  HappyAbsSyn6
-		 (Factor happy_var_1
+		 (AST.Factor happy_var_1
 	)
 happyReduction_8 _  = notHappyAtAll 
 
 happyReduce_9 = happySpecReduce_1  7 happyReduction_9
 happyReduction_9 (HappyTerminal (TokenInt happy_var_1))
 	 =  HappyAbsSyn7
-		 (Int happy_var_1
+		 (AST.Int happy_var_1
 	)
 happyReduction_9 _  = notHappyAtAll 
 
 happyReduce_10 = happySpecReduce_1  7 happyReduction_10
 happyReduction_10 (HappyTerminal (TokenVar happy_var_1))
 	 =  HappyAbsSyn7
-		 (Var happy_var_1
+		 (AST.Var happy_var_1
 	)
 happyReduction_10 _  = notHappyAtAll 
 
@@ -215,7 +216,7 @@ happyReduction_11 _
 	(HappyAbsSyn4  happy_var_2)
 	_
 	 =  HappyAbsSyn7
-		 (Brack happy_var_2
+		 (AST.Brack happy_var_2
 	)
 happyReduction_11 _ _ _  = notHappyAtAll 
 
@@ -268,11 +269,6 @@ happySeq = happyDontSeq
 
 happyError :: [Token] -> a
 happyError _ = error ("Parse error\n")
-
-data Exp  = Let String Exp Exp | Exp1 Exp1 deriving (Show)
-data Exp1 = Plus Exp1 Term | Minus Exp1 Term | Term Term deriving (Show)
-data Term = Times Term Factor | Div Term Factor | Factor Factor deriving (Show)
-data Factor = Int Int | Var String | Brack Exp deriving (Show)
 
 data Token
   = TokenLet

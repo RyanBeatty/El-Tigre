@@ -1,6 +1,7 @@
 {
 module Tiger where
 import Data.Char
+import TigerAST as AST
     --import Tokens as T
 }
 
@@ -23,30 +24,25 @@ import Data.Char
 %%
 
 Exp :: { Exp }
-Exp : let var '=' Exp in Exp  { Let $2 $4 $6 }
-    | Exp1            { Exp1 $1 }
+Exp : let var '=' Exp in Exp  { AST.Let $2 $4 $6 }
+    | Exp1            { AST.Exp1 $1 }
 
-Exp1 : Exp1 '+' Term      { Plus $1 $3 }
-     | Exp1 '-' Term      { Minus $1 $3 }
-     | Term           { Term $1 }
+Exp1 : Exp1 '+' Term      { AST.Plus $1 $3 }
+     | Exp1 '-' Term      { AST.Minus $1 $3 }
+     | Term           { AST.Term $1 }
 
-Term : Term '*' Factor    { Times $1 $3 }
-     | Term '/' Factor    { Div $1 $3 }
-     | Factor         { Factor $1 }
+Term : Term '*' Factor    { AST.Times $1 $3 }
+     | Term '/' Factor    { AST.Div $1 $3 }
+     | Factor         { AST.Factor $1 }
 
-Factor : int          { Int $1 }
-   | var          { Var $1 }
-   | '(' Exp ')'      { Brack $2 }
+Factor : int          { AST.Int $1 }
+   | var          { AST.Var $1 }
+   | '(' Exp ')'      { AST.Brack $2 }
 
 {
 
 happyError :: [Token] -> a
 happyError _ = error ("Parse error\n")
-
-data Exp  = Let String Exp Exp | Exp1 Exp1 deriving (Show)
-data Exp1 = Plus Exp1 Term | Minus Exp1 Term | Term Term deriving (Show)
-data Term = Times Term Factor | Div Term Factor | Factor Factor deriving (Show)
-data Factor = Int Int | Var String | Brack Exp deriving (Show)
 
 data Token
   = TokenLet
