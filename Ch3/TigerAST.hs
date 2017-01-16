@@ -7,6 +7,15 @@ data Expr =
   | StringLit String
   deriving (Show)
 
+data TypeDec = TypeDec String Type
+  deriving (Show)
+
+data Type =
+    Type String
+  | Record [TyField]
+  | Array String
+  deriving (Show)
+
 data TyField = TyField String String
   deriving (Show)
 

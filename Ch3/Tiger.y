@@ -60,16 +60,14 @@ import Tokens as Tok
 --Dec : TyDec       
 --    | VarDec
 
---TypeDec : type id '=' Ty
---Ty : id
---   | '{' TyFields '}'
---   | array of id
-
-TyFields  : {- empty production -} { [] }
-          | TyFields_              { reverse $1 }
-
+TypeDec : type id '=' Type           { AST.TypeDec $2 $4 }
+Type : id                            { AST.Type $1 }
+   | '{' TyFields '}'                { AST.Record $2 }
+   | array of id                     { AST.Array $3 }
+TyFields  : {- empty production -}   { [] }
+          | TyFields_                { reverse $1 }
 TyFields_ : id ':' id                { [AST.TyField $1 $3] }
-          | TyFields_ ',' id ':' id  { AST.TyField $3 $5 : $1}
+          | TyFields_ ',' id ':' id  { AST.TyField $3 $5 : $1 }
 
 -- Variable declarations can omit or make explicit the
 -- type of the declared variable.

@@ -6,168 +6,239 @@ import Tokens as Tok
 
 -- parser produced by Happy Version 1.18.9
 
-data HappyAbsSyn t4 t5 t6 t7
+data HappyAbsSyn t4 t5 t6 t7 t8 t9
 	= HappyTerminal (Tok.TigerToken)
 	| HappyErrorToken Int
 	| HappyAbsSyn4 t4
 	| HappyAbsSyn5 t5
 	| HappyAbsSyn6 t6
 	| HappyAbsSyn7 t7
+	| HappyAbsSyn8 t8
+	| HappyAbsSyn9 t9
 
-action_0 (50) = happyShift action_4
-action_0 (4) = happyGoto action_2
-action_0 (5) = happyGoto action_3
-action_0 _ = happyReduce_1
+action_0 (10) = happyShift action_2
+action_0 (4) = happyGoto action_3
+action_0 _ = happyFail
 
+action_1 (10) = happyShift action_2
 action_1 _ = happyFail
 
-action_2 (52) = happyAccept
+action_2 (52) = happyShift action_4
 action_2 _ = happyFail
 
-action_3 (47) = happyShift action_6
-action_3 _ = happyReduce_2
+action_3 (54) = happyAccept
+action_3 _ = happyFail
 
-action_4 (46) = happyShift action_5
+action_4 (35) = happyShift action_5
 action_4 _ = happyFail
 
-action_5 (50) = happyShift action_8
+action_5 (26) = happyShift action_7
+action_5 (41) = happyShift action_8
+action_5 (52) = happyShift action_9
+action_5 (5) = happyGoto action_6
 action_5 _ = happyFail
 
-action_6 (50) = happyShift action_7
-action_6 _ = happyFail
+action_6 _ = happyReduce_1
 
-action_7 (46) = happyShift action_9
+action_7 (14) = happyShift action_13
 action_7 _ = happyFail
 
-action_8 _ = happyReduce_3
+action_8 (52) = happyShift action_12
+action_8 (6) = happyGoto action_10
+action_8 (7) = happyGoto action_11
+action_8 _ = happyReduce_5
 
-action_9 (50) = happyShift action_10
-action_9 _ = happyFail
+action_9 _ = happyReduce_2
 
-action_10 _ = happyReduce_4
+action_10 (42) = happyShift action_17
+action_10 _ = happyFail
 
-happyReduce_1 = happySpecReduce_0  4 happyReduction_1
-happyReduction_1  =  HappyAbsSyn4
-		 ([]
-	)
+action_11 (49) = happyShift action_16
+action_11 _ = happyReduce_6
 
-happyReduce_2 = happySpecReduce_1  4 happyReduction_2
-happyReduction_2 (HappyAbsSyn5  happy_var_1)
-	 =  HappyAbsSyn4
-		 (reverse happy_var_1
-	)
-happyReduction_2 _  = notHappyAtAll 
+action_12 (48) = happyShift action_15
+action_12 _ = happyFail
 
-happyReduce_3 = happySpecReduce_3  5 happyReduction_3
-happyReduction_3 (HappyTerminal (IdToken happy_var_3))
-	_
-	(HappyTerminal (IdToken happy_var_1))
-	 =  HappyAbsSyn5
-		 ([AST.TyField happy_var_1 happy_var_3]
-	)
-happyReduction_3 _ _ _  = notHappyAtAll 
+action_13 (52) = happyShift action_14
+action_13 _ = happyFail
 
-happyReduce_4 = happyReduce 5 5 happyReduction_4
-happyReduction_4 ((HappyTerminal (IdToken happy_var_5)) `HappyStk`
-	_ `HappyStk`
-	(HappyTerminal (IdToken happy_var_3)) `HappyStk`
-	_ `HappyStk`
-	(HappyAbsSyn5  happy_var_1) `HappyStk`
-	happyRest)
-	 = HappyAbsSyn5
-		 (AST.TyField happy_var_3 happy_var_5 : happy_var_1
-	) `HappyStk` happyRest
+action_14 _ = happyReduce_4
 
-happyReduce_5 = happyReduce 4 6 happyReduction_5
-happyReduction_5 ((HappyAbsSyn7  happy_var_4) `HappyStk`
+action_15 (52) = happyShift action_19
+action_15 _ = happyFail
+
+action_16 (52) = happyShift action_18
+action_16 _ = happyFail
+
+action_17 _ = happyReduce_3
+
+action_18 (48) = happyShift action_20
+action_18 _ = happyFail
+
+action_19 _ = happyReduce_7
+
+action_20 (52) = happyShift action_21
+action_20 _ = happyFail
+
+action_21 _ = happyReduce_8
+
+happyReduce_1 = happyReduce 4 4 happyReduction_1
+happyReduction_1 ((HappyAbsSyn5  happy_var_4) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (IdToken happy_var_2)) `HappyStk`
 	_ `HappyStk`
 	happyRest)
-	 = HappyAbsSyn6
+	 = HappyAbsSyn4
+		 (AST.TypeDec happy_var_2 happy_var_4
+	) `HappyStk` happyRest
+
+happyReduce_2 = happySpecReduce_1  5 happyReduction_2
+happyReduction_2 (HappyTerminal (IdToken happy_var_1))
+	 =  HappyAbsSyn5
+		 (AST.Type happy_var_1
+	)
+happyReduction_2 _  = notHappyAtAll 
+
+happyReduce_3 = happySpecReduce_3  5 happyReduction_3
+happyReduction_3 _
+	(HappyAbsSyn6  happy_var_2)
+	_
+	 =  HappyAbsSyn5
+		 (AST.Record happy_var_2
+	)
+happyReduction_3 _ _ _  = notHappyAtAll 
+
+happyReduce_4 = happySpecReduce_3  5 happyReduction_4
+happyReduction_4 (HappyTerminal (IdToken happy_var_3))
+	_
+	_
+	 =  HappyAbsSyn5
+		 (AST.Array happy_var_3
+	)
+happyReduction_4 _ _ _  = notHappyAtAll 
+
+happyReduce_5 = happySpecReduce_0  6 happyReduction_5
+happyReduction_5  =  HappyAbsSyn6
+		 ([]
+	)
+
+happyReduce_6 = happySpecReduce_1  6 happyReduction_6
+happyReduction_6 (HappyAbsSyn7  happy_var_1)
+	 =  HappyAbsSyn6
+		 (reverse happy_var_1
+	)
+happyReduction_6 _  = notHappyAtAll 
+
+happyReduce_7 = happySpecReduce_3  7 happyReduction_7
+happyReduction_7 (HappyTerminal (IdToken happy_var_3))
+	_
+	(HappyTerminal (IdToken happy_var_1))
+	 =  HappyAbsSyn7
+		 ([AST.TyField happy_var_1 happy_var_3]
+	)
+happyReduction_7 _ _ _  = notHappyAtAll 
+
+happyReduce_8 = happyReduce 5 7 happyReduction_8
+happyReduction_8 ((HappyTerminal (IdToken happy_var_5)) `HappyStk`
+	_ `HappyStk`
+	(HappyTerminal (IdToken happy_var_3)) `HappyStk`
+	_ `HappyStk`
+	(HappyAbsSyn7  happy_var_1) `HappyStk`
+	happyRest)
+	 = HappyAbsSyn7
+		 (AST.TyField happy_var_3 happy_var_5 : happy_var_1
+	) `HappyStk` happyRest
+
+happyReduce_9 = happyReduce 4 8 happyReduction_9
+happyReduction_9 ((HappyAbsSyn9  happy_var_4) `HappyStk`
+	_ `HappyStk`
+	(HappyTerminal (IdToken happy_var_2)) `HappyStk`
+	_ `HappyStk`
+	happyRest)
+	 = HappyAbsSyn8
 		 (AST.VarDec happy_var_2 happy_var_4
 	) `HappyStk` happyRest
 
-happyReduce_6 = happyReduce 6 6 happyReduction_6
-happyReduction_6 ((HappyAbsSyn7  happy_var_6) `HappyStk`
+happyReduce_10 = happyReduce 6 8 happyReduction_10
+happyReduction_10 ((HappyAbsSyn9  happy_var_6) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (IdToken happy_var_4)) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (IdToken happy_var_2)) `HappyStk`
 	_ `HappyStk`
 	happyRest)
-	 = HappyAbsSyn6
+	 = HappyAbsSyn8
 		 (AST.VarDecL happy_var_2 happy_var_4 happy_var_6
 	) `HappyStk` happyRest
 
-happyReduce_7 = happySpecReduce_1  7 happyReduction_7
-happyReduction_7 (HappyTerminal (IntToken happy_var_1))
-	 =  HappyAbsSyn7
+happyReduce_11 = happySpecReduce_1  9 happyReduction_11
+happyReduction_11 (HappyTerminal (IntToken happy_var_1))
+	 =  HappyAbsSyn9
 		 (AST.IntLit happy_var_1
 	)
-happyReduction_7 _  = notHappyAtAll 
+happyReduction_11 _  = notHappyAtAll 
 
-happyReduce_8 = happySpecReduce_1  7 happyReduction_8
-happyReduction_8 (HappyTerminal (StringToken happy_var_1))
-	 =  HappyAbsSyn7
+happyReduce_12 = happySpecReduce_1  9 happyReduction_12
+happyReduction_12 (HappyTerminal (StringToken happy_var_1))
+	 =  HappyAbsSyn9
 		 (AST.StringLit happy_var_1
 	)
-happyReduction_8 _  = notHappyAtAll 
+happyReduction_12 _  = notHappyAtAll 
 
 happyNewToken action sts stk [] =
-	action 52 52 notHappyAtAll (HappyState action) sts stk []
+	action 54 54 notHappyAtAll (HappyState action) sts stk []
 
 happyNewToken action sts stk (tk:tks) =
 	let cont i = action i i tk (HappyState action) sts stk tks in
 	case tk of {
-	TypeToken -> cont 8;
-	VarToken -> cont 9;
-	FunctionToken -> cont 10;
-	BreakToken -> cont 11;
-	OfToken -> cont 12;
-	EndToken -> cont 13;
-	InToken -> cont 14;
-	NilToken -> cont 15;
-	LetToken -> cont 16;
-	DoToken -> cont 17;
-	ToToken -> cont 18;
-	ForToken -> cont 19;
-	WhileToken -> cont 20;
-	ElseToken -> cont 21;
-	ThenToken -> cont 22;
-	IfToken -> cont 23;
-	ArrayToken -> cont 24;
-	AssignToken -> cont 25;
-	OrToken -> cont 26;
-	AndToken -> cont 27;
-	GeToken -> cont 28;
-	GtToken -> cont 29;
-	LeToken -> cont 30;
-	LtToken -> cont 31;
-	NeqToken -> cont 32;
-	EqToken -> cont 33;
-	DivideToken -> cont 34;
-	TimesToken -> cont 35;
-	MinusToken -> cont 36;
-	PlusToken -> cont 37;
-	DotToken -> cont 38;
-	RbraceToken -> cont 39;
-	LbraceToken -> cont 40;
-	RbrackToken -> cont 41;
-	LbrackToken -> cont 42;
-	RparenToken -> cont 43;
-	LparenToken -> cont 44;
-	SemicolonToken -> cont 45;
-	ColonToken -> cont 46;
-	CommaToken -> cont 47;
-	StringToken happy_dollar_dollar -> cont 48;
-	IntToken happy_dollar_dollar -> cont 49;
-	IdToken happy_dollar_dollar -> cont 50;
-	EofToken -> cont 51;
+	TypeToken -> cont 10;
+	VarToken -> cont 11;
+	FunctionToken -> cont 12;
+	BreakToken -> cont 13;
+	OfToken -> cont 14;
+	EndToken -> cont 15;
+	InToken -> cont 16;
+	NilToken -> cont 17;
+	LetToken -> cont 18;
+	DoToken -> cont 19;
+	ToToken -> cont 20;
+	ForToken -> cont 21;
+	WhileToken -> cont 22;
+	ElseToken -> cont 23;
+	ThenToken -> cont 24;
+	IfToken -> cont 25;
+	ArrayToken -> cont 26;
+	AssignToken -> cont 27;
+	OrToken -> cont 28;
+	AndToken -> cont 29;
+	GeToken -> cont 30;
+	GtToken -> cont 31;
+	LeToken -> cont 32;
+	LtToken -> cont 33;
+	NeqToken -> cont 34;
+	EqToken -> cont 35;
+	DivideToken -> cont 36;
+	TimesToken -> cont 37;
+	MinusToken -> cont 38;
+	PlusToken -> cont 39;
+	DotToken -> cont 40;
+	RbraceToken -> cont 41;
+	LbraceToken -> cont 42;
+	RbrackToken -> cont 43;
+	LbrackToken -> cont 44;
+	RparenToken -> cont 45;
+	LparenToken -> cont 46;
+	SemicolonToken -> cont 47;
+	ColonToken -> cont 48;
+	CommaToken -> cont 49;
+	StringToken happy_dollar_dollar -> cont 50;
+	IntToken happy_dollar_dollar -> cont 51;
+	IdToken happy_dollar_dollar -> cont 52;
+	EofToken -> cont 53;
 	_ -> happyError' (tk:tks)
 	}
 
-happyError_ 52 tk tks = happyError' tks
+happyError_ 54 tk tks = happyError' tks
 happyError_ _ tk tks = happyError' (tk:tks)
 
 newtype HappyIdentity a = HappyIdentity a
