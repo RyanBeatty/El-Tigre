@@ -16,45 +16,46 @@ $alpha = [a-zA-Z]       -- alphabetic characters
 
 tokens :-
 
-  <0>type            {action typeToken}
-  <0>function        {action functionToken}
-  <0>break           {action breakToken}
-  <0>of              {action ofToken}
-  <0>end             {action endToken}
-  <0>in              {action inToken}
-  <0>nil             {action nilToken}
-  <0>let             {action letToken}
-  <0>do              {action doToken}
-  <0>to              {action toToken}
-  <0>for             {action forToken}
-  <0>while           {action whileToken}
-  <0>else            {action elseToken}
-  <0>then            {action thenToken}
-  <0>if              {action ifToken}
-  <0>array           {action arrayToken}
-  <0>":="            {action assignToken}
-  <0>or              {action orToken}
-  <0>"&"             {action andToken}
-  <0>">="            {action geToken}
-  <0>">"             {action gtToken}
-  <0>"<="            {action leToken}
-  <0>"<"             {action ltToken}
-  <0>"<>"            {action neqToken}
-  <0>"="             {action eqToken}
-  <0>"/"             {action divideToken}
-  <0>"*"             {action timesToken}
-  <0>"-"             {action minusToken}
-  <0>"+"             {action plusToken}
-  <0>"."             {action dotToken}
-  <0>"{"             {action lbraceToken}
-  <0>"}"             {action rbraceToken}
-  <0>"["             {action lbrackToken}     
-  <0>"]"             {action rbrackToken}
-  <0>"("             {action lparenToken}
-  <0>")"             {action rparenToken}
-  <0>";"             {action semicolonToken}
-  <0>":"             {action colonToken}
-  <0>","             {action commaToken}
+  <0>type            {action TypeToken}
+  <0>var             {action VarToken}
+  <0>function        {action FunctionToken}
+  <0>break           {action BreakToken}
+  <0>of              {action OfToken}
+  <0>end             {action EndToken}
+  <0>in              {action InToken}
+  <0>nil             {action NilToken}
+  <0>let             {action LetToken}
+  <0>do              {action DoToken}
+  <0>to              {action ToToken}
+  <0>for             {action ForToken}
+  <0>while           {action WhileToken}
+  <0>else            {action ElseToken}
+  <0>then            {action ThenToken}
+  <0>if              {action IfToken}
+  <0>array           {action ArrayToken}
+  <0>":="            {action AssignToken}
+  <0>or              {action OrToken}
+  <0>"&"             {action AndToken}
+  <0>">="            {action GeToken}
+  <0>">"             {action GtToken}
+  <0>"<="            {action LeToken}
+  <0>"<"             {action LtToken}
+  <0>"<>"            {action NeqToken}
+  <0>"="             {action EqToken}
+  <0>"/"             {action DivideToken}
+  <0>"*"             {action TimesToken}
+  <0>"-"             {action MinusToken}
+  <0>"+"             {action PlusToken}
+  <0>"."             {action DotToken}
+  <0>"{"             {action LbraceToken}
+  <0>"}"             {action RbraceToken}
+  <0>"["             {action LbrackToken}     
+  <0>"]"             {action RbrackToken}
+  <0>"("             {action LparenToken}
+  <0>")"             {action RparenToken}
+  <0>";"             {action SemicolonToken}
+  <0>":"             {action ColonToken}
+  <0>","             {action CommaToken}
 
   <0>@id             {identifierAction}
 
@@ -81,22 +82,21 @@ line (AlexPn _ l _) = l
 col :: AlexPosn -> Int
 col (AlexPn _ _ c) = c
 
-action f (pos, _, _, _) _ = return $ f (line pos, col pos)
+action f (pos, _, _, _) _ = return $ f
 
-identifierAction (pos, _, _, s) len = return (idToken (take len s, line pos, col pos) :: String)
+identifierAction (pos, _, _, s) len = return (IdToken (take len s))
 
-intLiteralAction (pos, _, _, s) len = return (intToken (read (take len s) :: Int, line pos, col pos) :: String)
+intLiteralAction (pos, _, _, s) len = return (IntToken (read (take len s) :: Int))
 
 lexerError msg = Alex $ \s -> Left msg
 
 -----------------------------------------------------------
 -- Things that need to be defined for alex to work as well
 -- as helper functions for changing AlexUserState.
-alexEOF :: Alex String
 alexEOF = 
   do scd <- getLexerStartCode
      if scd == 0
-     then return eofToken
+     then return EofToken
      else lexerError "Lexer finished with invalid start code."
 
 data AlexUserState = AlexUserState {
@@ -144,7 +144,7 @@ addCurrentToString i@(_, _, _, input) len = addCharToString c input len
 
 endStringValue (pos, _, _, _) _ =
   do s <- getLexerStringValue
-     return (stringToken (reverse s, line pos, col pos) :: String)
+     return (StringToken (reverse s))
 
 beginNewComment _ _ =
   do setLexerCommentDepth 1
@@ -169,7 +169,7 @@ endComment inp len =
 -- Lexing helpers.
 getTokens = do
   tok <- alexMonadScan
-  if tok == eofToken
+  if tok == EofToken
   then return [tok]
   else do toks <- getTokens
           return $ tok : toks
@@ -180,6 +180,6 @@ main = do
     s <- getContents
     let tokens = case lexer s of
                     Left msg -> msg
-                    Right ts -> intercalate "\n" ts
+                    Right ts -> intercalate "\n" $ map show ts
     print tokens
 }

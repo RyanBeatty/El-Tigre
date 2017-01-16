@@ -47,4 +47,4 @@ data TigerToken =
     | IntToken Int
     | IdToken String
     | EofToken
-    deriving (Show)
+    deriving (Show, Eq)
