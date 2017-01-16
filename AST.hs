@@ -1,6 +1,6 @@
 -- Contains the data type definition of the abstract syntax
 -- of the Tiger programming language
-module TigerAST where
+module AST where
 
 data Expr =
     IntLit Int

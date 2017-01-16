@@ -1,7 +1,7 @@
 {
 module Tiger where
 import Data.Char
-import TigerAST as AST
+import AST
 import Tokens as Tok
 }
 

@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -w #-}
 module Tiger where
 import Data.Char
-import TigerAST as AST
+import AST
 import Tokens as Tok
 
 -- parser produced by Happy Version 1.18.9
