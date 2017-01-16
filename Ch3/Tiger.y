@@ -57,11 +57,17 @@ import Tokens as Tok
 
 %%
 
-LValue : id               { AST.Var $1 }
-       | LValue '.' id    { AST.RecField $1 $3 }
+--LValue : id               { AST.Var $1 }
+--       | LValue '.' id    { AST.RecField $1 $3 }
+
+-- Variable declarations can omit or make explicit the
+-- type of the declared variable.
+VarDec : var id ':=' Expr         { AST.VarDec $2 $4}
+       | var id ':' id ':=' Expr  { AST.VarDecL $2 $4 $6}
 
 Expr : int                { AST.IntLit $1 }
      | string             { AST.StringLit $1 }
+
 
 {
 

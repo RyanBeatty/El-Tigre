@@ -12,39 +12,74 @@ data HappyAbsSyn t4 t5
 	| HappyAbsSyn4 t4
 	| HappyAbsSyn5 t5
 
-action_0 (48) = happyShift action_2
+action_0 (7) = happyShift action_4
 action_0 (4) = happyGoto action_3
 action_0 _ = happyFail
 
-action_1 (48) = happyShift action_2
+action_1 (7) = happyShift action_2
 action_1 _ = happyFail
 
-action_2 _ = happyReduce_1
+action_2 (48) = happyShift action_6
+action_2 _ = happyFail
 
-action_3 (36) = happyShift action_4
 action_3 (50) = happyAccept
 action_3 _ = happyFail
 
 action_4 (48) = happyShift action_5
 action_4 _ = happyFail
 
-action_5 _ = happyReduce_2
+action_5 (23) = happyShift action_7
+action_5 (44) = happyShift action_8
+action_5 _ = happyFail
 
-happyReduce_1 = happySpecReduce_1  4 happyReduction_1
-happyReduction_1 (HappyTerminal (IdToken happy_var_1))
-	 =  HappyAbsSyn4
-		 (AST.Var happy_var_1
-	)
-happyReduction_1 _  = notHappyAtAll 
+action_6 (23) = happyShift action_7
+action_6 _ = happyFail
 
-happyReduce_2 = happySpecReduce_3  4 happyReduction_2
-happyReduction_2 (HappyTerminal (IdToken happy_var_3))
-	_
-	(HappyAbsSyn4  happy_var_1)
-	 =  HappyAbsSyn4
-		 (AST.RecField happy_var_1 happy_var_3
-	)
-happyReduction_2 _ _ _  = notHappyAtAll 
+action_7 (46) = happyShift action_11
+action_7 (47) = happyShift action_12
+action_7 (5) = happyGoto action_10
+action_7 _ = happyFail
+
+action_8 (48) = happyShift action_9
+action_8 _ = happyFail
+
+action_9 (23) = happyShift action_13
+action_9 _ = happyFail
+
+action_10 _ = happyReduce_1
+
+action_11 _ = happyReduce_4
+
+action_12 _ = happyReduce_3
+
+action_13 (46) = happyShift action_11
+action_13 (47) = happyShift action_12
+action_13 (5) = happyGoto action_14
+action_13 _ = happyFail
+
+action_14 _ = happyReduce_2
+
+happyReduce_1 = happyReduce 4 4 happyReduction_1
+happyReduction_1 ((HappyAbsSyn5  happy_var_4) `HappyStk`
+	_ `HappyStk`
+	(HappyTerminal (IdToken happy_var_2)) `HappyStk`
+	_ `HappyStk`
+	happyRest)
+	 = HappyAbsSyn4
+		 (AST.VarDec happy_var_2 happy_var_4
+	) `HappyStk` happyRest
+
+happyReduce_2 = happyReduce 6 4 happyReduction_2
+happyReduction_2 ((HappyAbsSyn5  happy_var_6) `HappyStk`
+	_ `HappyStk`
+	(HappyTerminal (IdToken happy_var_4)) `HappyStk`
+	_ `HappyStk`
+	(HappyTerminal (IdToken happy_var_2)) `HappyStk`
+	_ `HappyStk`
+	happyRest)
+	 = HappyAbsSyn4
+		 (AST.VarDecL happy_var_2 happy_var_4 happy_var_6
+	) `HappyStk` happyRest
 
 happyReduce_3 = happySpecReduce_1  5 happyReduction_3
 happyReduction_3 (HappyTerminal (IntToken happy_var_1))
