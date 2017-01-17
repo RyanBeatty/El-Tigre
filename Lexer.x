@@ -1,5 +1,5 @@
 {
-module Lexer (main, lexer) where
+module Lexer (main, lexer, P, runAlex) where
 
 import Tokens
 
@@ -168,11 +168,19 @@ getTokens = do
   else do toks <- getTokens
           return $ tok : toks
 
-lexer str = runAlex str getTokens
+runLexer str = runAlex str getTokens
+
+lexer cont = do
+  token <- alexMonadScan
+  cont token
+
+-- Type synonym for Alex monad that must be exported
+-- for Happy parser to work.
+type P a = Alex a
 
 main = do
     s <- getContents
-    let tokens = case lexer s of
+    let tokens = case runLexer s of
                     Left msg -> msg
                     Right ts -> intercalate "\n" $ map show ts
     print tokens

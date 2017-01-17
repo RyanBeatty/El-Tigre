@@ -1,11 +1,13 @@
 {
-module Tiger where
-import Data.Char
+module Tiger (parser) where
+import Lexer as Lex
 import AST
 import Tokens as Tok
 }
 
-%name tiger
+%monad{Lex.P}
+%lexer{Lex.lexer}{Tok.EofToken}
+%name parser
 %tokentype { Tok.TigerToken }
 
 -- Map tokens to terminal symbols
@@ -85,11 +87,16 @@ Expr : int                { AST.IntLit $1 }
 {
 
 -- Needs to be defined for Happy to compile
-happyError :: [Tok.TigerToken] -> a
-happyError _ = error ("Parse error\n")
+happyError = error "Parser error!"
 
+--runParser :: String -> Either String Dec
+runParser input = runAlex input parser
 
---runTiger :: String -> Exp
---runTiger = tiger . lexer
+main = do
+  s <- getContents
+  let ast = case runParser s of
+              Left msg -> msg
+              Right ast' -> show ast'
+  print ast
 
 }

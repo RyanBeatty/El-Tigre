@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -w #-}
-module Tiger where
-import Data.Char
+module Tiger (parser) where
+import Lexer as Lex
 import AST
 import Tokens as Tok
 
@@ -239,12 +239,11 @@ happyReduction_14 (HappyTerminal (StringToken happy_var_1))
 	)
 happyReduction_14 _  = notHappyAtAll 
 
-happyNewToken action sts stk [] =
-	action 55 55 notHappyAtAll (HappyState action) sts stk []
-
-happyNewToken action sts stk (tk:tks) =
-	let cont i = action i i tk (HappyState action) sts stk tks in
+happyNewToken action sts stk
+	= Lex.lexer(\tk -> 
+	let cont i = action i i tk (HappyState action) sts stk in
 	case tk of {
+	Tok.EofToken -> action 55 55 tk (HappyState action) sts stk;
 	TypeToken -> cont 11;
 	VarToken -> cont 12;
 	FunctionToken -> cont 13;
@@ -289,43 +288,40 @@ happyNewToken action sts stk (tk:tks) =
 	IntToken happy_dollar_dollar -> cont 52;
 	IdToken happy_dollar_dollar -> cont 53;
 	EofToken -> cont 54;
-	_ -> happyError' (tk:tks)
-	}
+	_ -> happyError' tk
+	})
 
-happyError_ 55 tk tks = happyError' tks
-happyError_ _ tk tks = happyError' (tk:tks)
+happyError_ 55 tk = happyError' tk
+happyError_ _ tk = happyError' tk
 
-newtype HappyIdentity a = HappyIdentity a
-happyIdentity = HappyIdentity
-happyRunIdentity (HappyIdentity a) = a
-
-instance Monad HappyIdentity where
-    return = HappyIdentity
-    (HappyIdentity p) >>= q = q p
-
-happyThen :: () => HappyIdentity a -> (a -> HappyIdentity b) -> HappyIdentity b
+happyThen :: () => Lex.P a -> (a -> Lex.P b) -> Lex.P b
 happyThen = (>>=)
-happyReturn :: () => a -> HappyIdentity a
+happyReturn :: () => a -> Lex.P a
 happyReturn = (return)
-happyThen1 m k tks = (>>=) m (\a -> k a tks)
-happyReturn1 :: () => a -> b -> HappyIdentity a
-happyReturn1 = \a tks -> (return) a
-happyError' :: () => [(Tok.TigerToken)] -> HappyIdentity a
-happyError' = HappyIdentity . happyError
+happyThen1 = happyThen
+happyReturn1 :: () => a -> Lex.P a
+happyReturn1 = happyReturn
+happyError' :: () => (Tok.TigerToken) -> Lex.P a
+happyError' tk = (\token -> happyError) tk
 
-tiger tks = happyRunIdentity happySomeParser where
-  happySomeParser = happyThen (happyParse action_0 tks) (\x -> case x of {HappyAbsSyn4 z -> happyReturn z; _other -> notHappyAtAll })
+parser = happySomeParser where
+  happySomeParser = happyThen (happyParse action_0) (\x -> case x of {HappyAbsSyn4 z -> happyReturn z; _other -> notHappyAtAll })
 
 happySeq = happyDontSeq
 
 
 -- Needs to be defined for Happy to compile
-happyError :: [Tok.TigerToken] -> a
-happyError _ = error ("Parse error\n")
+happyError = error "Parser error!"
 
+--runParser :: String -> Either String Dec
+runParser input = runAlex input parser
 
---runTiger :: String -> Exp
---runTiger = tiger . lexer
+main = do
+  s <- getContents
+  let ast = case runParser s of
+              Left msg -> msg
+              Right ast' -> show ast'
+  print ast
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
