@@ -61,6 +61,10 @@ import Tokens as Tok
 
 Dec : TypeDec  { AST.TDec $1 }       
     | VarDec   { AST.VDec $1 }
+    | FunDec   { AST.FDec $1 }
+
+FunDec : function id '(' TyFields ')' '=' Exp        { AST.ProcDec $2 $4 $7 }
+       | function id '(' TyFields ')' ':' id '=' Exp   { AST.FunDec $2 $4 $7 $9 }
 
 ----------------------------------------------------------
 
@@ -81,11 +85,11 @@ TyFields_ : id ':' id                { [AST.TyField $1 $3] }
 
 -- Variable declarations can omit or make explicit the
 -- type of the declared variable.
-VarDec : var id ':=' Expr         { AST.VarDec $2 $4}
-       | var id ':' id ':=' Expr  { AST.VarDecL $2 $4 $6}
+VarDec : var id ':=' Exp         { AST.VarDec $2 $4}
+       | var id ':' id ':=' Exp  { AST.VarDecL $2 $4 $6}
 
-Expr : int                { AST.IntLit $1 }
-     | string             { AST.StringLit $1 }
+Exp : int                { AST.IntLit $1 }
+    | string             { AST.StringLit $1 }
 
 --LValue : id               { AST.Var $1 }
 --       | LValue '.' id    { AST.RecField $1 $3 }

@@ -2,40 +2,51 @@
 -- of the Tiger programming language
 module AST where
 
-data Expr =
+type Identifier = String
+
+data Exp =
     IntLit Int
-  | StringLit String
+  | StringLit Identifier
   deriving (Show)
 
 data Dec =
     TDec TypeDec
   | VDec VarDec
+  | FDec FunDec
+  deriving (Show)
+
+-- A function declaration can either be a procedure
+-- declaration (no return type) or a function
+-- declaration (has return type).
+data FunDec =
+    ProcDec Identifier [TyField] Exp
+  | FunDec Identifier [TyField] Identifier Exp
   deriving (Show)
 
 -- Type declaration
-data TypeDec = TypeDec String Type
+data TypeDec = TypeDec Identifier Type
   deriving (Show)
 
 -- The type of a type declaration
 data Type =
-    Type String
+    Type Identifier
   | Record [TyField]
-  | Array String
+  | Array Identifier
   deriving (Show)
 
 -- Field in a Record
-data TyField = TyField String String
+data TyField = TyField Identifier Identifier
   deriving (Show)
 
 -- Variable declarations in Tiger language.
 -- VarDecL deals with case where the type is specified.
 data VarDec =
-    VarDec String Expr
-  | VarDecL String String Expr
+    VarDec Identifier Exp
+  | VarDecL Identifier Identifier Exp
   deriving (Show)
 
 
 data LValue =
-    Var String
-  | RecField LValue String
+    Var Identifier
+  | RecField LValue Identifier
   deriving (Show)
