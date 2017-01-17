@@ -275,12 +275,12 @@ happyNewToken action sts stk
 	MinusToken -> cont 39;
 	PlusToken -> cont 40;
 	DotToken -> cont 41;
-	RbraceToken -> cont 42;
-	LbraceToken -> cont 43;
-	RbrackToken -> cont 44;
-	LbrackToken -> cont 45;
-	RparenToken -> cont 46;
-	LparenToken -> cont 47;
+	LbraceToken -> cont 42;
+	RbraceToken -> cont 43;
+	LbrackToken -> cont 44;
+	RbrackToken -> cont 45;
+	LparenToken -> cont 46;
+	RparenToken -> cont 47;
 	SemicolonToken -> cont 48;
 	ColonToken -> cont 49;
 	CommaToken -> cont 50;
