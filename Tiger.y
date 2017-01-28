@@ -59,15 +59,25 @@ import Tokens as Tok
 
 %%
 
+----------------------------------------------------------
+
+DecList : {- empty production -}  { [] }
+        | DecList_                { reverse $1 }
+
+DecList_ : Dec                    { [$1] }
+         | DecList_ Dec            { $2 : $1 }
+
 Dec : TypeDec  { AST.TDec $1 }       
     | VarDec   { AST.VDec $1 }
     | FunDec   { AST.FDec $1 }
 
+----------------------------------------------------------
+-- Function declaration in Tiger language. Can either be a
+-- procedure declaration or a function declaration.
 FunDec : function id '(' TyFields ')' '=' Exp        { AST.ProcDec $2 $4 $7 }
        | function id '(' TyFields ')' ':' id '=' Exp   { AST.FunDec $2 $4 $7 $9 }
 
 ----------------------------------------------------------
-
 -- Type declaration in Tiger language. A type declaration
 -- can either by a built-in type, record, or array.
 TypeDec : type id '=' Type           { AST.TypeDec $2 $4 }
@@ -81,13 +91,14 @@ TyFields : {- empty production -}    { [] }
 
 TyFields_ : id ':' id                { [AST.TyField $1 $3] }
           | TyFields_ ',' id ':' id  { AST.TyField $3 $5 : $1 }
-----------------------------------------------------------
 
+----------------------------------------------------------
 -- Variable declarations can omit or make explicit the
 -- type of the declared variable.
 VarDec : var id ':=' Exp         { AST.VarDec $2 $4}
        | var id ':' id ':=' Exp  { AST.VarDecL $2 $4 $6}
 
+----------------------------------------------------------
 Exp : int                { AST.IntLit $1 }
     | string             { AST.StringLit $1 }
 

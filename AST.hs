@@ -9,6 +9,7 @@ data Exp =
   | StringLit Identifier
   deriving (Show)
 
+-- A declaration.
 data Dec =
     TDec TypeDec
   | VDec VarDec
