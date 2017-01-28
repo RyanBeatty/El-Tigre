@@ -60,13 +60,14 @@ import Tokens as Tok
 %%
 
 ----------------------------------------------------------
-
+-- List of declarations.
 DecList : {- empty production -}  { [] }
         | DecList_                { reverse $1 }
 
 DecList_ : Dec                    { [$1] }
-         | DecList_ Dec            { $2 : $1 }
+         | DecList_ Dec           { $2 : $1 }
 
+-- A declaration can be a type, variable, or function declaration.
 Dec : TypeDec  { AST.TDec $1 }       
     | VarDec   { AST.VDec $1 }
     | FunDec   { AST.FDec $1 }
