@@ -9,6 +9,12 @@ data Exp =
   | StringLit Identifier
   deriving (Show)
 
+data LValue =
+    Var Identifier
+  | RecField LValue Identifier
+  | ArrSubscript LValue Exp
+  deriving (Show)
+
 -- A declaration.
 data Dec =
     TDec TypeDec
@@ -44,10 +50,4 @@ data TyField = TyField Identifier Identifier
 data VarDec =
     VarDec Identifier Exp
   | VarDecL Identifier Identifier Exp
-  deriving (Show)
-
-
-data LValue =
-    Var Identifier
-  | RecField LValue Identifier
   deriving (Show)

@@ -59,6 +59,16 @@ import Tokens as Tok
 
 %%
 
+LValue : id                 { AST.Var $1 }
+       | LValue '.' id      { AST.RecField $1 $3 }
+       | LValue '[' Exp ']' { AST.ArrSubscript $1 $3 }
+
+Exp : int                { AST.IntLit $1 }
+    | string             { AST.StringLit $1 }
+
+--LValue : id               { AST.Var $1 }
+--       | LValue '.' id    { AST.RecField $1 $3 }
+
 ----------------------------------------------------------
 -- List of declarations.
 DecList : {- empty production -}  { [] }
@@ -100,11 +110,7 @@ VarDec : var id ':=' Exp         { AST.VarDec $2 $4}
        | var id ':' id ':=' Exp  { AST.VarDecL $2 $4 $6}
 
 ----------------------------------------------------------
-Exp : int                { AST.IntLit $1 }
-    | string             { AST.StringLit $1 }
 
---LValue : id               { AST.Var $1 }
---       | LValue '.' id    { AST.RecField $1 $3 }
 
 {
 
