@@ -59,15 +59,14 @@ import Tokens as Tok
 
 %%
 
+Exp : LValue   { AST.LVal $1 }
+    | nil      { AST.Nil }
+    | int      { AST.IntLit $1 }
+    | string   { AST.StringLit $1 }
+
 LValue : id                 { AST.Var $1 }
        | LValue '.' id      { AST.RecField $1 $3 }
        | LValue '[' Exp ']' { AST.ArrSubscript $1 $3 }
-
-Exp : int                { AST.IntLit $1 }
-    | string             { AST.StringLit $1 }
-
---LValue : id               { AST.Var $1 }
---       | LValue '.' id    { AST.RecField $1 $3 }
 
 ----------------------------------------------------------
 -- List of declarations.

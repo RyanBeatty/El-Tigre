@@ -21,129 +21,154 @@ data HappyAbsSyn t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
 	| HappyAbsSyn13 t13
 	| HappyAbsSyn14 t14
 
-action_0 (57) = happyShift action_2
-action_0 (4) = happyGoto action_3
+action_0 (22) = happyShift action_5
+action_0 (55) = happyShift action_6
+action_0 (56) = happyShift action_7
+action_0 (57) = happyShift action_3
+action_0 (4) = happyGoto action_4
+action_0 (5) = happyGoto action_2
 action_0 _ = happyFail
 
-action_1 (57) = happyShift action_2
+action_1 (57) = happyShift action_3
+action_1 (5) = happyGoto action_2
 action_1 _ = happyFail
 
+action_2 (45) = happyShift action_8
+action_2 (48) = happyShift action_9
 action_2 _ = happyReduce_1
 
-action_3 (45) = happyShift action_4
-action_3 (48) = happyShift action_5
-action_3 (59) = happyAccept
-action_3 _ = happyFail
+action_3 _ = happyReduce_5
 
-action_4 (57) = happyShift action_9
+action_4 (59) = happyAccept
 action_4 _ = happyFail
 
-action_5 (55) = happyShift action_7
-action_5 (56) = happyShift action_8
-action_5 (5) = happyGoto action_6
-action_5 _ = happyFail
+action_5 _ = happyReduce_2
 
-action_6 (49) = happyShift action_10
-action_6 _ = happyFail
+action_6 _ = happyReduce_4
 
-action_7 _ = happyReduce_5
+action_7 _ = happyReduce_3
 
-action_8 _ = happyReduce_4
+action_8 (57) = happyShift action_11
+action_8 _ = happyFail
 
-action_9 _ = happyReduce_2
+action_9 (22) = happyShift action_5
+action_9 (55) = happyShift action_6
+action_9 (56) = happyShift action_7
+action_9 (57) = happyShift action_3
+action_9 (4) = happyGoto action_10
+action_9 (5) = happyGoto action_2
+action_9 _ = happyFail
 
-action_10 _ = happyReduce_3
+action_10 (49) = happyShift action_12
+action_10 _ = happyFail
+
+action_11 _ = happyReduce_6
+
+action_12 _ = happyReduce_7
 
 happyReduce_1 = happySpecReduce_1  4 happyReduction_1
-happyReduction_1 (HappyTerminal (IdToken happy_var_1))
+happyReduction_1 (HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn4
-		 (AST.Var happy_var_1
+		 (AST.LVal happy_var_1
 	)
 happyReduction_1 _  = notHappyAtAll 
 
-happyReduce_2 = happySpecReduce_3  4 happyReduction_2
-happyReduction_2 (HappyTerminal (IdToken happy_var_3))
-	_
-	(HappyAbsSyn4  happy_var_1)
+happyReduce_2 = happySpecReduce_1  4 happyReduction_2
+happyReduction_2 _
 	 =  HappyAbsSyn4
-		 (AST.RecField happy_var_1 happy_var_3
+		 (AST.Nil
 	)
-happyReduction_2 _ _ _  = notHappyAtAll 
 
-happyReduce_3 = happyReduce 4 4 happyReduction_3
-happyReduction_3 (_ `HappyStk`
-	(HappyAbsSyn5  happy_var_3) `HappyStk`
-	_ `HappyStk`
-	(HappyAbsSyn4  happy_var_1) `HappyStk`
-	happyRest)
-	 = HappyAbsSyn4
-		 (AST.ArrSubscript happy_var_1 happy_var_3
-	) `HappyStk` happyRest
-
-happyReduce_4 = happySpecReduce_1  5 happyReduction_4
-happyReduction_4 (HappyTerminal (IntToken happy_var_1))
-	 =  HappyAbsSyn5
+happyReduce_3 = happySpecReduce_1  4 happyReduction_3
+happyReduction_3 (HappyTerminal (IntToken happy_var_1))
+	 =  HappyAbsSyn4
 		 (AST.IntLit happy_var_1
+	)
+happyReduction_3 _  = notHappyAtAll 
+
+happyReduce_4 = happySpecReduce_1  4 happyReduction_4
+happyReduction_4 (HappyTerminal (StringToken happy_var_1))
+	 =  HappyAbsSyn4
+		 (AST.StringLit happy_var_1
 	)
 happyReduction_4 _  = notHappyAtAll 
 
 happyReduce_5 = happySpecReduce_1  5 happyReduction_5
-happyReduction_5 (HappyTerminal (StringToken happy_var_1))
+happyReduction_5 (HappyTerminal (IdToken happy_var_1))
 	 =  HappyAbsSyn5
-		 (AST.StringLit happy_var_1
+		 (AST.Var happy_var_1
 	)
 happyReduction_5 _  = notHappyAtAll 
 
-happyReduce_6 = happySpecReduce_0  6 happyReduction_6
-happyReduction_6  =  HappyAbsSyn6
+happyReduce_6 = happySpecReduce_3  5 happyReduction_6
+happyReduction_6 (HappyTerminal (IdToken happy_var_3))
+	_
+	(HappyAbsSyn5  happy_var_1)
+	 =  HappyAbsSyn5
+		 (AST.RecField happy_var_1 happy_var_3
+	)
+happyReduction_6 _ _ _  = notHappyAtAll 
+
+happyReduce_7 = happyReduce 4 5 happyReduction_7
+happyReduction_7 (_ `HappyStk`
+	(HappyAbsSyn4  happy_var_3) `HappyStk`
+	_ `HappyStk`
+	(HappyAbsSyn5  happy_var_1) `HappyStk`
+	happyRest)
+	 = HappyAbsSyn5
+		 (AST.ArrSubscript happy_var_1 happy_var_3
+	) `HappyStk` happyRest
+
+happyReduce_8 = happySpecReduce_0  6 happyReduction_8
+happyReduction_8  =  HappyAbsSyn6
 		 ([]
 	)
 
-happyReduce_7 = happySpecReduce_1  6 happyReduction_7
-happyReduction_7 (HappyAbsSyn7  happy_var_1)
+happyReduce_9 = happySpecReduce_1  6 happyReduction_9
+happyReduction_9 (HappyAbsSyn7  happy_var_1)
 	 =  HappyAbsSyn6
 		 (reverse happy_var_1
 	)
-happyReduction_7 _  = notHappyAtAll 
+happyReduction_9 _  = notHappyAtAll 
 
-happyReduce_8 = happySpecReduce_1  7 happyReduction_8
-happyReduction_8 (HappyAbsSyn8  happy_var_1)
+happyReduce_10 = happySpecReduce_1  7 happyReduction_10
+happyReduction_10 (HappyAbsSyn8  happy_var_1)
 	 =  HappyAbsSyn7
 		 ([happy_var_1]
 	)
-happyReduction_8 _  = notHappyAtAll 
+happyReduction_10 _  = notHappyAtAll 
 
-happyReduce_9 = happySpecReduce_2  7 happyReduction_9
-happyReduction_9 (HappyAbsSyn8  happy_var_2)
+happyReduce_11 = happySpecReduce_2  7 happyReduction_11
+happyReduction_11 (HappyAbsSyn8  happy_var_2)
 	(HappyAbsSyn7  happy_var_1)
 	 =  HappyAbsSyn7
 		 (happy_var_2 : happy_var_1
 	)
-happyReduction_9 _ _  = notHappyAtAll 
+happyReduction_11 _ _  = notHappyAtAll 
 
-happyReduce_10 = happySpecReduce_1  8 happyReduction_10
-happyReduction_10 (HappyAbsSyn10  happy_var_1)
+happyReduce_12 = happySpecReduce_1  8 happyReduction_12
+happyReduction_12 (HappyAbsSyn10  happy_var_1)
 	 =  HappyAbsSyn8
 		 (AST.TDec happy_var_1
 	)
-happyReduction_10 _  = notHappyAtAll 
+happyReduction_12 _  = notHappyAtAll 
 
-happyReduce_11 = happySpecReduce_1  8 happyReduction_11
-happyReduction_11 (HappyAbsSyn14  happy_var_1)
+happyReduce_13 = happySpecReduce_1  8 happyReduction_13
+happyReduction_13 (HappyAbsSyn14  happy_var_1)
 	 =  HappyAbsSyn8
 		 (AST.VDec happy_var_1
 	)
-happyReduction_11 _  = notHappyAtAll 
+happyReduction_13 _  = notHappyAtAll 
 
-happyReduce_12 = happySpecReduce_1  8 happyReduction_12
-happyReduction_12 (HappyAbsSyn9  happy_var_1)
+happyReduce_14 = happySpecReduce_1  8 happyReduction_14
+happyReduction_14 (HappyAbsSyn9  happy_var_1)
 	 =  HappyAbsSyn8
 		 (AST.FDec happy_var_1
 	)
-happyReduction_12 _  = notHappyAtAll 
+happyReduction_14 _  = notHappyAtAll 
 
-happyReduce_13 = happyReduce 7 9 happyReduction_13
-happyReduction_13 ((HappyAbsSyn5  happy_var_7) `HappyStk`
+happyReduce_15 = happyReduce 7 9 happyReduction_15
+happyReduction_15 ((HappyAbsSyn4  happy_var_7) `HappyStk`
 	_ `HappyStk`
 	_ `HappyStk`
 	(HappyAbsSyn12  happy_var_4) `HappyStk`
@@ -155,8 +180,8 @@ happyReduction_13 ((HappyAbsSyn5  happy_var_7) `HappyStk`
 		 (AST.ProcDec happy_var_2 happy_var_4 happy_var_7
 	) `HappyStk` happyRest
 
-happyReduce_14 = happyReduce 9 9 happyReduction_14
-happyReduction_14 ((HappyAbsSyn5  happy_var_9) `HappyStk`
+happyReduce_16 = happyReduce 9 9 happyReduction_16
+happyReduction_16 ((HappyAbsSyn4  happy_var_9) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (IdToken happy_var_7)) `HappyStk`
 	_ `HappyStk`
@@ -170,8 +195,8 @@ happyReduction_14 ((HappyAbsSyn5  happy_var_9) `HappyStk`
 		 (AST.FunDec happy_var_2 happy_var_4 happy_var_7 happy_var_9
 	) `HappyStk` happyRest
 
-happyReduce_15 = happyReduce 4 10 happyReduction_15
-happyReduction_15 ((HappyAbsSyn11  happy_var_4) `HappyStk`
+happyReduce_17 = happyReduce 4 10 happyReduction_17
+happyReduction_17 ((HappyAbsSyn11  happy_var_4) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (IdToken happy_var_2)) `HappyStk`
 	_ `HappyStk`
@@ -180,54 +205,54 @@ happyReduction_15 ((HappyAbsSyn11  happy_var_4) `HappyStk`
 		 (AST.TypeDec happy_var_2 happy_var_4
 	) `HappyStk` happyRest
 
-happyReduce_16 = happySpecReduce_1  11 happyReduction_16
-happyReduction_16 (HappyTerminal (IdToken happy_var_1))
+happyReduce_18 = happySpecReduce_1  11 happyReduction_18
+happyReduction_18 (HappyTerminal (IdToken happy_var_1))
 	 =  HappyAbsSyn11
 		 (AST.Type happy_var_1
 	)
-happyReduction_16 _  = notHappyAtAll 
+happyReduction_18 _  = notHappyAtAll 
 
-happyReduce_17 = happySpecReduce_3  11 happyReduction_17
-happyReduction_17 _
+happyReduce_19 = happySpecReduce_3  11 happyReduction_19
+happyReduction_19 _
 	(HappyAbsSyn12  happy_var_2)
 	_
 	 =  HappyAbsSyn11
 		 (AST.Record happy_var_2
 	)
-happyReduction_17 _ _ _  = notHappyAtAll 
+happyReduction_19 _ _ _  = notHappyAtAll 
 
-happyReduce_18 = happySpecReduce_3  11 happyReduction_18
-happyReduction_18 (HappyTerminal (IdToken happy_var_3))
+happyReduce_20 = happySpecReduce_3  11 happyReduction_20
+happyReduction_20 (HappyTerminal (IdToken happy_var_3))
 	_
 	_
 	 =  HappyAbsSyn11
 		 (AST.Array happy_var_3
 	)
-happyReduction_18 _ _ _  = notHappyAtAll 
+happyReduction_20 _ _ _  = notHappyAtAll 
 
-happyReduce_19 = happySpecReduce_0  12 happyReduction_19
-happyReduction_19  =  HappyAbsSyn12
+happyReduce_21 = happySpecReduce_0  12 happyReduction_21
+happyReduction_21  =  HappyAbsSyn12
 		 ([]
 	)
 
-happyReduce_20 = happySpecReduce_1  12 happyReduction_20
-happyReduction_20 (HappyAbsSyn13  happy_var_1)
+happyReduce_22 = happySpecReduce_1  12 happyReduction_22
+happyReduction_22 (HappyAbsSyn13  happy_var_1)
 	 =  HappyAbsSyn12
 		 (reverse happy_var_1
 	)
-happyReduction_20 _  = notHappyAtAll 
+happyReduction_22 _  = notHappyAtAll 
 
-happyReduce_21 = happySpecReduce_3  13 happyReduction_21
-happyReduction_21 (HappyTerminal (IdToken happy_var_3))
+happyReduce_23 = happySpecReduce_3  13 happyReduction_23
+happyReduction_23 (HappyTerminal (IdToken happy_var_3))
 	_
 	(HappyTerminal (IdToken happy_var_1))
 	 =  HappyAbsSyn13
 		 ([AST.TyField happy_var_1 happy_var_3]
 	)
-happyReduction_21 _ _ _  = notHappyAtAll 
+happyReduction_23 _ _ _  = notHappyAtAll 
 
-happyReduce_22 = happyReduce 5 13 happyReduction_22
-happyReduction_22 ((HappyTerminal (IdToken happy_var_5)) `HappyStk`
+happyReduce_24 = happyReduce 5 13 happyReduction_24
+happyReduction_24 ((HappyTerminal (IdToken happy_var_5)) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (IdToken happy_var_3)) `HappyStk`
 	_ `HappyStk`
@@ -237,8 +262,8 @@ happyReduction_22 ((HappyTerminal (IdToken happy_var_5)) `HappyStk`
 		 (AST.TyField happy_var_3 happy_var_5 : happy_var_1
 	) `HappyStk` happyRest
 
-happyReduce_23 = happyReduce 4 14 happyReduction_23
-happyReduction_23 ((HappyAbsSyn5  happy_var_4) `HappyStk`
+happyReduce_25 = happyReduce 4 14 happyReduction_25
+happyReduction_25 ((HappyAbsSyn4  happy_var_4) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (IdToken happy_var_2)) `HappyStk`
 	_ `HappyStk`
@@ -247,8 +272,8 @@ happyReduction_23 ((HappyAbsSyn5  happy_var_4) `HappyStk`
 		 (AST.VarDec happy_var_2 happy_var_4
 	) `HappyStk` happyRest
 
-happyReduce_24 = happyReduce 6 14 happyReduction_24
-happyReduction_24 ((HappyAbsSyn5  happy_var_6) `HappyStk`
+happyReduce_26 = happyReduce 6 14 happyReduction_26
+happyReduction_26 ((HappyAbsSyn4  happy_var_6) `HappyStk`
 	_ `HappyStk`
 	(HappyTerminal (IdToken happy_var_4)) `HappyStk`
 	_ `HappyStk`

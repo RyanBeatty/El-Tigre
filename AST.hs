@@ -5,7 +5,9 @@ module AST where
 type Identifier = String
 
 data Exp =
-    IntLit Int
+    LVal LValue
+  | Nil
+  | IntLit Int
   | StringLit Identifier
   deriving (Show)
 
