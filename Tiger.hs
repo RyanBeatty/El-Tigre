@@ -922,7 +922,7 @@ happyReduction_3 _
 happyReduce_4 = happySpecReduce_1  5 happyReduction_4
 happyReduction_4 (HappyAbsSyn8  happy_var_1)
 	 =  HappyAbsSyn5
-		 (AST.Seq happy_var_1
+		 (happy_var_1
 	)
 happyReduction_4 _  = notHappyAtAll 
 
@@ -1063,7 +1063,7 @@ happyReduction_22 (_ `HappyStk`
 	_ `HappyStk`
 	happyRest)
 	 = HappyAbsSyn8
-		 (happy_var_2 : happy_var_4 : (reverse happy_var_5)
+		 (AST.Seq (happy_var_2 : happy_var_4 : reverse happy_var_5)
 	) `HappyStk` happyRest
 
 happyReduce_23 = happySpecReduce_0  9 happyReduction_23

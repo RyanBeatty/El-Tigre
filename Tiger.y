@@ -63,7 +63,7 @@ Program : Exp { $1 }
 
 Exp : LValue      { AST.LVal $1 }
     | nil         { AST.Nil }
-    | Seq         { AST.Seq $1 }
+    | Seq         { $1 }
     | int         { AST.IntLit $1 }
     | string      { AST.StringLit $1 }
     | Neg         { $1 }
@@ -88,7 +88,7 @@ LValue_ : id '.' id            { AST.RecField (AST.Var $1) $3 }
 
 -- A sequence is a list of two or more expressions separated
 -- by a semicolon.
-Seq : '(' Exp ';' Exp Seq_ ')' { $2 : $4 : (reverse $5) }
+Seq : '(' Exp ';' Exp Seq_ ')' { AST.Seq ($2 : $4 : reverse $5) }
 Seq_ : {- empty production -} { [] }
      | Seq_ ';' Exp           { $3 : $1 }
 
