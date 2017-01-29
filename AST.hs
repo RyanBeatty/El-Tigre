@@ -12,6 +12,7 @@ data Exp =
   | IntLit Int
   | StringLit Identifier
   | Neg Int
+  | FunCall Identifier [Exp]
   deriving (Show)
 
 data LValue =
