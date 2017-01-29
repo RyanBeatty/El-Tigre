@@ -8,8 +8,10 @@ data Exp =
     LVal LValue
   | Nil
   | Seq [Exp]
+  | NoVal
   | IntLit Int
   | StringLit Identifier
+  | Neg Int
   deriving (Show)
 
 data LValue =
