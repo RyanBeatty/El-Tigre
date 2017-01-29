@@ -7,6 +7,7 @@ type Identifier = String
 data Exp =
     LVal LValue
   | Nil
+  | Seq [Exp]
   | IntLit Int
   | StringLit Identifier
   deriving (Show)
