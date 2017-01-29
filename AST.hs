@@ -16,8 +16,7 @@ data Exp =
   | RecExp Identifier [Field]
   | ArrExp Identifier Exp Exp
   | Assign LValue Exp
-  | IfThenElse Exp Exp Exp
-  | IfThen Exp Exp
+  | Branch Exp Exp (Maybe Exp)
   | While Exp Exp
   | For Identifier Exp Exp Exp
   | Break

@@ -57,6 +57,8 @@ import Tokens as Tok
   id         { IdToken $$ }
   eof        { EofToken }
 
+%left else
+
 %%
 
 Program : Exp { $1 }
@@ -72,7 +74,7 @@ Exp : LValue      { AST.LVal $1 }
     | RecExp      { $1 }
     | ArrExp      { $1 }
     | Assign      { $1 }
-    --| Branch      { $1 }
+    | Branch      { $1 }
     | While       { $1 }
     | For         { $1 }
     | break       { AST.Break }
@@ -117,8 +119,9 @@ ArrExp : id '[' Exp ']' of Exp { AST.ArrExp $1 $3 $6 }
 -- Assignment expression.
 Assign : LValue ':=' Exp  { AST.Assign $1 $3 }
 
---Branch : if Exp then Exp else Exp  { AST.IfThenElse $2 $4 $6 }
---       | if Exp then Exp  { AST.IfThen $2 $4 }
+-- A branching expression can have an optional else clause.
+Branch : if Exp then Exp else Exp  { AST.Branch $2 $4 (Just $6) }
+       | if Exp then Exp           { AST.Branch $2 $4 Nothing }
 
 While : while Exp do Exp  { AST.While $2 $4 }
 
