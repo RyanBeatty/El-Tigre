@@ -59,6 +59,8 @@ import Tokens as Tok
 
 %%
 
+Program : Exp { $1 }
+
 Exp : LValue      { AST.LVal $1 }
     | nil         { AST.Nil }
     | Seq         { AST.Seq $1 }
