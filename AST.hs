@@ -15,6 +15,7 @@ data Exp =
   | FunCall Identifier [Exp]
   -- SPACE FOR OPS
   | RecExp Identifier [Field]
+  | ArrExp Identifier Exp Exp
   deriving (Show)
 
 data LValue =

@@ -68,11 +68,15 @@ Exp : LValue   { AST.LVal $1 }
     | Neg      { $1 }
     | FunCall  { $1 }
     -- Implement arithmetic and boolean ops here.
-    | RecExp      { $1 }
+    | RecExp   { $1 }
+    | ArrExp   { $1 }
 
-LValue : id                 { AST.Var $1 }
-       | LValue '.' id      { AST.RecField $1 $3 }
-       | LValue '[' Exp ']' { AST.ArrSubscript $1 $3 }
+LValue : id       { AST.Var $1 }
+       | LValue_  { $1 }  
+LValue_ : id '.' id            { AST.RecField (AST.Var $1) $3 }
+        | LValue_ '.' id       { AST.RecField $1 $3 }
+        | id '[' Exp ']'       { AST.ArrSubscript (AST.Var $1) $3 }
+        | LValue_ '[' Exp ']'  { AST.ArrSubscript $1 $3 }
 
 -- A sequence is a list of two or more expressions separated
 -- by a semicolon.
@@ -99,6 +103,10 @@ RecExp : id '{' '}'         { AST.RecExp $1 [] }
        | id '{' Fields '}'  { AST.RecExp $1 (reverse $3) }
 Fields : id '=' Exp             { [AST.Field $1 $3] }
        | Fields ',' id '=' Exp  { AST.Field $3 $5 : $1 }
+
+-- An array expression has a type-id. Exp1 is the length
+-- and Exp2 is the default value.
+ArrExp : id '[' Exp ']' of Exp { AST.ArrExp $1 $3 $6 }
 
 ----------------------------------------------------------
 -- List of declarations.
