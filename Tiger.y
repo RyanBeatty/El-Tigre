@@ -62,7 +62,6 @@ import Tokens as Tok
 Exp : LValue      { AST.LVal $1 }
     | nil         { AST.Nil }
     | Seq         { AST.Seq $1 }
-    | NoVal       { $1 }
     | int         { AST.IntLit $1 }
     | string      { AST.StringLit $1 }
     | Neg         { $1 }
@@ -72,6 +71,10 @@ Exp : LValue      { AST.LVal $1 }
     | ArrExp      { $1 }
     | Assign      { $1 }
     --| Branch      { $1 }
+    | While       { $1 }
+    | For         { $1 }
+    | break       { AST.Break }
+    | Let         { $1 }
 
 -- LValue_ is to fix shift-reduce conflict with ArrExp.
 LValue : id       { AST.Var $1 }
@@ -86,8 +89,6 @@ LValue_ : id '.' id            { AST.RecField (AST.Var $1) $3 }
 Seq : '(' Exp ';' Exp Seq_ ')' { $2 : $4 : (reverse $5) }
 Seq_ : {- empty production -} { [] }
      | Seq_ ';' Exp           { $3 : $1 }
-
-NoVal : '(' ')'  { AST.NoVal }
 
 Neg : '-' int    { AST.Neg $2 }
 
@@ -117,6 +118,14 @@ Assign : LValue ':=' Exp  { AST.Assign $1 $3 }
 --Branch : if Exp then Exp else Exp  { AST.IfThenElse $2 $4 $6 }
 --       | if Exp then Exp  { AST.IfThen $2 $4 }
 
+While : while Exp do Exp  { AST.While $2 $4 }
+
+For : for id ':=' Exp to Exp do Exp  { AST.For $2 $4 $6 $8 }
+
+Let : let DecList in ExpSeq end  { AST.Let $2 (reverse $4) }
+ExpSeq : {- empty production -} { [] }
+       | Exp             { [$1] }
+       | ExpSeq ';' Exp  { $3 : $1 }
 
 ----------------------------------------------------------
 -- List of declarations.

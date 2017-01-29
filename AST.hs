@@ -8,7 +8,6 @@ data Exp =
     LVal LValue
   | Nil
   | Seq [Exp]
-  | NoVal
   | IntLit Int
   | StringLit Identifier
   | Neg Int
@@ -19,6 +18,10 @@ data Exp =
   | Assign LValue Exp
   | IfThenElse Exp Exp Exp
   | IfThen Exp Exp
+  | While Exp Exp
+  | For Identifier Exp Exp Exp
+  | Break
+  | Let [Dec] [Exp]
   deriving (Show)
 
 data LValue =
