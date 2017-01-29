@@ -17,6 +17,8 @@ data Exp =
   | RecExp Identifier [Field]
   | ArrExp Identifier Exp Exp
   | Assign LValue Exp
+  | IfThenElse Exp Exp Exp
+  | IfThen Exp Exp
   deriving (Show)
 
 data LValue =

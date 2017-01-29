@@ -59,18 +59,19 @@ import Tokens as Tok
 
 %%
 
-Exp : LValue   { AST.LVal $1 }
-    | nil      { AST.Nil }
-    | Seq      { AST.Seq $1 }
-    | NoVal    { $1 }
-    | int      { AST.IntLit $1 }
-    | string   { AST.StringLit $1 }
-    | Neg      { $1 }
-    | FunCall  { $1 }
+Exp : LValue      { AST.LVal $1 }
+    | nil         { AST.Nil }
+    | Seq         { AST.Seq $1 }
+    | NoVal       { $1 }
+    | int         { AST.IntLit $1 }
+    | string      { AST.StringLit $1 }
+    | Neg         { $1 }
+    | FunCall     { $1 }
     -- Implement arithmetic and boolean ops here.
-    | RecExp   { $1 }
-    | ArrExp   { $1 }
-    | Assign   { $1 }
+    | RecExp      { $1 }
+    | ArrExp      { $1 }
+    | Assign      { $1 }
+    --| Branch      { $1 }
 
 -- LValue_ is to fix shift-reduce conflict with ArrExp.
 LValue : id       { AST.Var $1 }
@@ -112,6 +113,10 @@ ArrExp : id '[' Exp ']' of Exp { AST.ArrExp $1 $3 $6 }
 
 -- Assignment expression.
 Assign : LValue ':=' Exp  { AST.Assign $1 $3 }
+
+--Branch : if Exp then Exp else Exp  { AST.IfThenElse $2 $4 $6 }
+--       | if Exp then Exp  { AST.IfThen $2 $4 }
+
 
 ----------------------------------------------------------
 -- List of declarations.
