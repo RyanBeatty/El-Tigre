@@ -94,18 +94,18 @@ Neg : '-' int    { AST.Neg $2 }
 
 -- A function call is the function name identifier and a
 -- list of parameters.
-FunCall : id '(' ')'        { AST.FunCall $1 [] }
-        | id '(' Params ')' { AST.FunCall $1 (reverse $3) }
-Params : Exp             { [$1] }
-       | Params ',' Exp  { $3 : $1 }
+FunCall : id '(' Params ')' { AST.FunCall $1 (reverse $3) }
+Params : {- empty production -}  { [] }
+       | Exp                     { [$1] }
+       | Params ',' Exp          { $3 : $1 }
 
 -- SPACE FOR OPS
 
 -- A record expression creates a new record. Has a type-id
 -- and optional list of initialized record fields.
-RecExp : id '{' '}'         { AST.RecExp $1 [] }
-       | id '{' Fields '}'  { AST.RecExp $1 (reverse $3) }
-Fields : id '=' Exp             { [AST.Field $1 $3] }
+RecExp : id '{' Fields '}'  { AST.RecExp $1 (reverse $3) }
+Fields : {- empty production -} { [] }
+       | id '=' Exp             { [AST.Field $1 $3] }
        | Fields ',' id '=' Exp  { AST.Field $3 $5 : $1 }
 
 -- An array expression has a type-id. Exp1 is the length
