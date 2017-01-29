@@ -58,6 +58,11 @@ import Tokens as Tok
   eof        { EofToken }
 
 %left else
+%nonassoc '&' '|'
+%nonassoc '=' '<>' '>' '<' '>=' '<='
+%left '+' '-'
+%left '*' '/'
+%left NEG
 
 %%
 
@@ -71,6 +76,7 @@ Exp : LValue      { AST.LVal $1 }
     | Neg         { $1 }
     | FunCall     { $1 }
     -- Implement arithmetic and boolean ops here.
+    --| Arithmetic  { $1 }
     | RecExp      { $1 }
     | ArrExp      { $1 }
     | Assign      { $1 }
@@ -94,7 +100,7 @@ Seq : '(' Exp ';' Exp Seq_ ')' { AST.Seq ($2 : $4 : reverse $5) }
 Seq_ : {- empty production -} { [] }
      | Seq_ ';' Exp           { $3 : $1 }
 
-Neg : '-' int    { AST.Neg $2 }
+Neg : '-' int %prec NEG  { AST.Neg $2 }
 
 -- A function call is the function name identifier and a
 -- list of parameters.
@@ -104,6 +110,8 @@ Params : {- empty production -}  { [] }
        | Params ',' Exp          { $3 : $1 }
 
 -- SPACE FOR OPS
+Arithmetic : Exp '+' Exp {}
+           --| Exp '-' Exp {}
 
 -- A record expression creates a new record. Has a type-id
 -- and optional list of initialized record fields.
