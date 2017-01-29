@@ -16,6 +16,7 @@ data Exp =
   -- SPACE FOR OPS
   | RecExp Identifier [Field]
   | ArrExp Identifier Exp Exp
+  | Assign LValue Exp
   deriving (Show)
 
 data LValue =

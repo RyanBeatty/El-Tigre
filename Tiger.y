@@ -70,7 +70,9 @@ Exp : LValue   { AST.LVal $1 }
     -- Implement arithmetic and boolean ops here.
     | RecExp   { $1 }
     | ArrExp   { $1 }
+    | Assign   { $1 }
 
+-- LValue_ is to fix shift-reduce conflict with ArrExp.
 LValue : id       { AST.Var $1 }
        | LValue_  { $1 }  
 LValue_ : id '.' id            { AST.RecField (AST.Var $1) $3 }
@@ -107,6 +109,9 @@ Fields : id '=' Exp             { [AST.Field $1 $3] }
 -- An array expression has a type-id. Exp1 is the length
 -- and Exp2 is the default value.
 ArrExp : id '[' Exp ']' of Exp { AST.ArrExp $1 $3 $6 }
+
+-- Assignment expression.
+Assign : LValue ':=' Exp  { AST.Assign $1 $3 }
 
 ----------------------------------------------------------
 -- List of declarations.
