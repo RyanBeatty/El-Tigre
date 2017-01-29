@@ -67,6 +67,8 @@ Exp : LValue   { AST.LVal $1 }
     | string   { AST.StringLit $1 }
     | Neg      { $1 }
     | FunCall  { $1 }
+    -- Implement arithmetic and boolean ops here.
+    | RecExp      { $1 }
 
 LValue : id                 { AST.Var $1 }
        | LValue '.' id      { AST.RecField $1 $3 }
@@ -88,6 +90,15 @@ FunCall : id '(' ')'        { AST.FunCall $1 [] }
         | id '(' Params ')' { AST.FunCall $1 (reverse $3) }
 Params : Exp             { [$1] }
        | Params ',' Exp  { $3 : $1 }
+
+-- SPACE FOR OPS
+
+-- A record expression creates a new record. Has a type-id
+-- and optional list of initialized record fields.
+RecExp : id '{' '}'         { AST.RecExp $1 [] }
+       | id '{' Fields '}'  { AST.RecExp $1 (reverse $3) }
+Fields : id '=' Exp             { [AST.Field $1 $3] }
+       | Fields ',' id '=' Exp  { AST.Field $3 $5 : $1 }
 
 ----------------------------------------------------------
 -- List of declarations.

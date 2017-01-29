@@ -13,12 +13,18 @@ data Exp =
   | StringLit Identifier
   | Neg Int
   | FunCall Identifier [Exp]
+  -- SPACE FOR OPS
+  | RecExp Identifier [Field]
   deriving (Show)
 
 data LValue =
     Var Identifier
   | RecField LValue Identifier
   | ArrSubscript LValue Exp
+  deriving (Show)
+
+-- Represents an initialized field in a record.
+data Field = Field Identifier Exp
   deriving (Show)
 
 -- A declaration.
