@@ -55,9 +55,8 @@ import Tokens as Tok
   string     { StringToken $$ }
   int        { IntToken $$ }
   id         { IdToken $$ }
-  eof        { EofToken }
 
-%left else
+%nonassoc else
 %nonassoc ':=' do of
 %nonassoc '&' '|'
 %nonassoc '=' '<>' '>' '<' '>=' '<='
@@ -87,6 +86,7 @@ Exp : LValue      { AST.LVal $1 }
     | For         { $1 }
     | break       { AST.Break }
     | Let         { $1 }
+    | Parens      { $1 }
 
 -- LValue_ is to fix shift-reduce conflict with ArrExp.
 LValue : id       { AST.Var $1 }
@@ -152,6 +152,8 @@ Let : let DecList in ExpSeq end  { AST.Let $2 (reverse $4) }
 ExpSeq : {- empty production -} { [] }
        | Exp             { [$1] }
        | ExpSeq ';' Exp  { $3 : $1 }
+
+Parens : '(' Exp ')' { $2 }
 
 ----------------------------------------------------------
 -- List of declarations.
