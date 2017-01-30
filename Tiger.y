@@ -58,6 +58,7 @@ import Tokens as Tok
   eof        { EofToken }
 
 %left else
+%nonassoc ':=' do of
 %nonassoc '&' '|'
 %nonassoc '=' '<>' '>' '<' '>=' '<='
 %left '+' '-'
@@ -76,11 +77,11 @@ Exp : LValue      { AST.LVal $1 }
     | Neg         { $1 }
     | FunCall     { $1 }
     -- Implement arithmetic and boolean ops here.
-    --| Arithmetic  { $1 }
+    | Arithmetic  { $1 }
     | RecExp      { $1 }
     | ArrExp      { $1 }
     | Assign      { $1 }
-    | Branch      { $1 }
+    --| Branch      { $1 }
     | While       { $1 }
     | For         { $1 }
     | break       { AST.Break }
@@ -110,7 +111,7 @@ Params : {- empty production -}  { [] }
        | Params ',' Exp          { $3 : $1 }
 
 -- SPACE FOR OPS
-Arithmetic : Exp '+' Exp {}
+Arithmetic : Exp '+' Exp { AST.Plus $1 $3 }
            --| Exp '-' Exp {}
 
 -- A record expression creates a new record. Has a type-id

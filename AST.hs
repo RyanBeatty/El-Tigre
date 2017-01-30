@@ -12,7 +12,7 @@ data Exp =
   | StringLit Identifier
   | Neg Int
   | FunCall Identifier [Exp]
-  -- SPACE FOR OPS
+  | Plus Exp Exp
   | RecExp Identifier [Field]
   | ArrExp Identifier Exp Exp
   | Assign LValue Exp
