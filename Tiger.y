@@ -56,8 +56,8 @@ import Tokens as Tok
   int        { IntToken $$ }
   id         { IdToken $$ }
 
-%left else
 %nonassoc ':=' do of then
+%left else
 %nonassoc '&' '|'
 %nonassoc '=' '<>' '>' '<' '>=' '<='
 %left '+' '-'
@@ -141,8 +141,8 @@ ArrExp : id '[' Exp ']' of Exp { AST.ArrExp $1 $3 $6 }
 Assign : LValue ':=' Exp  { AST.Assign $1 $3 }
 
 -- A branching expression can have an optional else clause.
-Branch --: if Exp then Exp else Exp  { AST.Branch $2 $4 (Just $6) }
-       : if Exp then Exp           { AST.Branch $2 $4 Nothing }
+Branch : if Exp then Exp else Exp  { AST.Branch $2 $4 (Just $6) }
+       | if Exp then Exp           { AST.Branch $2 $4 Nothing }
 
 While : while Exp do Exp  { AST.While $2 $4 }
 
