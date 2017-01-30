@@ -12,49 +12,49 @@ import Tokens as Tok
 
 -- Map tokens to terminal symbols
 %token 
-  type       { TypeToken }
-  var        { VarToken }
-  function   { FunctionToken }
-  break      { BreakToken }
-  of         { OfToken }
-  end        { EndToken }
-  in         { InToken }
-  nil        { NilToken }
-  let        { LetToken }
-  do         { DoToken }
-  to         { ToToken }
-  for        { ForToken }
-  while      { WhileToken }
-  else       { ElseToken }
-  then       { ThenToken }
-  if         { IfToken }
-  array      { ArrayToken }
-  ':='       { AssignToken }
-  '|'        { OrToken }
-  '&'        { AndToken }
-  '>='       { GeToken }
-  '>'        { GtToken }
-  '<='       { LeToken }
-  '<'        { LtToken }
-  '<>'       { NeqToken }
-  '='        { EqToken }
-  '/'        { DivideToken }
-  '*'        { TimesToken }
-  '-'        { MinusToken }
-  '+'        { PlusToken }
-  '.'        { DotToken }
-  '{'        { LbraceToken }
-  '}'        { RbraceToken }
-  '['        { LbrackToken }
-  ']'        { RbrackToken }
-  '('        { LparenToken }
-  ')'        { RparenToken }
-  ';'        { SemicolonToken }
-  ':'        { ColonToken }
-  ','        { CommaToken }
-  string     { StringToken $$ }
-  int        { IntToken $$ }
-  id         { IdToken $$ }
+  type       { Tok.TypeToken }
+  var        { Tok.VarToken }
+  function   { Tok.FunctionToken }
+  break      { Tok.BreakToken }
+  of         { Tok.OfToken }
+  end        { Tok.EndToken }
+  in         { Tok.InToken }
+  nil        { Tok.NilToken }
+  let        { Tok.LetToken }
+  do         { Tok.DoToken }
+  to         { Tok.ToToken }
+  for        { Tok.ForToken }
+  while      { Tok.WhileToken }
+  else       { Tok.ElseToken }
+  then       { Tok.ThenToken }
+  if         { Tok.IfToken }
+  array      { Tok.ArrayToken }
+  ':='       { Tok.AssignToken }
+  '|'        { Tok.OrToken }
+  '&'        { Tok.AndToken }
+  '>='       { Tok.GeToken }
+  '>'        { Tok.GtToken }
+  '<='       { Tok.LeToken }
+  '<'        { Tok.LtToken }
+  '<>'       { Tok.NeqToken }
+  '='        { Tok.EqToken }
+  '/'        { Tok.DivideToken }
+  '*'        { Tok.TimesToken }
+  '-'        { Tok.MinusToken }
+  '+'        { Tok.PlusToken }
+  '.'        { Tok.DotToken }
+  '{'        { Tok.LbraceToken }
+  '}'        { Tok.RbraceToken }
+  '['        { Tok.LbrackToken }
+  ']'        { Tok.RbrackToken }
+  '('        { Tok.LparenToken }
+  ')'        { Tok.RparenToken }
+  ';'        { Tok.SemicolonToken }
+  ':'        { Tok.ColonToken }
+  ','        { Tok.CommaToken }
+  string     { Tok.StringToken $$ }
+  int        { Tok.IntToken $$ }
+  id         { Tok.IdToken $$ }
 
 %nonassoc ':=' do of then
 %left else
@@ -203,7 +203,7 @@ VarDec : var id ':=' Exp         { AST.VarDec $2 $4}
 -- Needs to be defined for Happy to compile
 happyError = error "Parser error!"
 
---runParser :: String -> Either String Dec
+runParser :: String -> Either String Exp
 runParser input = runAlex input parser
 
 main = do
