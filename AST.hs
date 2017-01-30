@@ -13,6 +13,9 @@ data Exp =
   | Neg Int
   | FunCall Identifier [Exp]
   | Plus Exp Exp
+  | Minus Exp Exp
+  | Div Exp Exp
+  | Mult Exp Exp
   | RecExp Identifier [Field]
   | ArrExp Identifier Exp Exp
   | Assign LValue Exp

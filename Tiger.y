@@ -76,8 +76,8 @@ Exp : LValue      { AST.LVal $1 }
     | string      { AST.StringLit $1 }
     | Neg         { $1 }
     | FunCall     { $1 }
-    -- Implement arithmetic and boolean ops here.
     | Arithmetic  { $1 }
+    -- | Logical
     | RecExp      { $1 }
     | ArrExp      { $1 }
     | Assign      { $1 }
@@ -110,9 +110,10 @@ Params : {- empty production -}  { [] }
        | Exp                     { [$1] }
        | Params ',' Exp          { $3 : $1 }
 
--- SPACE FOR OPS
-Arithmetic : Exp '+' Exp { AST.Plus $1 $3 }
-           --| Exp '-' Exp {}
+Arithmetic : Exp '+' Exp  { AST.Plus $1 $3 }
+           | Exp '-' Exp  { AST.Minus $1 $3 }
+           | Exp '/' Exp  { AST.Div $1 $3 }
+           | Exp '*' Exp  { AST.Mult $1 $3 }
 
 -- A record expression creates a new record. Has a type-id
 -- and optional list of initialized record fields.
