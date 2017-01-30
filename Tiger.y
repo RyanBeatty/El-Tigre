@@ -30,7 +30,7 @@ import Tokens as Tok
   if         { IfToken }
   array      { ArrayToken }
   ':='       { AssignToken }
-  or         { OrToken }
+  '|'        { OrToken }
   '&'        { AndToken }
   '>='       { GeToken }
   '>'        { GtToken }
@@ -77,7 +77,8 @@ Exp : LValue      { AST.LVal $1 }
     | Neg         { $1 }
     | FunCall     { $1 }
     | Arithmetic  { $1 }
-    -- | Logical
+    | Comparison  { $1 }
+    | Boolean     { $1 }
     | RecExp      { $1 }
     | ArrExp      { $1 }
     | Assign      { $1 }
@@ -114,6 +115,16 @@ Arithmetic : Exp '+' Exp  { AST.Plus $1 $3 }
            | Exp '-' Exp  { AST.Minus $1 $3 }
            | Exp '/' Exp  { AST.Div $1 $3 }
            | Exp '*' Exp  { AST.Mult $1 $3 }
+
+Comparison : Exp '=' Exp   { AST.Eq $1 $3 }
+           | Exp '<>' Exp  { AST.Neq $1 $3 }
+           | Exp '>' Exp   { AST.Gt $1 $3 }
+           | Exp '<' Exp   { AST.Lt $1 $3 }
+           | Exp '>=' Exp  { AST.Ge $1 $3 }
+           | Exp '<=' Exp  { AST.Le $1 $3 }
+
+Boolean : Exp '&' Exp { AST.And $1 $3 }
+        | Exp '|' Exp { AST.Or $1 $3 }
 
 -- A record expression creates a new record. Has a type-id
 -- and optional list of initialized record fields.

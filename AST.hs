@@ -16,6 +16,14 @@ data Exp =
   | Minus Exp Exp
   | Div Exp Exp
   | Mult Exp Exp
+  | Eq Exp Exp
+  | Neq Exp Exp
+  | Gt Exp Exp
+  | Lt Exp Exp
+  | Ge Exp Exp
+  | Le Exp Exp
+  | And Exp Exp
+  | Or Exp Exp
   | RecExp Identifier [Field]
   | ArrExp Identifier Exp Exp
   | Assign LValue Exp
