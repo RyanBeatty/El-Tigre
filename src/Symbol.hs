@@ -3,15 +3,18 @@ module Symbol () where
 import Control.Monad.State
 import qualified Data.Map as Map
 
+-- Every identifier (variable, function, type names, etc...)
+-- maps to a symbol. Symbols are faster than strings to
+-- check for equality.
 type Symbol = Int
 
 type Id = String
 
+-- A symbol map maps identifiers to symbols
 type SymMap = Map.Map Id Symbol
 
--- A symbol table has a table that maps identifiers to
--- symbols and contains the next symbol that should be
--- used for a new identifier.
+-- A symbol table has a symbol map and contains the next
+-- symbol that should be used for a new identifier.
 data SymTable = SymTable {
       table :: SymMap
     , nextSym :: Symbol
