@@ -17,30 +17,26 @@ data SymTable = SymTable {
     , nextSym :: Symbol
 } deriving (Show)
 
--- Construct an empty SymTable.
+type SymState = State SymTable Symbol
+
+-- Construct a SymTable.
 symTable :: SymMap -> Symbol -> SymTable
 symTable smap next = SymTable { table = smap, nextSym = next }
 
+-- Construct an empty SymTable.
 newSymTable :: SymTable
 newSymTable = symTable Map.empty 0
 
--- Return the symbol for the passed in identifier if
--- it exists.
-look :: Id -> SymTable -> Maybe Symbol
-look name t = Map.lookup name (table t)
-
-type SymState = State SymTable Symbol
-
---runSymState :: SymState a
---runSymState = runState f symTable
-
+-- Return symbol that the identifier maps to if it exists.
+-- If it doesn't, create a new mapping.
 symbol :: Id -> SymState
 symbol name = do
     curState <- get
-    case look name curState of
+    let t = table curState
+    case Map.lookup name t of
         Just sym -> return sym
         Nothing  -> do
-            let sym'   = nextSym curState
-            let newTable = Map.insert name sym' (table curState)
-            put (symTable newTable (succ sym'))
+            let sym' = nextSym curState
+            let t'   = Map.insert name sym' t
+            put (symTable t' (succ sym'))
             return sym'
