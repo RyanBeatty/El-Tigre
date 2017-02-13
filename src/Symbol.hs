@@ -43,5 +43,5 @@ symbol name = do
             -- Make new mapping.
             let sym' = nextSym curState
             let t'   = Map.insert name sym' t
-            put (symTable t' (succ sym'))
+            put $ symTable t' (succ sym')
             return sym'
