@@ -1,6 +1,8 @@
 module Symbol () where
 
 import Control.Monad.State
+
+-- TODO: See if I can use a faster hash map library.
 import qualified Data.Map as Map
 
 -- Every identifier (variable, function, type names, etc...)
