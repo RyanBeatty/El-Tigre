@@ -31,11 +31,13 @@ newSymTable = symTable Map.empty 0
 -- If it doesn't, create a new mapping.
 symbol :: Id -> SymState
 symbol name = do
+    -- Get the current SymTable and try to lookup name.
     curState <- get
     let t = table curState
     case Map.lookup name t of
         Just sym -> return sym
         Nothing  -> do
+            -- Make new mapping.
             let sym' = nextSym curState
             let t'   = Map.insert name sym' t
             put (symTable t' (succ sym'))
