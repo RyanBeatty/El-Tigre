@@ -1,3 +1,6 @@
+-- Implements the symbol table interface that will be used 
+-- for type checking.
+
 module Symbol (Symbol) where
 
 import Control.Applicative

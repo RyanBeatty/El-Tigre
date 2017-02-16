@@ -1,3 +1,5 @@
+-- Contains the semantic types of the Tiger language.
+
 module Types () where
 
 import Symbol (Symbol)
