@@ -1,4 +1,4 @@
-module Symbol () where
+module Symbol (Symbol) where
 
 import Control.Applicative
 import Control.Monad.State
