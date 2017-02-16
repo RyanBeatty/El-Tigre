@@ -1,9 +1,9 @@
 module Symbol () where
 
 import Control.Monad.State
-
 -- TODO: See if I can use a faster hash map library.
 import qualified Data.Map as Map
+import qualified Data.Tree.AVL as AVL
 
 -- Every identifier (variable, function, type names, etc...)
 -- maps to a symbol. Symbols are faster than strings to
@@ -25,12 +25,12 @@ data SymMap = SymMap {
 type SymState = State SymMap Symbol
 
 -- Construct a SymMap.
-symMap :: SMap -> Symbol -> SymMap
-symMap smap next = SymMap { smap = smap, nextSym = next }
+makeSymMap :: SMap -> Symbol -> SymMap
+makeSymMap smap next = SymMap { smap = smap, nextSym = next }
 
 -- Construct an empty SymMap.
 newSymMap :: SymMap
-newSymMap = symMap Map.empty 0
+newSymMap = makeSymMap Map.empty 0
 
 -- Return symbol that the identifier maps to if it exists.
 -- If it doesn't, create a new mapping.
@@ -45,5 +45,12 @@ symbol name = do
             -- Make new mapping.
             let sym' = nextSym curState
             let t'   = Map.insert name sym' t
-            put $ symMap t' (succ sym')
+            put $ makeSymMap t' (succ sym')
             return sym'
+
+type STable a = AVL.AVL (Symbol, a)
+
+data SymTable a = SymTable {
+      symMap :: SymMap
+    , stable :: STable a
+}
