@@ -12,13 +12,13 @@ type Symbol = Int
 
 type Id = String
 
--- A symbol map maps identifiers to symbols
+-- An smap maps identifiers to symbols
 type SMap = Map.Map Id Symbol
 
--- A symbol table has a symbol map and contains the next
+-- A symbol map has an smap and contains the next
 -- symbol that should be used for a new identifier.
 data SymMap = SymMap {
-      table :: SMap
+      smap :: SMap
     , nextSym :: Symbol
 } deriving (Show)
 
@@ -26,7 +26,7 @@ type SymState = State SymMap Symbol
 
 -- Construct a SymMap.
 symMap :: SMap -> Symbol -> SymMap
-symMap smap next = SymMap { table = smap, nextSym = next }
+symMap smap next = SymMap { smap = smap, nextSym = next }
 
 -- Construct an empty SymMap.
 newSymMap :: SymMap
@@ -38,7 +38,7 @@ symbol :: Id -> SymState
 symbol name = do
     -- Get the current SymMap and try to lookup name.
     curState <- get
-    let t = table curState
+    let t = smap curState
     case Map.lookup name t of
         Just sym -> return sym
         Nothing  -> do
