@@ -1,7 +1,7 @@
 -- Implements the symbol table interface that will be used 
 -- for type checking.
 
-module Symbol (Symbol) where
+module Symbol (Symbol, SymTable(..), Symbol.empty, Symbol.look, Symbol.enter) where
 
 import Control.Applicative
 import Control.Monad.State

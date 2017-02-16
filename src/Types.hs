@@ -1,6 +1,6 @@
 -- Contains the semantic types of the Tiger language.
 
-module Types () where
+module Types (Type(..)) where
 
 import Symbol (Symbol)
 
@@ -14,3 +14,4 @@ data Type = INT
         | UNIT
         -- TODO: Need to add Unique here. Use tuple, IORef, MVar, TVar?
         | NAME Symbol.Symbol (Maybe Type)
+        deriving (Show)
