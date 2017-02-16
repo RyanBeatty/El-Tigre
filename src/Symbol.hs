@@ -1,6 +1,7 @@
 module Symbol () where
 
 import Control.Monad.State
+import qualified Data.COrdering as COrd
 -- TODO: See if I can use a faster hash map library.
 import qualified Data.Map as Map
 import qualified Data.Tree.AVL as AVL
@@ -53,4 +54,18 @@ type STable a = AVL.AVL (Symbol, a)
 data SymTable a = SymTable {
       symMap :: SymMap
     , stable :: STable a
-}
+} deriving (Show)
+
+symComp :: (Symbol, a) -> (Symbol, a) -> COrd.COrdering (Symbol, a)
+symComp s = COrd.fstByCC (\(s1, _) (s2, _) -> compare s1 s2) s
+
+makeSymTable :: SymMap -> STable a -> SymTable a
+makeSymTable m t = SymTable { symMap = m, stable = t }
+
+empty :: SymTable a
+empty = makeSymTable newSymMap AVL.empty
+
+enter :: Symbol -> a -> SymTable a -> SymTable a
+enter sym binding t = makeSymTable m (AVL.push (undefined) (sym, binding) (stable t))
+    where m  = symMap t
+          st = stable t
