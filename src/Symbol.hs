@@ -66,6 +66,7 @@ empty :: SymTable a
 empty = makeSymTable newSymMap AVL.empty
 
 enter :: Symbol -> a -> SymTable a -> SymTable a
-enter sym binding t = makeSymTable m (AVL.push (undefined) (sym, binding) (stable t))
-    where m  = symMap t
-          st = stable t
+enter sym binding t = makeSymTable m (AVL.push (symComp element) element (stable t))
+    where m       = symMap t
+          st      = stable t
+          element = (sym, binding)
