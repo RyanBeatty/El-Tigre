@@ -50,14 +50,14 @@ symbol :: Id -> SymState
 symbol name = do
     -- Get the current SymMap and try to lookup name.
     curState <- get
-    let t = smap curState
-    case Map.lookup name t of
+    let sm = smap curState
+    case Map.lookup name sm of
         Just sym -> return sym
         Nothing  -> do
             -- Make new mapping.
             let sym' = nextSym curState
-            let t'   = Map.insert name sym' t
-            put $ makeSymMap t' (succ sym')
+            let sm'   = Map.insert name sym' sm
+            put $ makeSymMap sm' (succ sym')
             return sym'
 
 -- An STable is an avl tree that contains Symbol to binding mappings.

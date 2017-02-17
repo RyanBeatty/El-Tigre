@@ -1,5 +1,6 @@
 -- Contains the data type definition of the abstract syntax
 -- of the Tiger programming language
+-- TODO: I can probably symplify a lot of the abstract syntax.
 module AST where
 
 type Identifier = String
