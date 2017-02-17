@@ -1,7 +1,14 @@
 -- Implements the symbol table interface that will be used 
 -- for type checking.
 
-module Symbol (Symbol, SymTable(..), Symbol.empty, Symbol.look, Symbol.enter) where
+module Symbol (
+    Symbol,
+    SymTable(..),
+    Symbol.empty,
+    Symbol.look,
+    Symbol.enter,
+    Symbol.fromList
+) where
 
 import Control.Applicative
 import Control.Monad.State
@@ -78,11 +85,18 @@ symComp s el = COrd.sndByCC (\s1 (s2, _) -> compare s1 s2) s el
 makeSymTable :: SymMap -> STable a -> SymTable a
 makeSymTable m t = SymTable { symMap = m, stable = t }
 
+-- Takes a list of pairs with the Id's as the first element and
+-- creates a SymTable from the list.
 fromList :: [(Id, a)] -> SymTable a
 fromList xs = makeSymTable sm tree
     where (xs', sm) = runState action newSymMap
+          -- create a SymState action that will map all of the Id's in the
+          -- input list to Symbols. and return the input list with the Id's
+          -- replaced by the Symbol the Id maps to.
           action    = mapM (\(n, a) -> symbol n >>= \s -> return (s, a)) xs
+          -- Take the result of action and build the symbol table tree.
           tree      = AVL.asTree elemComp xs'
+
 -- Make an empty SymTable.
 empty :: SymTable a
 empty = makeSymTable newSymMap AVL.empty
