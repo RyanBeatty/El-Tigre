@@ -78,6 +78,11 @@ symComp s el = COrd.sndByCC (\s1 (s2, _) -> compare s1 s2) s el
 makeSymTable :: SymMap -> STable a -> SymTable a
 makeSymTable m t = SymTable { symMap = m, stable = t }
 
+fromList :: [(Id, a)] -> SymTable a
+fromList xs = makeSymTable sm tree
+    where (xs', sm) = runState action newSymMap
+          action    = mapM (\(n, a) -> symbol n >>= \s -> return (s, a)) xs
+          tree      = AVL.asTree elemComp xs'
 -- Make an empty SymTable.
 empty :: SymTable a
 empty = makeSymTable newSymMap AVL.empty
