@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -w #-}
-module Tiger (parser) where
+module Parser (parser, runParser) where
 import Lexer as Lex
 import AST
 import Tokens as Tok
