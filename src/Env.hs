@@ -19,11 +19,11 @@ type TEnv = Symbol.SymTable Types.Type
 type VEnv = Symbol.SymTable EnvEntry
 
 -- The built in types environment for Tiger.
-baseTEnv :: Symbol.SymTable Types.Type
+baseTEnv :: TEnv
 baseTEnv = Symbol.fromList [("int", Types.INT), ("string", Types.STRING)]
 
 -- the built in functions environment for Tiger.
-baseVEnv :: Symbol.SymTable EnvEntry
+baseVEnv :: VEnv
 baseVEnv = Symbol.fromList [
       ("print", FuncEntry { formals = [Types.STRING], result = Types.UNIT })
     , ("flush", FuncEntry { formals = [], result = Types.UNIT })
