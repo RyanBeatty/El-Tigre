@@ -16,8 +16,6 @@ data Exp =
   | ArithOp AOp Exp Exp
   | CompOp COp Exp Exp
   | LogOp LOp Exp Exp
-  -- | And Exp Exp
-  -- | Or Exp Exp
   | RecExp Identifier [Field]
   | ArrExp Identifier Exp Exp
   | Assign LValue Exp
