@@ -2479,21 +2479,21 @@ happyReduction_65 _ _  = notHappyAtAll
 happyReduce_66 = happySpecReduce_1  28 happyReduction_66
 happyReduction_66 (HappyAbsSyn30  happy_var_1)
 	 =  HappyAbsSyn28
-		 (AST.TDec happy_var_1
+		 (happy_var_1
 	)
 happyReduction_66 _  = notHappyAtAll 
 
 happyReduce_67 = happySpecReduce_1  28 happyReduction_67
 happyReduction_67 (HappyAbsSyn34  happy_var_1)
 	 =  HappyAbsSyn28
-		 (AST.VDec happy_var_1
+		 (happy_var_1
 	)
 happyReduction_67 _  = notHappyAtAll 
 
 happyReduce_68 = happySpecReduce_1  28 happyReduction_68
 happyReduction_68 (HappyAbsSyn29  happy_var_1)
 	 =  HappyAbsSyn28
-		 (AST.FDec happy_var_1
+		 (happy_var_1
 	)
 happyReduction_68 _  = notHappyAtAll 
 

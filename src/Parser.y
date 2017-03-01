@@ -164,9 +164,9 @@ DecList_ : Dec                    { [$1] }
          | DecList_ Dec           { $2 : $1 }
 
 -- A declaration can be a type, variable, or function declaration.
-Dec : TypeDec  { AST.TDec $1 }       
-    | VarDec   { AST.VDec $1 }
-    | FunDec   { AST.FDec $1 }
+Dec : TypeDec  { $1 }       
+    | VarDec   { $1 }
+    | FunDec   { $1 }
 
 ----------------------------------------------------------
 -- Function declaration in Tiger language. Can either be a

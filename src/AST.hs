@@ -52,19 +52,12 @@ data Field = Field Identifier Exp
 
 -- A declaration.
 data Dec =
-    TDec TypeDec
-  | VDec VarDec
-  | FDec FunDec
-  deriving (Show)
-
--- A function declaration can either be a procedure
--- declaration (no return type) or a function
--- declaration (has return type).
-data FunDec = FunDec Identifier [TyField] (Maybe Identifier) Exp
-  deriving (Show)
-
--- Type declaration
-data TypeDec = TypeDec Identifier Type
+    TypeDec Identifier Type
+  -- A variable declaration can specify a explicit type.
+  | VarDec Identifier (Maybe Identifier) Exp
+  -- A function declaration can either be a procedure declaration (no return
+  -- type) or a function declaration (has return type).
+  | FunDec Identifier [TyField] (Maybe Identifier) Exp
   deriving (Show)
 
 -- The type of a type declaration
@@ -76,9 +69,4 @@ data Type =
 
 -- Field in a Record
 data TyField = TyField Identifier Identifier
-  deriving (Show)
-
--- Variable declarations in Tiger language.
--- VarDecL deals with case where the type is specified.
-data VarDec = VarDec Identifier (Maybe Identifier) Exp
   deriving (Show)
