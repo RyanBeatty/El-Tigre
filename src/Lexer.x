@@ -34,7 +34,7 @@ tokens :-
   <0>if              {action IfToken}
   <0>array           {action ArrayToken}
   <0>":="            {action AssignToken}
-  <0>or              {action OrToken}
+  <0>"|"             {action OrToken}
   <0>"&"             {action AndToken}
   <0>">="            {action GeToken}
   <0>">"             {action GtToken}
