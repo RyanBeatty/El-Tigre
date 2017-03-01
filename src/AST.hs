@@ -60,9 +60,7 @@ data Dec =
 -- A function declaration can either be a procedure
 -- declaration (no return type) or a function
 -- declaration (has return type).
-data FunDec =
-    ProcDec Identifier [TyField] Exp
-  | FunDec Identifier [TyField] Identifier Exp
+data FunDec = FunDec Identifier [TyField] (Maybe Identifier) Exp
   deriving (Show)
 
 -- Type declaration

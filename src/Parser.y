@@ -171,8 +171,8 @@ Dec : TypeDec  { AST.TDec $1 }
 ----------------------------------------------------------
 -- Function declaration in Tiger language. Can either be a
 -- procedure declaration or a function declaration.
-FunDec : function id '(' TyFields ')' '=' Exp        { AST.ProcDec $2 $4 $7 }
-       | function id '(' TyFields ')' ':' id '=' Exp   { AST.FunDec $2 $4 $7 $9 }
+FunDec : function id '(' TyFields ')' '=' Exp          { AST.FunDec $2 $4 Nothing $7 }
+       | function id '(' TyFields ')' ':' id '=' Exp   { AST.FunDec $2 $4 (Just $7) $9 }
 
 ----------------------------------------------------------
 -- Type declaration in Tiger language. A type declaration

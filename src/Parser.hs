@@ -2507,7 +2507,7 @@ happyReduction_69 ((HappyAbsSyn5  happy_var_7) `HappyStk`
 	_ `HappyStk`
 	happyRest)
 	 = HappyAbsSyn29
-		 (AST.ProcDec happy_var_2 happy_var_4 happy_var_7
+		 (AST.FunDec happy_var_2 happy_var_4 Nothing happy_var_7
 	) `HappyStk` happyRest
 
 happyReduce_70 = happyReduce 9 29 happyReduction_70
@@ -2522,7 +2522,7 @@ happyReduction_70 ((HappyAbsSyn5  happy_var_9) `HappyStk`
 	_ `HappyStk`
 	happyRest)
 	 = HappyAbsSyn29
-		 (AST.FunDec happy_var_2 happy_var_4 happy_var_7 happy_var_9
+		 (AST.FunDec happy_var_2 happy_var_4 (Just happy_var_7) happy_var_9
 	) `HappyStk` happyRest
 
 happyReduce_71 = happyReduce 4 30 happyReduction_71
