@@ -2293,7 +2293,7 @@ happyReduction_45 (HappyAbsSyn5  happy_var_3)
 	_
 	(HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn15
-		 (AST.And happy_var_1 happy_var_3
+		 (AST.LogOp AST.And happy_var_1 happy_var_3
 	)
 happyReduction_45 _ _ _  = notHappyAtAll 
 
@@ -2302,7 +2302,7 @@ happyReduction_46 (HappyAbsSyn5  happy_var_3)
 	_
 	(HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn15
-		 (AST.Or happy_var_1 happy_var_3
+		 (AST.LogOp AST.Or happy_var_1 happy_var_3
 	)
 happyReduction_46 _ _ _  = notHappyAtAll 
 

@@ -123,8 +123,8 @@ Comparison : Exp '=' Exp   { AST.CompOp AST.Eq $1 $3 }
            | Exp '>=' Exp  { AST.CompOp AST.Ge $1 $3 }
            | Exp '<=' Exp  { AST.CompOp AST.Le $1 $3 }
 
-Boolean : Exp '&' Exp { AST.And $1 $3 }
-        | Exp '|' Exp { AST.Or $1 $3 }
+Boolean : Exp '&' Exp { AST.LogOp AST.And $1 $3 }
+        | Exp '|' Exp { AST.LogOp AST.Or $1 $3 }
 
 -- A record expression creates a new record. Has a type-id
 -- and optional list of initialized record fields.

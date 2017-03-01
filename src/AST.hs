@@ -15,8 +15,9 @@ data Exp =
   | FunCall Identifier [Exp]
   | ArithOp AOp Exp Exp
   | CompOp COp Exp Exp
-  | And Exp Exp
-  | Or Exp Exp
+  | LogOp LOp Exp Exp
+  -- | And Exp Exp
+  -- | Or Exp Exp
   | RecExp Identifier [Field]
   | ArrExp Identifier Exp Exp
   | Assign LValue Exp
@@ -33,6 +34,10 @@ data AOp = Plus | Minus | Div | Mult
 
 -- Comparison operator types.
 data COp = Eq | Neq | Gt | Lt | Ge | Le
+  deriving (Show)
+
+-- Logical operator types.
+data LOp = And | Or
   deriving (Show)
 
 data LValue =
