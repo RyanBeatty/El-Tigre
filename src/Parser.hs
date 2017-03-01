@@ -2599,7 +2599,7 @@ happyReduction_79 ((HappyAbsSyn5  happy_var_4) `HappyStk`
 	_ `HappyStk`
 	happyRest)
 	 = HappyAbsSyn34
-		 (AST.VarDec happy_var_2 happy_var_4
+		 (AST.VarDec happy_var_2 Nothing happy_var_4
 	) `HappyStk` happyRest
 
 happyReduce_80 = happyReduce 6 34 happyReduction_80
@@ -2611,7 +2611,7 @@ happyReduction_80 ((HappyAbsSyn5  happy_var_6) `HappyStk`
 	_ `HappyStk`
 	happyRest)
 	 = HappyAbsSyn34
-		 (AST.VarDecL happy_var_2 happy_var_4 happy_var_6
+		 (AST.VarDec happy_var_2 (Just happy_var_4) happy_var_6
 	) `HappyStk` happyRest
 
 happyNewToken action sts stk

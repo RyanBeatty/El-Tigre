@@ -192,8 +192,8 @@ TyFields_ : id ':' id                { [AST.TyField $1 $3] }
 ----------------------------------------------------------
 -- Variable declarations can omit or make explicit the
 -- type of the declared variable.
-VarDec : var id ':=' Exp         { AST.VarDec $2 $4}
-       | var id ':' id ':=' Exp  { AST.VarDecL $2 $4 $6}
+VarDec : var id ':=' Exp         { AST.VarDec $2 Nothing $4}
+       | var id ':' id ':=' Exp  { AST.VarDec $2 (Just $4) $6}
 
 ----------------------------------------------------------
 

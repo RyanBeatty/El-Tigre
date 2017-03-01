@@ -82,7 +82,5 @@ data TyField = TyField Identifier Identifier
 
 -- Variable declarations in Tiger language.
 -- VarDecL deals with case where the type is specified.
-data VarDec =
-    VarDec Identifier Exp
-  | VarDecL Identifier Identifier Exp
+data VarDec = VarDec Identifier (Maybe Identifier) Exp
   deriving (Show)
