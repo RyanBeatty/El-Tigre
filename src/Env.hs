@@ -1,16 +1,21 @@
 module Env (
     TEnv,
     VEnv,
+    EnvEntry(..),
     Env.baseTEnv,
-    Env.baseVEnv
+    Env.baseVEnv,
+    Env.makeVarEntry
 ) where
 
 import Symbol (fromList, SymTable)
 import Types
 
-data EnvEntry = VarEntry  { ty :: Types.Type }
+data EnvEntry = VarEntry  { envty :: Types.Type }
               | FuncEntry { formals :: [Types.Type], result :: Types.Type }
               deriving (Show)
+
+makeVarEntry :: Types.Type -> EnvEntry
+makeVarEntry t = VarEntry { envty = t }
 
 -- Environment for tiger type bindings.
 type TEnv = Symbol.SymTable Types.Type

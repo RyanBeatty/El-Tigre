@@ -3,6 +3,7 @@ module Semant () where
 import AST
 import Env
 import Parser (runParser)
+import qualified Symbol as Sym
 import qualified Translate as Trans
 import Types
 
@@ -23,7 +24,11 @@ transTy  :: Env.TEnv -> AST.Type -> Types.Type
 transTy = undefined
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> (Env.VEnv, Env.TEnv)
-transDec = undefined
+transDec venv tenv (AST.VarDec name vty val) =
+    let ExpType { expr = expr, ty = ety } = transExp venv tenv val
+    in case vty of
+        --Just t  -> 
+        Nothing -> (Sym.enterName (name, makeVarEntry ety) venv, tenv)
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
 transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> (Env.VEnv, Env.TEnv)
@@ -43,6 +48,8 @@ transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> ExpType
 transSeq venv tenv [x]    = transExp venv tenv x
 transSeq venv tenv (_:xs) = transSeq venv tenv xs  
 
+-- TODO: Add actual error propagation. Something like changing the type to
+-- Either String ExpType.
 transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> ExpType
 transExp venv tenv (AST.IntLit _)    = makeExpType () Types.INT
 transExp venv tenv (AST.StringLit _) = makeExpType () Types.STRING
@@ -59,6 +66,10 @@ transExp venv tenv (AST.LogOp _ left right)
 transExp venv tenv (AST.Let decs body) =
     let (venv', tenv') = transDecs venv tenv decs
     in transSeq venv' tenv' body
+transExp venv tenv (AST.LVal (AST.Var name)) =
+    case Sym.lookName venv name of
+        Just varEntry -> makeExpType () (envty varEntry)
+        Nothing       -> error "undeclared variable"
 
 testTrans :: String -> IO ()
 testTrans input = 
