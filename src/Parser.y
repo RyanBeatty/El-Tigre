@@ -111,10 +111,10 @@ Params : {- empty production -}  { [] }
        | Exp                     { [$1] }
        | Params ',' Exp          { $3 : $1 }
 
-Arithmetic : Exp '+' Exp  { AST.Plus $1 $3 }
-           | Exp '-' Exp  { AST.Minus $1 $3 }
-           | Exp '/' Exp  { AST.Div $1 $3 }
-           | Exp '*' Exp  { AST.Mult $1 $3 }
+Arithmetic : Exp '+' Exp  { AST.ArithOp AST.Plus $1 $3 }
+           | Exp '-' Exp  { AST.ArithOp AST.Minus $1 $3 }
+           | Exp '/' Exp  { AST.ArithOp AST.Div $1 $3 }
+           | Exp '*' Exp  { AST.ArithOp AST.Mult $1 $3 }
 
 Comparison : Exp '=' Exp   { AST.Eq $1 $3 }
            | Exp '<>' Exp  { AST.Neq $1 $3 }

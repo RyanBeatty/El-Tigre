@@ -13,10 +13,7 @@ data Exp =
   | StringLit Identifier
   | Neg Int
   | FunCall Identifier [Exp]
-  | Plus Exp Exp
-  | Minus Exp Exp
-  | Div Exp Exp
-  | Mult Exp Exp
+  | ArithOp AOp Exp Exp
   | Eq Exp Exp
   | Neq Exp Exp
   | Gt Exp Exp
@@ -33,6 +30,10 @@ data Exp =
   | For Identifier Exp Exp Exp
   | Break
   | Let [Dec] [Exp]
+  deriving (Show)
+
+-- Arithmetic operator types.
+data AOp = Plus | Minus | Div | Mult
   deriving (Show)
 
 data LValue =

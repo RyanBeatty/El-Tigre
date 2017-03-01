@@ -2203,7 +2203,7 @@ happyReduction_35 (HappyAbsSyn5  happy_var_3)
 	_
 	(HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn13
-		 (AST.Plus happy_var_1 happy_var_3
+		 (AST.ArithOp AST.Plus happy_var_1 happy_var_3
 	)
 happyReduction_35 _ _ _  = notHappyAtAll 
 
@@ -2212,7 +2212,7 @@ happyReduction_36 (HappyAbsSyn5  happy_var_3)
 	_
 	(HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn13
-		 (AST.Minus happy_var_1 happy_var_3
+		 (AST.ArithOp AST.Minus happy_var_1 happy_var_3
 	)
 happyReduction_36 _ _ _  = notHappyAtAll 
 
@@ -2221,7 +2221,7 @@ happyReduction_37 (HappyAbsSyn5  happy_var_3)
 	_
 	(HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn13
-		 (AST.Div happy_var_1 happy_var_3
+		 (AST.ArithOp AST.Div happy_var_1 happy_var_3
 	)
 happyReduction_37 _ _ _  = notHappyAtAll 
 
@@ -2230,7 +2230,7 @@ happyReduction_38 (HappyAbsSyn5  happy_var_3)
 	_
 	(HappyAbsSyn5  happy_var_1)
 	 =  HappyAbsSyn13
-		 (AST.Mult happy_var_1 happy_var_3
+		 (AST.ArithOp AST.Mult happy_var_1 happy_var_3
 	)
 happyReduction_38 _ _ _  = notHappyAtAll 
 
