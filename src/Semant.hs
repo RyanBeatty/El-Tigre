@@ -18,6 +18,9 @@ checkInt :: ExpType -> Bool
 checkInt expty = ty expty == Types.INT
 
 transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> ExpType
+transExp venv tenv (AST.IntLit _)    = makeExpType () Types.INT
+transExp venv tenv (AST.StringLit _) = makeExpType () Types.STRING
+transExp venv tenv (AST.Neg _)       = makeExpType () Types.INT
 transExp venv tenv (AST.Plus left right)
     | checkInt (transExp venv tenv left) && checkInt (transExp venv tenv right) = makeExpType () Types.INT
     | otherwise = error "need two ints"
