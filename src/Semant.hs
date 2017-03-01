@@ -24,12 +24,21 @@ transTy  :: Env.TEnv -> AST.Type -> Types.Type
 transTy = undefined
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> (Env.VEnv, Env.TEnv)
-transDec venv tenv (AST.VarDec name vty val) =
-    let ExpType { expr = expr, ty = ety } = transExp venv tenv val
-    in case vty >>= getType of
-        Just t  -> if ety == t
-                    then (newVarEntry t, tenv)
-                    else error "variable declaration needs consistent type."  
+transDec venv tenv (AST.VarDec name vty initializer) =
+    -- Translate initializer expression.
+    let ExpType { expr = expr, ty = ety } = transExp venv tenv initializer
+    -- Check if variable declaration has an explicit type.
+    in case vty of
+        -- Typed variable declarations must have matching types between specified
+        -- type and init expression type.
+        -- TODO: Add handling NIL init expression type.
+        Just t  -> case getType t of
+                    Just t' -> if ety == t'
+                                then (newVarEntry t', tenv)
+                                else error "variable declaration needs consistent type."
+                    Nothing -> error $ "Undeclared type <" ++ t ++ ">"
+        -- Untyped variable declarations take the type of their init expression,
+        -- So add new entry in var env with init expression type.
         Nothing -> (newVarEntry ety, tenv)
     where newVarEntry etype = Sym.enterName (name, makeVarEntry etype) venv
           getType x = Sym.lookName tenv x
