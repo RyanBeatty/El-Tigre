@@ -116,12 +116,12 @@ Arithmetic : Exp '+' Exp  { AST.ArithOp AST.Plus $1 $3 }
            | Exp '/' Exp  { AST.ArithOp AST.Div $1 $3 }
            | Exp '*' Exp  { AST.ArithOp AST.Mult $1 $3 }
 
-Comparison : Exp '=' Exp   { AST.Eq $1 $3 }
-           | Exp '<>' Exp  { AST.Neq $1 $3 }
-           | Exp '>' Exp   { AST.Gt $1 $3 }
-           | Exp '<' Exp   { AST.Lt $1 $3 }
-           | Exp '>=' Exp  { AST.Ge $1 $3 }
-           | Exp '<=' Exp  { AST.Le $1 $3 }
+Comparison : Exp '=' Exp   { AST.CompOp AST.Eq $1 $3 }
+           | Exp '<>' Exp  { AST.CompOp AST.Neq $1 $3 }
+           | Exp '>' Exp   { AST.CompOp AST.Gt $1 $3 }
+           | Exp '<' Exp   { AST.CompOp AST.Lt $1 $3 }
+           | Exp '>=' Exp  { AST.CompOp AST.Ge $1 $3 }
+           | Exp '<=' Exp  { AST.CompOp AST.Le $1 $3 }
 
 Boolean : Exp '&' Exp { AST.And $1 $3 }
         | Exp '|' Exp { AST.Or $1 $3 }
