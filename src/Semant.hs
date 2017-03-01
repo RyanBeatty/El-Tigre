@@ -27,7 +27,9 @@ transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> (Env.VEnv, Env.TEnv)
 transDec venv tenv (AST.VarDec name vty val) =
     let ExpType { expr = expr, ty = ety } = transExp venv tenv val
     in case vty >>= getType of
-        Just t  -> if ety == t then (newVarEntry t, tenv) else error "variable declaration needs consistent type."  
+        Just t  -> if ety == t
+                    then (newVarEntry t, tenv)
+                    else error "variable declaration needs consistent type."  
         Nothing -> (newVarEntry ety, tenv)
     where newVarEntry etype = Sym.enterName (name, makeVarEntry etype) venv
           getType x = Sym.lookName tenv x
