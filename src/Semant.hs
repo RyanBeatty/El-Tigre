@@ -19,10 +19,11 @@ checkInt expty = ty expty == Types.INT
 
 --transVar :: Env.VEnv -> Env.TEnv -> AST.Var -> ExpType
 --transVar = undefined
-transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> (Env.VEnv, Env.TEnv)
-transDec = undefined
 transTy  :: Env.TEnv -> AST.Type -> Types.Type
 transTy = undefined
+
+transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> (Env.VEnv, Env.TEnv)
+transDec = undefined
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
 transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> (Env.VEnv, Env.TEnv)
