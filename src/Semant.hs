@@ -34,10 +34,11 @@ transDec venv tenv (AST.VarDec name vty initializer) = do
         -- type and init expression type.
         -- TODO: Add handling NIL init expression type.
         Just t  -> case getType t of
-                    Just t' -> if ety == t'
+                    Just t' -> if t' == ety
                                 then Right (newVarEntry t', tenv)
-                                else Left "variable declaration needs consistent type."
-                    Nothing -> Left $ "Undeclared type <" ++ t ++ ">"
+                                else Left $ "Variable Type Mismatch. Declared <" ++
+                                            (show t') ++ "> Got <" ++ (show ety) ++ ">"
+                    Nothing -> Left $ "Undeclared Type <" ++ t ++ ">"
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
         Nothing -> Right (newVarEntry ety, tenv)
@@ -73,20 +74,26 @@ transExp venv tenv (AST.ArithOp _ left right) = do
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
         then Right $ makeExpType () Types.INT
-        else Left "arithmetic operators need two ints"
+        else Left $ "Arithmetic operators need two ints. Got <" ++
+                    (show $ ty exptype1) ++ "> and <" ++
+                    (show $ ty exptype2) ++ ">"
 -- TODO: Add type checking for comparing arrays and records and strings
 transExp venv tenv (AST.CompOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
         then Right $ makeExpType () Types.INT
-        else Left "comparison operators require two ints"
+        else Left $ "Comparison operators require two ints. Got <" ++
+                    (show $ ty exptype1) ++ "> and <" ++
+                    (show $ ty exptype2) ++ ">"
 transExp venv tenv (AST.LogOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
         then Right $ makeExpType () Types.INT
-        else Left "Logical operators require two ints"
+        else Left $ "Logical operators require two ints. Got <" ++
+                    (show $ ty exptype1) ++ "> and <" ++
+                    (show $ ty exptype2) ++ ">"
 transExp venv tenv (AST.Let decs body) = do
     -- Translate the declarations and then translate the body using the updated
     -- variable and type environments. The type of the last expression of the
@@ -96,7 +103,7 @@ transExp venv tenv (AST.Let decs body) = do
 transExp venv tenv (AST.LVal (AST.Var name)) =
     case Sym.lookName venv name of
         Just varEntry -> Right $ makeExpType () (envty varEntry)
-        Nothing       -> Left "undeclared variable"
+        Nothing       -> Left $ "Undeclared variable <" ++ name ++ ">"
 
 testTrans :: String -> IO ()
 testTrans input = 
