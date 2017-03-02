@@ -63,8 +63,8 @@ transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> Either String ExpType
 transSeq venv tenv [x]    = transExp venv tenv x
 transSeq venv tenv (_:xs) = transSeq venv tenv xs  
 
--- TODO: Add actual error propagation. Something like changing the type to
--- Either String ExpType.
+-- TODO: Theres alot of code duplication/similar patterns here for the binary
+-- operation expressions. See if I can factor this out to make things simpler.
 transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> Either String ExpType
 transExp venv tenv (AST.IntLit _)    = Right $ makeExpType () Types.INT
 transExp venv tenv (AST.StringLit _) = Right $ makeExpType () Types.STRING
