@@ -23,7 +23,7 @@ checkInt expty = ty expty == Types.INT
 transTy  :: Env.TEnv -> AST.Type -> Types.Type
 transTy = undefined
 
-transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> (Env.VEnv, Env.TEnv)
+transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> Either String (Env.VEnv, Env.TEnv)
 transDec venv tenv (AST.VarDec name vty initializer) =
     -- Translate initializer expression.
     let ExpType { expr = expr, ty = ety } = transExp venv tenv initializer
@@ -34,22 +34,22 @@ transDec venv tenv (AST.VarDec name vty initializer) =
         -- TODO: Add handling NIL init expression type.
         Just t  -> case getType t of
                     Just t' -> if ety == t'
-                                then (newVarEntry t', tenv)
-                                else error "variable declaration needs consistent type."
-                    Nothing -> error $ "Undeclared type <" ++ t ++ ">"
+                                then Right (newVarEntry t', tenv)
+                                else Left "variable declaration needs consistent type."
+                    Nothing -> Left $ "Undeclared type <" ++ t ++ ">"
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
-        Nothing -> (newVarEntry ety, tenv)
+        Nothing -> Right (newVarEntry ety, tenv)
     where newVarEntry etype = Sym.enterName (name, makeVarEntry etype) venv
           getType x = Sym.lookName tenv x
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
-transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> (Env.VEnv, Env.TEnv)
-transDecs venv tenv []     = (venv, tenv)
+transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> Either String (Env.VEnv, Env.TEnv)
+transDecs venv tenv []     = Right (venv, tenv)
 transDecs venv tenv [x]    = transDec venv tenv x
-transDecs venv tenv (x:xs) =
-    let (venv', tenv') = transDec venv tenv x
-    in transDecs venv' tenv' xs 
+transDecs venv tenv (x:xs) = do
+    (venv', tenv') <- transDec venv tenv x
+    transDecs venv' tenv' xs 
 
 -- This is really only supposed to be used to translate a Seq expression
 -- and the list of the expressions in the body of the Let expression.
@@ -77,8 +77,9 @@ transExp venv tenv (AST.LogOp _ left right)
     | checkInt (transExp venv tenv left) && checkInt (transExp venv tenv right) = makeExpType () Types.INT
     | otherwise = error "comparison operators require two ints"
 transExp venv tenv (AST.Let decs body) =
-    let (venv', tenv') = transDecs venv tenv decs
-    in transSeq venv' tenv' body
+    case transDecs venv tenv decs of
+        Left msg            -> error msg
+        Right (venv', tenv') -> transSeq venv' tenv' body
 transExp venv tenv (AST.LVal (AST.Var name)) =
     case Sym.lookName venv name of
         Just varEntry -> makeExpType () (envty varEntry)
