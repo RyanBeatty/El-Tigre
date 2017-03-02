@@ -24,11 +24,12 @@ transTy  :: Env.TEnv -> AST.Type -> Types.Type
 transTy = undefined
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> Either String (Env.VEnv, Env.TEnv)
-transDec venv tenv (AST.VarDec name vty initializer) =
+transDec venv tenv (AST.VarDec name vty initializer) = do
     -- Translate initializer expression.
-    let ExpType { expr = expr, ty = ety } = transExp venv tenv initializer
+    exptype <- transExp venv tenv initializer
+    let ety = ty exptype
     -- Check if variable declaration has an explicit type.
-    in case vty of
+    case vty of
         -- Typed variable declarations must have matching types between specified
         -- type and init expression type.
         -- TODO: Add handling NIL init expression type.
@@ -57,33 +58,42 @@ transDecs venv tenv (x:xs) = do
 -- TODO: This is sort of a hack because I didn't let the body of a 
 -- Let expression be an Exp so that Seq could be used. Figure out a more
 -- elegant solution than this.
-transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> ExpType
+transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> Either String ExpType
 transSeq venv tenv [x]    = transExp venv tenv x
 transSeq venv tenv (_:xs) = transSeq venv tenv xs  
 
 -- TODO: Add actual error propagation. Something like changing the type to
 -- Either String ExpType.
-transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> ExpType
-transExp venv tenv (AST.IntLit _)    = makeExpType () Types.INT
-transExp venv tenv (AST.StringLit _) = makeExpType () Types.STRING
-transExp venv tenv (AST.Neg _)       = makeExpType () Types.INT
-transExp venv tenv (AST.ArithOp _ left right)
-    | checkInt (transExp venv tenv left) && checkInt (transExp venv tenv right) = makeExpType () Types.INT
-    | otherwise = error "arithmetic operators need two ints"
-transExp venv tenv (AST.CompOp _ left right)
-    | checkInt (transExp venv tenv left) && checkInt (transExp venv tenv right) = makeExpType () Types.INT
-    | otherwise = error "comparison operators require two ints"
-transExp venv tenv (AST.LogOp _ left right)
-    | checkInt (transExp venv tenv left) && checkInt (transExp venv tenv right) = makeExpType () Types.INT
-    | otherwise = error "comparison operators require two ints"
-transExp venv tenv (AST.Let decs body) =
-    case transDecs venv tenv decs of
-        Left msg            -> error msg
-        Right (venv', tenv') -> transSeq venv' tenv' body
+transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> Either String ExpType
+transExp venv tenv (AST.IntLit _)    = Right $ makeExpType () Types.INT
+transExp venv tenv (AST.StringLit _) = Right $ makeExpType () Types.STRING
+transExp venv tenv (AST.Neg _)       = Right $ makeExpType () Types.INT
+transExp venv tenv (AST.ArithOp _ left right) = do
+    exptype1 <- transExp venv tenv left
+    exptype2 <- transExp venv tenv right
+    if checkInt exptype1 && checkInt exptype2
+        then Right $ makeExpType () Types.INT
+        else Left "arithmetic operators need two ints"
+-- TODO: Add type checking for comparing arrays and records and strings
+transExp venv tenv (AST.CompOp _ left right) = do
+    exptype1 <- transExp venv tenv left
+    exptype2 <- transExp venv tenv right
+    if checkInt exptype1 && checkInt exptype2
+        then Right $ makeExpType () Types.INT
+        else Left "comparison operators require two ints"
+transExp venv tenv (AST.LogOp _ left right) = do
+    exptype1 <- transExp venv tenv left
+    exptype2 <- transExp venv tenv right
+    if checkInt exptype1 && checkInt exptype2
+        then Right $ makeExpType () Types.INT
+        else Left "Logical operators require two ints"
+transExp venv tenv (AST.Let decs body) = do
+    (venv', tenv') <- transDecs venv tenv decs
+    transSeq venv' tenv' body
 transExp venv tenv (AST.LVal (AST.Var name)) =
     case Sym.lookName venv name of
-        Just varEntry -> makeExpType () (envty varEntry)
-        Nothing       -> error "undeclared variable"
+        Just varEntry -> Right $ makeExpType () (envty varEntry)
+        Nothing       -> Left "undeclared variable"
 
 testTrans :: String -> IO ()
 testTrans input = 
