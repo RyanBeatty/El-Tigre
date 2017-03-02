@@ -20,8 +20,14 @@ checkInt expty = ty expty == Types.INT
 
 --transVar :: Env.VEnv -> Env.TEnv -> AST.Var -> ExpType
 --transVar = undefined
-transTy  :: Env.TEnv -> AST.Type -> Types.Type
-transTy = undefined
+transTy  :: Env.TEnv -> AST.Type -> Either String Types.Type
+-- Array type declarations are translated by looking up the name of their type
+-- and returning a Types.ARRAY.
+transTy tenv (AST.Array name) =
+    case Sym.lookName tenv name of
+        Nothing -> Left $ "Undeclared Type <" ++ name ++ ">"
+        -- TODO: Figure out how to handle Unique. Maybe use the State Monad?
+        Just t  -> Right $ Types.ARRAY t (Types.Unique 0)
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> Either String (Env.VEnv, Env.TEnv)
 transDec venv tenv (AST.VarDec name vty initializer) = do
@@ -44,6 +50,10 @@ transDec venv tenv (AST.VarDec name vty initializer) = do
         Nothing -> Right (newVarEntry ety, tenv)
     where newVarEntry etype = Sym.enterName (name, makeVarEntry etype) venv
           getType x = Sym.lookName tenv x
+-- Type declarations are first translated to a Types.Type and added to the type env.
+transDec venv tenv (AST.TypeDec name t) = do
+    t' <- transTy tenv t
+    Right (venv, Sym.enterName (name, t') tenv)
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
 transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> Either String (Env.VEnv, Env.TEnv)
