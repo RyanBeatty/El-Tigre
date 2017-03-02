@@ -1,5 +1,7 @@
 module Semant () where
 
+import Control.Monad.State
+
 import AST
 import Env
 import Parser (runParser)
@@ -11,6 +13,14 @@ data ExpType = ExpType {
       expr :: Trans.Exp
     , ty :: Types.Type
 } deriving (Show)
+
+type Trans a = State [Types.Unique] a
+
+genUnique :: Trans Types.Unique
+genUnique = do
+    xs <- get
+    put $ tail xs
+    return $ head xs
 
 makeExpType :: Trans.Exp -> Types.Type -> ExpType
 makeExpType e t = ExpType { expr = e, ty = t }
