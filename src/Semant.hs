@@ -88,6 +88,9 @@ transExp venv tenv (AST.LogOp _ left right) = do
         then Right $ makeExpType () Types.INT
         else Left "Logical operators require two ints"
 transExp venv tenv (AST.Let decs body) = do
+    -- Translate the declarations and then translate the body using the updated
+    -- variable and type environments. The type of the last expression of the
+    -- body is the result type for the entire Let expression.
     (venv', tenv') <- transDecs venv tenv decs
     transSeq venv' tenv' body
 transExp venv tenv (AST.LVal (AST.Var name)) =
