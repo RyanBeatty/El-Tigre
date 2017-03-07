@@ -31,16 +31,17 @@ checkInt expty = ty expty == Types.INT
 
 --transVar :: Env.VEnv -> Env.TEnv -> AST.Var -> ExpType
 --transVar = undefined
-transTy  :: Env.TEnv -> AST.Type -> Either String Types.Type
+transTy  :: Env.TEnv -> AST.Type -> TransT Types.Type
 -- Array type declarations are translated by looking up the name of their type
 -- and returning a Types.ARRAY.
 transTy tenv (AST.Array name) =
     case Sym.lookName tenv name of
-        Nothing -> Left $ "Undeclared Type <" ++ name ++ ">"
+        Nothing -> lift . Left $ "Undeclared Type <" ++ name ++ ">"
         -- TODO: Figure out how to handle Unique. Maybe use the State Monad?
-        Just t  -> Right $ Types.ARRAY t 0
+        Just t  -> do u <- genUnique
+                      return $ Types.ARRAY t u
 
-transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> Either String (Env.VEnv, Env.TEnv)
+transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> TransT (Env.VEnv, Env.TEnv)
 transDec venv tenv (AST.VarDec name vty initializer) = do
     -- Translate initializer expression.
     exptype <- transExp venv tenv initializer
@@ -52,23 +53,23 @@ transDec venv tenv (AST.VarDec name vty initializer) = do
         -- TODO: Add handling NIL init expression type.
         Just t  -> case getType t of
                     Just t' -> if t' == ety
-                                then Right (newVarEntry t', tenv)
-                                else Left $ "Variable Type Mismatch. Declared <" ++
+                                then return (newVarEntry t', tenv)
+                                else lift . Left $ "Variable Type Mismatch. Declared <" ++
                                             (show t') ++ "> Got <" ++ (show ety) ++ ">"
-                    Nothing -> Left $ "Undeclared Type <" ++ t ++ ">"
+                    Nothing -> lift . Left $ "Undeclared Type <" ++ t ++ ">"
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
-        Nothing -> Right (newVarEntry ety, tenv)
+        Nothing -> return (newVarEntry ety, tenv)
     where newVarEntry etype = Sym.enterName (name, makeVarEntry etype) venv
           getType x = Sym.lookName tenv x
 -- Type declarations are first translated to a Types.Type and added to the type env.
 transDec venv tenv (AST.TypeDec name t) = do
     t' <- transTy tenv t
-    Right (venv, Sym.enterName (name, t') tenv)
+    return (venv, Sym.enterName (name, t') tenv)
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
-transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> Either String (Env.VEnv, Env.TEnv)
-transDecs venv tenv []     = Right (venv, tenv)
+transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> TransT (Env.VEnv, Env.TEnv)
+transDecs venv tenv []     = return (venv, tenv)
 transDecs venv tenv [x]    = transDec venv tenv x
 transDecs venv tenv (x:xs) = do
     (venv', tenv') <- transDec venv tenv x
@@ -80,41 +81,41 @@ transDecs venv tenv (x:xs) = do
 -- TODO: This is sort of a hack because I didn't let the body of a 
 -- Let expression be an Exp so that Seq could be used. Figure out a more
 -- elegant solution than this.
-transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> Either String ExpType
+transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> TransT ExpType
 transSeq venv tenv [x]    = transExp venv tenv x
 transSeq venv tenv (_:xs) = transSeq venv tenv xs  
 
 -- TODO: Theres alot of code duplication/similar patterns here for the binary
 -- operation expressions. See if I can factor this out to make things simpler.
-transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> Either String ExpType
-transExp venv tenv (AST.IntLit _)    = Right $ makeExpType () Types.INT
-transExp venv tenv (AST.StringLit _) = Right $ makeExpType () Types.STRING
-transExp venv tenv (AST.Neg _)       = Right $ makeExpType () Types.INT
+transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> TransT ExpType
+transExp venv tenv (AST.IntLit _)    = return $ makeExpType () Types.INT
+transExp venv tenv (AST.StringLit _) = return $ makeExpType () Types.STRING
+transExp venv tenv (AST.Neg _)       = return $ makeExpType () Types.INT
 transExp venv tenv (AST.ArithOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
-        then Right $ makeExpType () Types.INT
-        else Left $ "Arithmetic operators need two ints. Got <" ++
-                    (show $ ty exptype1) ++ "> and <" ++
-                    (show $ ty exptype2) ++ ">"
+        then return $ makeExpType () Types.INT
+        else lift . Left $ "Arithmetic operators need two ints. Got <" ++
+                           (show $ ty exptype1) ++ "> and <" ++
+                           (show $ ty exptype2) ++ ">"
 -- TODO: Add type checking for comparing arrays and records and strings
 transExp venv tenv (AST.CompOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
-        then Right $ makeExpType () Types.INT
-        else Left $ "Comparison operators require two ints. Got <" ++
-                    (show $ ty exptype1) ++ "> and <" ++
-                    (show $ ty exptype2) ++ ">"
+        then return $ makeExpType () Types.INT
+        else lift . Left $ "Comparison operators require two ints. Got <" ++
+                           (show $ ty exptype1) ++ "> and <" ++
+                           (show $ ty exptype2) ++ ">"
 transExp venv tenv (AST.LogOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
-        then Right $ makeExpType () Types.INT
-        else Left $ "Logical operators require two ints. Got <" ++
-                    (show $ ty exptype1) ++ "> and <" ++
-                    (show $ ty exptype2) ++ ">"
+        then return $ makeExpType () Types.INT
+        else lift . Left $ "Logical operators require two ints. Got <" ++
+                           (show $ ty exptype1) ++ "> and <" ++
+                           (show $ ty exptype2) ++ ">"
 transExp venv tenv (AST.Let decs body) = do
     -- Translate the declarations and then translate the body using the updated
     -- variable and type environments. The type of the last expression of the
@@ -123,11 +124,11 @@ transExp venv tenv (AST.Let decs body) = do
     transSeq venv' tenv' body
 transExp venv tenv (AST.LVal (AST.Var name)) =
     case Sym.lookName venv name of
-        Just varEntry -> Right $ makeExpType () (envty varEntry)
-        Nothing       -> Left $ "Undeclared variable <" ++ name ++ ">"
+        Just varEntry -> return $ makeExpType () (envty varEntry)
+        Nothing       -> lift . Left $ "Undeclared variable <" ++ name ++ ">"
 
 testTrans :: String -> IO ()
 testTrans input = 
     case runParser input of
-        Right e -> print $ transExp Env.baseVEnv Env.baseTEnv e
+        Right e -> print $ ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) Types.uniqueSet
         Left msg -> print msg
