@@ -17,6 +17,7 @@ data ExpType = ExpType {
 
 type TransT a = ST.StateT [T.Unique] (Either String) a
 
+-- Returns the next unique value to use for a RECORD, ARRAY, or NAME.
 genUnique :: TransT T.Unique
 genUnique = do
     xs <- get
@@ -37,7 +38,6 @@ transTy  :: Env.TEnv -> AST.Type -> TransT T.Type
 transTy tenv (AST.Array name) =
     case Sym.lookName tenv name of
         Nothing -> lift . Left $ "Undeclared Type <" ++ name ++ ">"
-        -- TODO: Figure out how to handle Unique. Maybe use the State Monad?
         Just t  -> do u <- genUnique
                       return $ T.ARRAY t u
 
