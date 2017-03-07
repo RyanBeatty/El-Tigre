@@ -1,6 +1,7 @@
 module Semant () where
 
 import Control.Monad.State
+import qualified Control.Monad.Trans.State as ST
 
 import AST
 import Env
@@ -14,9 +15,9 @@ data ExpType = ExpType {
     , ty :: Types.Type
 } deriving (Show)
 
-type Trans a = State [Types.Unique] a
+type TransT a = ST.StateT [Types.Unique] (Either String) a
 
-genUnique :: Trans Types.Unique
+genUnique :: TransT Types.Unique
 genUnique = do
     xs <- get
     put $ tail xs
