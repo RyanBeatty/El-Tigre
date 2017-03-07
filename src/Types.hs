@@ -1,14 +1,13 @@
 -- Contains the semantic types of the Tiger language.
 
-module Types (Type(..), Unique(..), Types.uniqueSet) where
+module Types (Type(..), Unique, Types.uniqueSet) where
 
 import Symbol (Symbol)
 
-data Unique = Unique Int
-    deriving (Show, Eq)
+type Unique = Int
 
 uniqueSet :: [Unique]
-uniqueSet = map Unique [0..]
+uniqueSet = [0..]
 
 data Type = INT
         | STRING

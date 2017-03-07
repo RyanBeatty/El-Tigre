@@ -37,7 +37,7 @@ transTy tenv (AST.Array name) =
     case Sym.lookName tenv name of
         Nothing -> Left $ "Undeclared Type <" ++ name ++ ">"
         -- TODO: Figure out how to handle Unique. Maybe use the State Monad?
-        Just t  -> Right $ Types.ARRAY t (Types.Unique 0)
+        Just t  -> Right $ Types.ARRAY t 0
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> Either String (Env.VEnv, Env.TEnv)
 transDec venv tenv (AST.VarDec name vty initializer) = do
