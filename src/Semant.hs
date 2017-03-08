@@ -1,4 +1,4 @@
-module Semant () where
+module Semant (transProg) where
 
 import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
@@ -132,3 +132,5 @@ testTrans input =
     case runParser input of
         Right e -> print $ ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet
         Left msg -> print msg
+
+transProg = testTrans
