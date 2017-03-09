@@ -12,16 +12,20 @@ semantTests = testGroup "Semant.hs Tests" [
       testIntLit
     , testStringLit
     , testNeg
-    , testArithOp]
+    , testArithOpPlus
+    , testArithOpMinus
+    , testArithOpMult
+    , testArithOpDiv
+    , testArithOpMismatch]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
 
-assertTrue :: (Eq a) => a -> a -> Assertion
-assertTrue x y = x == y @?= True
+assertEq :: (Eq a, Show a) => a -> a -> Assertion
+assertEq x y = x @?= y
 
 yieldsType :: String -> T.Type -> Assertion
-yieldsType s t = assertTrue (getType s) (return t)
+yieldsType s t = assertEq (getType s) (return t)
 
 yieldsInt :: String -> Assertion
 yieldsInt s = yieldsType s T.INT
@@ -38,5 +42,18 @@ testStringLit = testCase "StringLit: \"hello\" yields STRING" $ yieldsString "\"
 testNeg :: TestTree
 testNeg = testCase "Neg: -1 yields INT" $ yieldsInt "-1"
 
-testArithOp :: TestTree
-testArithOp = testCase "ArithOp: 1 + 1 yields INT" $ yieldsInt "1 + 1"
+testArithOpPlus :: TestTree
+testArithOpPlus = testCase "ArithOp Plus: 1 + 1 yields INT" $ yieldsInt "1 + 1"
+
+testArithOpMinus :: TestTree
+testArithOpMinus = testCase "ArithOp Minus: 1 - 1 yields INT" $ yieldsInt "1 - 1"
+
+testArithOpMult :: TestTree
+testArithOpMult = testCase "ArithOp Mult: 1 * 1 yields INT" $ yieldsInt "1 + 1"
+
+testArithOpDiv :: TestTree
+testArithOpDiv = testCase "ArithOp Div: 1 / 1 yields INT" $ yieldsInt "1 / 1"
+
+testArithOpMismatch :: TestTree
+testArithOpMismatch = testCase "ArithOp Mismatch: 1 + \"hello\" yields type error" $
+    (getType "1 + \"hello\"") == Left "Arithmetic operators need two ints. Got <int> and <string>" @?= False
