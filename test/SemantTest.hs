@@ -12,11 +12,12 @@ semantTests = testGroup "Semant.hs Tests" [
       testIntLit
     , testStringLit
     , testNeg
-    , testArithOpPlus
-    , testArithOpMinus
-    , testArithOpMult
-    , testArithOpDiv
-    , testArithOpMismatch
+    , testArithOp
+    --, testArithOpPlus
+    --, testArithOpMinus
+    --, testArithOpMult
+    --, testArithOpDiv
+    --, testArithOpMismatch
     , testCompOpGT
     , testCompOpLT
     , testCompOpGE
@@ -24,7 +25,8 @@ semantTests = testGroup "Semant.hs Tests" [
     , testCompOpEQ
     , testCompOpNEQ
     , testLogOpAnd
-    , testLogOpOr]
+    , testLogOpOr
+    , testLetNoDecs]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
@@ -50,21 +52,16 @@ testStringLit = testCase "StringLit: \"hello\" yields STRING" $ yieldsString "\"
 testNeg :: TestTree
 testNeg = testCase "Neg: -1 yields INT" $ yieldsInt "-1"
 
-testArithOpPlus :: TestTree
-testArithOpPlus = testCase "ArithOp Plus: 1 + 1 yields INT" $ yieldsInt "1 + 1"
-
-testArithOpMinus :: TestTree
-testArithOpMinus = testCase "ArithOp Minus: 1 - 1 yields INT" $ yieldsInt "1 - 1"
-
-testArithOpMult :: TestTree
-testArithOpMult = testCase "ArithOp Mult: 1 * 1 yields INT" $ yieldsInt "1 + 1"
-
-testArithOpDiv :: TestTree
-testArithOpDiv = testCase "ArithOp Div: 1 / 1 yields INT" $ yieldsInt "1 / 1"
-
-testArithOpMismatch :: TestTree
-testArithOpMismatch = testCase "ArithOp Mismatch: 1 + \"hello\" yields type error" $
-    (getType "1 + \"hello\"") == Left "Arithmetic operators need two ints. Got <int> and <string>" @?= False
+testArithOp :: TestTree
+testArithOp = testGroup "ArithOp Tests"
+  [ testCase "ArithOp Plus: 1 + 1 yields INT" $ yieldsInt "1 + 1"
+  , testCase "ArithOp Minus: 1 - 1 yields INT" $ yieldsInt "1 - 1"
+  , testCase "ArithOp Mult: 1 * 1 yields INT" $ yieldsInt "1 + 1"
+  , testCase "ArithOp Mult: 1 * 1 yields INT" $ yieldsInt "1 + 1"
+  , testCase "ArithOp Div: 1 / 1 yields INT" $ yieldsInt "1 / 1"
+  , testCase "ArithOp Mismatch: 1 + \"hello\" yields type error" $
+      (getType "1 + \"hello\"") == Left "Arithmetic operators need two ints. Got <int> and <string>" @?= False
+  ]
 
 testCompOpGT :: TestTree
 testCompOpGT = testCase "CompOp GT: 1 > 1 yields INT" $ yieldsInt "1 > 1"
@@ -89,3 +86,6 @@ testLogOpAnd = testCase "LogOp And: 1 & 1 yields INT" $ yieldsInt "1 & 1"
 
 testLogOpOr :: TestTree
 testLogOpOr = testCase "LogOp Or: 1 | 1 yields INT" $ yieldsInt "1 | 1"
+
+testLetNoDecs :: TestTree
+testLetNoDecs = testCase "Let: let in 1 end yields INT" $ yieldsInt "let in 1 end"
