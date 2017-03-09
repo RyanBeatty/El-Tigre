@@ -22,7 +22,9 @@ semantTests = testGroup "Semant.hs Tests" [
     , testCompOpGE
     , testCompOpLE
     , testCompOpEQ
-    , testCompOpNEQ]
+    , testCompOpNEQ
+    , testLogOpAnd
+    , testLogOpOr]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
@@ -81,3 +83,9 @@ testCompOpEQ = testCase "CompOp EQ: 1 = 1 yields INT" $ yieldsInt "1 = 1"
 
 testCompOpNEQ :: TestTree
 testCompOpNEQ = testCase "CompOp NEQ: 1 <> 1 yields INT" $ yieldsInt "1 <> 1"
+
+testLogOpAnd :: TestTree
+testLogOpAnd = testCase "LogOp And: 1 & 1 yields INT" $ yieldsInt "1 & 1"
+
+testLogOpOr :: TestTree
+testLogOpOr = testCase "LogOp Or: 1 | 1 yields INT" $ yieldsInt "1 | 1"
