@@ -17,7 +17,8 @@ cabal-version:       >=1.10
 
 library
     default-language: Haskell2010
-    exposed-modules: Semant
+    exposed-modules: Semant, Types
+    other-modules: AST, Env, Lexer, Parser, Symbol, Tokens, Translate
     hs-source-dirs: src
     build-depends:
         base,
