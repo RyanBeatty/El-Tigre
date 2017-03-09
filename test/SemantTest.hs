@@ -65,7 +65,6 @@ testCompOp = testGroup "CompOp Tests"
   , testCase "CompOp NEQ" $ yieldsInt "1 <> 1"
   , testCase "CompOp Mismatch" $
         yieldsTypeError "1 > \"hello\"" "Comparison operators require two ints. Got <INT> and <STRING>"
-
   ]
 
 testLogOp :: TestTree
