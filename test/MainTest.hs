@@ -1,6 +1,12 @@
-module Main where
+module Main (main) where
 
-import Semant
+import Test.Tasty
+import Test.Tasty.HUnit
+
+import SemantTest (semantTests)
 
 main :: IO ()
-main = print "Hello, World!"
+main = defaultMain tests
+
+tests :: TestTree
+tests = testGroup "MCI Tests" [semantTests]
