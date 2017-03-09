@@ -3,4 +3,7 @@ module Main where
 import Semant (transProg)
 
 main :: IO ()
-main = getContents >>= transProg
+main = do
+    contents <- getContents
+    print $ transProg contents
+
