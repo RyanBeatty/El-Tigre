@@ -23,3 +23,15 @@ executable mci
   hs-source-dirs:      src
   build-tools:         alex, happy
   default-language:    Haskell2010
+
+
+test-suite test
+  ghc-options: -Wall
+  default-extensions:  OverloadedStrings
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: MainTest.hs
+  build-depends:       base,
+                       --mci,
+                       HUnit
+  default-language:    Haskell2010
