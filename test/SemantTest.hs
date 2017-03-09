@@ -13,17 +13,7 @@ semantTests = testGroup "Semant.hs Tests" [
     , testStringLit
     , testNeg
     , testArithOp
-    --, testArithOpPlus
-    --, testArithOpMinus
-    --, testArithOpMult
-    --, testArithOpDiv
-    --, testArithOpMismatch
-    , testCompOpGT
-    , testCompOpLT
-    , testCompOpGE
-    , testCompOpLE
-    , testCompOpEQ
-    , testCompOpNEQ
+    , testCompOp
     , testLogOpAnd
     , testLogOpOr
     , testLetNoDecs]
@@ -33,6 +23,9 @@ getType s = ty <$> transProg s
 
 assertEq :: (Eq a, Show a) => a -> a -> Assertion
 assertEq x y = x @?= y
+
+yieldsTypeError :: String -> String -> Assertion
+yieldsTypeError ex err = assertEq (getType ex) (Left err)
 
 yieldsType :: String -> T.Type -> Assertion
 yieldsType s t = assertEq (getType s) (return t)
@@ -60,26 +53,20 @@ testArithOp = testGroup "ArithOp Tests"
   , testCase "ArithOp Mult: 1 * 1 yields INT" $ yieldsInt "1 + 1"
   , testCase "ArithOp Div: 1 / 1 yields INT" $ yieldsInt "1 / 1"
   , testCase "ArithOp Mismatch: 1 + \"hello\" yields type error" $
-      (getType "1 + \"hello\"") == Left "Arithmetic operators need two ints. Got <int> and <string>" @?= False
+        yieldsTypeError "1 + \"hello\"" "Arithmetic operators need two ints. Got <INT> and <STRING>"
   ]
 
-testCompOpGT :: TestTree
-testCompOpGT = testCase "CompOp GT: 1 > 1 yields INT" $ yieldsInt "1 > 1"
+testCompOp :: TestTree
+testCompOp = testGroup "CompOp Tests"
+  [ testCase "CompOp GT: 1 > 1 yields INT" $ yieldsInt "1 > 1"
+  , testCase "CompOp LT: 1 < 1 yields INT" $ yieldsInt "1 < 1"
+  , testCase "CompOp GE: 1 >= 1 yields INT" $ yieldsInt "1 >= 1"
+  , testCase "CompOp LE: 1 <= 1 yields INT" $ yieldsInt "1 <= 1"
+  , testCase "CompOp EQ: 1 = 1 yields INT" $ yieldsInt "1 = 1"
+  , testCase "CompOp NEQ: 1 <> 1 yields INT" $ yieldsInt "1 <> 1"
+  --, testCase "CompOp Mismatch: 1 > \"hello\" yields type error" $
 
-testCompOpLT :: TestTree
-testCompOpLT = testCase "CompOp LT: 1 < 1 yields INT" $ yieldsInt "1 < 1"
-
-testCompOpGE :: TestTree
-testCompOpGE = testCase "CompOp GE: 1 >= 1 yields INT" $ yieldsInt "1 >= 1"
-
-testCompOpLE :: TestTree
-testCompOpLE = testCase "CompOp LE: 1 <= 1 yields INT" $ yieldsInt "1 <= 1"
-
-testCompOpEQ :: TestTree
-testCompOpEQ = testCase "CompOp EQ: 1 = 1 yields INT" $ yieldsInt "1 = 1"
-
-testCompOpNEQ :: TestTree
-testCompOpNEQ = testCase "CompOp NEQ: 1 <> 1 yields INT" $ yieldsInt "1 <> 1"
+  ]
 
 testLogOpAnd :: TestTree
 testLogOpAnd = testCase "LogOp And: 1 & 1 yields INT" $ yieldsInt "1 & 1"
