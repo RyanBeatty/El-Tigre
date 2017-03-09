@@ -77,4 +77,8 @@ testLogOp = testGroup "LogOp Tests"
 testLet :: TestTree
 testLet = testGroup "Let Tests"
   [ testCase "Let Empty Decs: let in 1 end yields INT" $ yieldsInt "let in 1 end"
+  , testCase "Let Many Exps: let in 1; \"hello\" end yields STRING" $ yieldsString "let in 1; \"hello\" end"
+  , testCase "Let UnTyped VarDec: let var foo := 1 in foo end yields INT" $ yieldsInt "let var foo := 1 in foo end"
+  , testCase "Let Typed VarDec: let var foo : int := 1 in foo end yields INT" $ yieldsInt "let var foo : int := 1 in foo end"
+  , testCase "Let Typed VarDec Mismatch" $ yieldsTypeError "let var foo : string := 1 in foo end" "Variable Type Mismatch. Declared <STRING> Got <INT>"
   ]
