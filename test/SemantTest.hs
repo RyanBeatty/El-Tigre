@@ -80,5 +80,8 @@ testLet = testGroup "Let Tests"
   , testCase "Let Many Exps" $ yieldsString "let in 1; \"hello\" end"
   , testCase "Let UnTyped VarDec" $ yieldsInt "let var foo := 1 in foo end"
   , testCase "Let Typed VarDec" $ yieldsInt "let var foo : int := 1 in foo end"
-  , testCase "Let Typed VarDec Mismatch" $ yieldsTypeError "let var foo : string := 1 in foo end" "Variable Type Mismatch. Declared <STRING> Got <INT>"
+  , testCase "Let Typed VarDec Mismatch" $
+        yieldsTypeError "let var foo : string := 1 in foo end" "Variable Type Mismatch. Declared <STRING> Got <INT>"
+  , testCase "Let Undeclared Typed VarDec" $
+        yieldsTypeError "let var foo : bar := 1 in foo end" "Undeclared Type <bar>"
   ]
