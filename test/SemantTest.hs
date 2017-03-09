@@ -14,9 +14,8 @@ semantTests = testGroup "Semant.hs Tests" [
     , testNeg
     , testArithOp
     , testCompOp
-    , testLogOpAnd
-    , testLogOpOr
-    , testLetNoDecs]
+    , testLogOp
+    , testLet]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
@@ -64,15 +63,18 @@ testCompOp = testGroup "CompOp Tests"
   , testCase "CompOp LE: 1 <= 1 yields INT" $ yieldsInt "1 <= 1"
   , testCase "CompOp EQ: 1 = 1 yields INT" $ yieldsInt "1 = 1"
   , testCase "CompOp NEQ: 1 <> 1 yields INT" $ yieldsInt "1 <> 1"
-  --, testCase "CompOp Mismatch: 1 > \"hello\" yields type error" $
+  , testCase "CompOp Mismatch: 1 > \"hello\" yields type error" $
+        yieldsTypeError "1 > \"hello\"" "Comparison operators require two ints. Got <INT> and <STRING>"
 
   ]
 
-testLogOpAnd :: TestTree
-testLogOpAnd = testCase "LogOp And: 1 & 1 yields INT" $ yieldsInt "1 & 1"
+testLogOp :: TestTree
+testLogOp = testGroup "LogOp Tests"
+  [ testCase "LogOp And: 1 & 1 yields INT" $ yieldsInt "1 & 1"
+  , testCase "LogOp Or: 1 | 1 yields INT" $ yieldsInt "1 | 1"
+  ]
 
-testLogOpOr :: TestTree
-testLogOpOr = testCase "LogOp Or: 1 | 1 yields INT" $ yieldsInt "1 | 1"
-
-testLetNoDecs :: TestTree
-testLetNoDecs = testCase "Let: let in 1 end yields INT" $ yieldsInt "let in 1 end"
+testLet :: TestTree
+testLet = testGroup "Let Tests"
+  [ testCase "Let Empty Decs: let in 1 end yields INT" $ yieldsInt "let in 1 end"
+  ]
