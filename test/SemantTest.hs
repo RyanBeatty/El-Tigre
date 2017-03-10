@@ -25,8 +25,8 @@ getType s = ty <$> transProg s
 assertEq :: (Eq a, Show a) => a -> a -> Assertion
 assertEq x y = x @?= y
 
-yieldsTypeError :: String -> String -> Assertion
-yieldsTypeError ex err = assertEq (getType ex) (Left err)
+yieldsTypeError :: String -> TypeError -> Assertion
+yieldsTypeError ex err = assertEq (getType ex) (Left $ show err)
 
 yieldsType :: String -> T.Type -> Assertion
 yieldsType s t = assertEq (getType s) (return t)
@@ -57,7 +57,7 @@ testArithOp = testGroup "ArithOp Tests"
   , testCase "ArithOp: Mult" $ yieldsInt "1 + 1"
   , testCase "ArithOp: Div" $ yieldsInt "1 / 1"
   , testCase "ArithOp: Mismatch" $
-        yieldsTypeError "1 + \"hello\"" "Arithmetic operators need two ints. Got <INT> and <STRING>"
+        yieldsTypeError "1 + \"hello\"" (TypeMismatch T.INT T.STRING)
   ]
 
 testCompOp :: TestTree
@@ -69,7 +69,7 @@ testCompOp = testGroup "CompOp Tests"
   , testCase "CompOp: EQ" $ yieldsInt "1 = 1"
   , testCase "CompOp: NEQ" $ yieldsInt "1 <> 1"
   , testCase "CompOp: Mismatch" $
-        yieldsTypeError "1 > \"hello\"" "Comparison operators require two ints. Got <INT> and <STRING>"
+        yieldsTypeError "1 > \"hello\"" (TypeMismatch T.INT T.STRING)
   ]
 
 testLogOp :: TestTree
@@ -85,9 +85,9 @@ testLet = testGroup "Let Tests"
   , testCase "Let: UnTyped VarDec" $ yieldsInt "let var foo := 1 in foo end"
   , testCase "Let: Typed VarDec" $ yieldsInt "let var foo : int := 1 in foo end"
   , testCase "Let: Typed VarDec Mismatch" $
-        yieldsTypeError "let var foo : string := 1 in foo end" "Variable Type Mismatch. Declared <STRING> Got <INT>"
+        yieldsTypeError "let var foo : string := 1 in foo end" (UnexpectedType T.STRING T.INT)
   , testCase "Let: Undeclared Typed VarDec" $
-        yieldsTypeError "let var foo : bar := 1 in foo end" "Undeclared Type <bar>"
+        yieldsTypeError "let var foo : bar := 1 in foo end" (UndeclaredType "bar")
   , testCase "Let: Empty Decs And Body" $ yieldsUnit "let in end"
   ]
 
@@ -102,9 +102,9 @@ testIf = testGroup "If Tests"
   [ testCase "If: If-Then" $ yieldsString "if 1 then \"hell\""
   , testCase "If: If-Then-Else" $ yieldsInt "if 1 then 2 else 3"
   , testCase "If: If-Then Type Error" $
-      yieldsTypeError "if \"hello\" then 1" "If condition expects int. Got<STRING>"
+      yieldsTypeError "if \"hello\" then 1" (UnexpectedType T.INT T.STRING)
   , testCase "If: If-Then-Else Type Error" $
-      yieldsTypeError "if \"hello\" then 1 else 1" "If condition expects int. Got<STRING>"
+      yieldsTypeError "if \"hello\" then 1 else 1" (UnexpectedType T.INT T.STRING)
   , testCase "If: If-Then-Else Type Mismatch" $
-      yieldsTypeError "if 1 then 2 else ()" "If branches require same type. Got <INT> and <UNIT>"
+      yieldsTypeError "if 1 then 2 else ()" (TypeMismatch T.INT T.UNIT)
   ]

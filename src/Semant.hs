@@ -1,4 +1,4 @@
-module Semant (transProg, ExpType(..)) where
+module Semant (transProg, ExpType(..), TypeError(..)) where
 
 import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
@@ -10,12 +10,19 @@ import qualified Symbol as Sym
 import qualified Translate as Trans
 import qualified Types as T
 
+data TypeError =
+      UndeclaredVar Identifier
+    | UndeclaredType Identifier
+    | UnexpectedType T.Type T.Type
+    | TypeMismatch T.Type T.Type
+    deriving (Show, Eq)
+
 data ExpType = ExpType {
       expr :: Trans.Exp
     , ty   :: T.Type
 } deriving (Show)
 
-type TransT a = ST.StateT [T.Unique] (Either String) a
+type TransT a = ST.StateT [T.Unique] (Either TypeError) a
 
 -- Returns the next unique value to use for a RECORD, ARRAY, or NAME.
 genUnique :: TransT T.Unique
@@ -37,7 +44,7 @@ transTy  :: Env.TEnv -> AST.Type -> TransT T.Type
 -- and returning a T.ARRAY.
 transTy tenv (AST.Array name) =
     case Sym.lookName tenv name of
-        Nothing -> lift . Left $ "Undeclared Type <" ++ name ++ ">"
+        Nothing -> lift . Left $ UndeclaredType name
         Just t  -> do u <- genUnique
                       return $ T.ARRAY t u
 
@@ -54,9 +61,8 @@ transDec venv tenv (AST.VarDec name vty initializer) = do
         Just t  -> case getType t of
                     Just t' -> if t' == ety
                                 then return (newVarEntry t', tenv)
-                                else lift . Left $ "Variable Type Mismatch. Declared <" ++
-                                            (show t') ++ "> Got <" ++ (show ety) ++ ">"
-                    Nothing -> lift . Left $ "Undeclared Type <" ++ t ++ ">"
+                                else lift . Left $ UnexpectedType t' ety
+                    Nothing -> lift . Left $ UndeclaredType t
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
         Nothing -> return (newVarEntry ety, tenv)
@@ -96,26 +102,20 @@ transExp venv tenv (AST.ArithOp _ left right) = do
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
         then return $ makeExpType () T.INT
-        else lift . Left $ "Arithmetic operators need two ints. Got <" ++
-                           (show $ ty exptype1) ++ "> and <" ++
-                           (show $ ty exptype2) ++ ">"
+        else lift . Left $ TypeMismatch (ty exptype1) (ty exptype2)
 -- TODO: Add type checking for comparing arrays and records and strings
 transExp venv tenv (AST.CompOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
         then return $ makeExpType () T.INT
-        else lift . Left $ "Comparison operators require two ints. Got <" ++
-                           (show $ ty exptype1) ++ "> and <" ++
-                           (show $ ty exptype2) ++ ">"
+        else lift . Left $ TypeMismatch (ty exptype1) (ty exptype2)
 transExp venv tenv (AST.LogOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
     if checkInt exptype1 && checkInt exptype2
         then return $ makeExpType () T.INT
-        else lift . Left $ "Logical operators require two ints. Got <" ++
-                           (show $ ty exptype1) ++ "> and <" ++
-                           (show $ ty exptype2) ++ ">"
+        else lift . Left $ TypeMismatch (ty exptype1) (ty exptype2)
 transExp venv tenv (AST.Let decs body) = do
     -- Translate the declarations and then translate the body using the updated
     -- variable and type environments. The type of the last expression of the
@@ -125,7 +125,7 @@ transExp venv tenv (AST.Let decs body) = do
 transExp venv tenv (AST.LVal (AST.Var name)) =
     case Sym.lookName venv name of
         Just varEntry -> return $ makeExpType () (envty varEntry)
-        Nothing       -> lift . Left $ "Undeclared variable <" ++ name ++ ">"
+        Nothing       -> lift . Left $ UndeclaredVar name
 -- The type of a Seq is the type of its last expression. If it has no
 -- expressions, then it has the UNIT type.
 transExp venv tenv (AST.Seq xs) = transSeq venv tenv xs
@@ -133,8 +133,7 @@ transExp venv tenv (AST.Branch exp1 exp2 Nothing) = do
     -- Translate condition.
     exptype1 <- transExp venv tenv exp1
     if not (checkInt exptype1)
-        then lift . Left $ "If condition expects int. Got<" ++ 
-                           (show $ ty exptype1) ++ ">"
+        then lift . Left $ UnexpectedType T.INT (ty exptype1)
         -- Translate Then clause type.
         else do exptype2 <- transExp venv tenv exp2
                 return $ makeExpType () (ty exptype2)
@@ -142,15 +141,12 @@ transExp venv tenv (AST.Branch exp1 exp2 (Just exp3)) = do
     -- Translate condition.
     exptype1 <- transExp venv tenv exp1
     if not (checkInt exptype1)
-        then lift . Left $ "If condition expects int. Got<" ++ 
-                           (show $ ty exptype1) ++ ">"
+        then lift . Left $ UnexpectedType T.INT (ty exptype1)
         else do exptype2 <- transExp venv tenv exp2
                 exptype3 <- transExp venv tenv exp3
                 -- Both branch types must match.
                 if (ty exptype2) /= (ty exptype3)
-                    then lift . Left $ "If branches require same type. Got <" ++
-                                       (show $ ty exptype2) ++ "> and <" ++
-                                       (show $ ty exptype3) ++ ">"
+                    then lift . Left $ TypeMismatch (ty exptype2) (ty exptype3)
                     else return $ makeExpType () (ty exptype2)
 
 testTrans :: String -> IO ()
@@ -161,5 +157,7 @@ testTrans input =
 
 transProg input =
     case runParser input of
-        Right e  -> ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet
+        Right e  -> case ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet of
+                        Right a -> Right a
+                        Left b  -> Left $ show b
         Left msg -> Left msg
