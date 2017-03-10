@@ -1,4 +1,4 @@
-module Semant (transProg, ExpType(..), ExpType) where
+module Semant (transProg, ExpType(..)) where
 
 import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
