@@ -42,6 +42,11 @@ checkInt' exptype
     | ty exptype == T.INT = return ()
     | otherwise           = lift . Left $ UnexpectedType T.INT (ty exptype)
 
+checkMatchingTypes :: ExpType -> ExpType -> TransT ()
+checkMatchingTypes e1 e2
+    | ty e1 == ty e2 = return ()
+    | otherwise      = lift . Left $ TypeMismatch (ty e1) (ty e2)
+
 --transVar :: Env.VEnv -> Env.TEnv -> AST.Var -> ExpType
 --transVar = undefined
 transTy  :: Env.TEnv -> AST.Type -> TransT T.Type
@@ -137,19 +142,20 @@ transExp venv tenv (AST.Seq xs) = transSeq venv tenv xs
 transExp venv tenv (AST.Branch exp1 exp2 Nothing) = do
     -- Translate condition.
     exptype1 <- transExp venv tenv exp1
+    -- Branching condition must be an int.
     checkInt' exptype1
     exptype2 <- transExp venv tenv exp2
     return $ makeExpType () (ty exptype2)
 transExp venv tenv (AST.Branch exp1 exp2 (Just exp3)) = do
     -- Translate condition.
     exptype1 <- transExp venv tenv exp1
+    -- Branching condition must be an int.
     checkInt' exptype1
     exptype2 <- transExp venv tenv exp2
     exptype3 <- transExp venv tenv exp3
     -- Both branch types must match.
-    if (ty exptype2) /= (ty exptype3)
-        then lift . Left $ TypeMismatch (ty exptype2) (ty exptype3)
-        else return $ makeExpType () (ty exptype2)
+    checkMatchingTypes exptype2 exptype3
+    return $ makeExpType () (ty exptype2)
 
 testTrans :: String -> IO ()
 testTrans input = 
