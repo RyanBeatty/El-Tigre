@@ -93,5 +93,5 @@ testLet = testGroup "Let Tests"
 testSeq :: TestTree
 testSeq = testGroup "Seq Tests"
   [ testCase "Seq: Basic" $ yieldsInt "(\"hello\"; 1)"
-  --, testCase "Seq: Unit Result" $ yieldsUnit "(1; 1; ())"
+  , testCase "Seq: Unit Result" $ yieldsUnit "(1; ())"
   ]

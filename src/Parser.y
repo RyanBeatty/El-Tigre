@@ -98,9 +98,10 @@ LValue_ : id '.' id            { AST.RecField (AST.Var $1) $3 }
 
 -- A sequence is a list of two or more expressions separated
 -- by a semicolon.
-Seq : '(' Exp ';' Exp Seq_ ')' { AST.Seq ($2 : $4 : reverse $5) }
-Seq_ : {- empty production -} { [] }
-     | Seq_ ';' Exp           { $3 : $1 }
+Seq : '(' ')'                  { AST.Seq [] }
+    | '(' Exp ';' Exp Seq_ ')' { AST.Seq ($2 : $4 : reverse $5) }
+Seq_ : {- empty production -}  { [] }
+     | Seq_ ';' Exp            { $3 : $1 }
 
 Neg : '-' int %prec NEG  { AST.Neg $2 }
 
