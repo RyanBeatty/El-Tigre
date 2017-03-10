@@ -34,11 +34,8 @@ genUnique = do
 makeExpType :: Trans.Exp -> T.Type -> ExpType
 makeExpType e t = ExpType { expr = e, ty = t }
 
-checkInt :: ExpType -> Bool
-checkInt expty = ty expty == T.INT
-
-checkInt' :: ExpType -> TransT ()
-checkInt' exptype
+checkInt :: ExpType -> TransT ()
+checkInt exptype
     | ty exptype == T.INT = return ()
     | otherwise           = lift . Left $ UnexpectedType T.INT (ty exptype)
 
@@ -145,14 +142,14 @@ transExp venv tenv (AST.Branch exp1 exp2 Nothing) = do
     -- Translate condition.
     exptype1 <- transExp venv tenv exp1
     -- Branching condition must be an int.
-    checkInt' exptype1
+    checkInt exptype1
     exptype2 <- transExp venv tenv exp2
     return $ makeExpType () (ty exptype2)
 transExp venv tenv (AST.Branch exp1 exp2 (Just exp3)) = do
     -- Translate condition.
     exptype1 <- transExp venv tenv exp1
     -- Branching condition must be an int.
-    checkInt' exptype1
+    checkInt exptype1
     exptype2 <- transExp venv tenv exp2
     exptype3 <- transExp venv tenv exp3
     -- Both branch types must match.
@@ -160,7 +157,7 @@ transExp venv tenv (AST.Branch exp1 exp2 (Just exp3)) = do
     return $ makeExpType () (ty exptype2)
 transExp venv tenv (AST.While exp1 exp2) = do
     exptype1 <- transExp venv tenv exp1
-    checkInt' exptype1
+    checkInt exptype1
     exptype2 <- transExp venv tenv exp2
     checkUnit exptype2
     return $ makeExpType () T.UNIT
