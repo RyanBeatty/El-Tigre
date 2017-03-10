@@ -35,6 +35,9 @@ yieldsInt s = yieldsType s T.INT
 yieldsString :: String -> Assertion
 yieldsString s = yieldsType s T.STRING
 
+yieldsUnit :: String -> Assertion
+yieldsUnit s = yieldsType s T.UNIT
+
 testIntLit :: TestTree
 testIntLit = testCase "IntLit" $ yieldsInt "1"
 
@@ -83,4 +86,5 @@ testLet = testGroup "Let Tests"
         yieldsTypeError "let var foo : string := 1 in foo end" "Variable Type Mismatch. Declared <STRING> Got <INT>"
   , testCase "Let: Undeclared Typed VarDec" $
         yieldsTypeError "let var foo : bar := 1 in foo end" "Undeclared Type <bar>"
+  , testCase "Let: Empty Decs And Body" $ yieldsUnit "let in end"
   ]

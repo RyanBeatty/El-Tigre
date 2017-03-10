@@ -77,11 +77,11 @@ transDecs venv tenv (x:xs) = do
 
 -- This is really only supposed to be used to translate a Seq expression
 -- and the list of the expressions in the body of the Let expression.
--- NOTE: This function assumes that the list of expressions is not empty.
 -- TODO: This is sort of a hack because I didn't let the body of a 
 -- Let expression be an Exp so that Seq could be used. Figure out a more
 -- elegant solution than this.
 transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> TransT ExpType
+transSeq venv tenv []     = return $ makeExpType () T.UNIT
 transSeq venv tenv [x]    = transExp venv tenv x
 transSeq venv tenv (_:xs) = transSeq venv tenv xs  
 
