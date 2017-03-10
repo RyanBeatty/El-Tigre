@@ -15,7 +15,8 @@ semantTests = testGroup "Semant.hs Tests" [
     , testArithOp
     , testCompOp
     , testLogOp
-    , testLet]
+    , testLet
+    , testSeq]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
@@ -87,4 +88,10 @@ testLet = testGroup "Let Tests"
   , testCase "Let: Undeclared Typed VarDec" $
         yieldsTypeError "let var foo : bar := 1 in foo end" "Undeclared Type <bar>"
   , testCase "Let: Empty Decs And Body" $ yieldsUnit "let in end"
+  ]
+
+testSeq :: TestTree
+testSeq = testGroup "Seq Tests"
+  [ testCase "Seq: Basic" $ yieldsInt "(\"hello\"; 1)"
+  --, testCase "Seq: Unit Result" $ yieldsUnit "(1; 1; ())"
   ]

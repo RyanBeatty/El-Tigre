@@ -126,6 +126,7 @@ transExp venv tenv (AST.LVal (AST.Var name)) =
     case Sym.lookName venv name of
         Just varEntry -> return $ makeExpType () (envty varEntry)
         Nothing       -> lift . Left $ "Undeclared variable <" ++ name ++ ">"
+transExp venv tenv (AST.Seq xs) = transSeq venv tenv xs
 
 testTrans :: String -> IO ()
 testTrans input = 
