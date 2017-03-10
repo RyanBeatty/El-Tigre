@@ -130,36 +130,28 @@ transExp venv tenv (AST.LVal (AST.Var name)) =
 -- expressions, then it has the UNIT type.
 transExp venv tenv (AST.Seq xs) = transSeq venv tenv xs
 transExp venv tenv (AST.Branch exp1 exp2 Nothing) = do
+    -- Translate condition.
     exptype1 <- transExp venv tenv exp1
     if not (checkInt exptype1)
         then lift . Left $ "If condition expects int. Got<" ++ 
                            (show $ ty exptype1) ++ ">"
+        -- Translate Then clause type.
         else do exptype2 <- transExp venv tenv exp2
                 return $ makeExpType () (ty exptype2)
 transExp venv tenv (AST.Branch exp1 exp2 (Just exp3)) = do
+    -- Translate condition.
     exptype1 <- transExp venv tenv exp1
     if not (checkInt exptype1)
         then lift . Left $ "If condition expects int. Got<" ++ 
                            (show $ ty exptype1) ++ ">"
         else do exptype2 <- transExp venv tenv exp2
                 exptype3 <- transExp venv tenv exp3
+                -- Both branch types must match.
                 if (ty exptype2) /= (ty exptype3)
                     then lift . Left $ "If branches require same type. Got <" ++
                                        (show $ ty exptype2) ++ "> and <" ++
                                        (show $ ty exptype3) ++ ">"
                     else return $ makeExpType () (ty exptype2)
-    --exptype1 <- transExp venv tenv exp1
-    --if not checkInt exptype1
-    --    then lift . Left $ "If condition expects int. Got<" ++ 
-    --                       (show $ ty exptype1) ++ ">"
-    --    else do exptype2 <- transExp venv tenv exp2
-    --            case exp3 of
-    --                Nothing    -> return $ makeExpType () (ty exptype2)
-    --                Just exp3' -> do exptype3 <- transExp venv tenv exp3'
-    --                                 if ty exptype2 == ty exptype3
-    --                                    then return $ makeExpType () (ty exptype2)
-    --                                    else lift . Left $ "If "
-
 
 testTrans :: String -> IO ()
 testTrans input = 
