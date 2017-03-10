@@ -17,7 +17,8 @@ semantTests = testGroup "Semant.hs Tests" [
     , testLogOp
     , testLet
     , testSeq
-    , testIf]
+    , testIf
+    , testWhile]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
@@ -107,4 +108,13 @@ testIf = testGroup "If Tests"
       yieldsTypeError "if \"hello\" then 1 else 1" (UnexpectedType T.INT T.STRING)
   , testCase "If: If-Then-Else Type Mismatch" $
       yieldsTypeError "if 1 then 2 else ()" (TypeMismatch T.INT T.UNIT)
+  ]
+
+testWhile :: TestTree
+testWhile = testGroup "While Tests"
+  [ testCase "While" $ yieldsUnit "while 1 do (1; ())"
+  , testCase "While: Unexpected Condition Type" $
+      yieldsTypeError "while \"hello\" do ()" (UnexpectedType T.INT T.STRING)
+  , testCase "While: Unexpected Body Type" $
+      yieldsTypeError "while 1 do 1" (UnexpectedType T.UNIT T.INT)
   ]

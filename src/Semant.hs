@@ -42,6 +42,11 @@ checkInt' exptype
     | ty exptype == T.INT = return ()
     | otherwise           = lift . Left $ UnexpectedType T.INT (ty exptype)
 
+checkUnit :: ExpType -> TransT ()
+checkUnit exptype
+    | ty exptype == T.UNIT = return ()
+    | otherwise            = lift . Left $ UnexpectedType T.UNIT (ty exptype)
+
 checkMatchingTypes :: ExpType -> ExpType -> TransT ()
 checkMatchingTypes e1 e2
     | ty e1 == ty e2 = return ()
@@ -110,22 +115,19 @@ transExp venv tenv (AST.Neg _)       = return $ makeExpType () T.INT
 transExp venv tenv (AST.ArithOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
-    if checkInt exptype1 && checkInt exptype2
-        then return $ makeExpType () T.INT
-        else lift . Left $ TypeMismatch (ty exptype1) (ty exptype2)
+    checkMatchingTypes exptype1 exptype2
+    return $ makeExpType () T.INT
 -- TODO: Add type checking for comparing arrays and records and strings
 transExp venv tenv (AST.CompOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
-    if checkInt exptype1 && checkInt exptype2
-        then return $ makeExpType () T.INT
-        else lift . Left $ TypeMismatch (ty exptype1) (ty exptype2)
+    checkMatchingTypes exptype1 exptype2
+    return $ makeExpType () T.INT
 transExp venv tenv (AST.LogOp _ left right) = do
     exptype1 <- transExp venv tenv left
     exptype2 <- transExp venv tenv right
-    if checkInt exptype1 && checkInt exptype2
-        then return $ makeExpType () T.INT
-        else lift . Left $ TypeMismatch (ty exptype1) (ty exptype2)
+    checkMatchingTypes exptype1 exptype2
+    return $ makeExpType () T.INT
 transExp venv tenv (AST.Let decs body) = do
     -- Translate the declarations and then translate the body using the updated
     -- variable and type environments. The type of the last expression of the
@@ -156,6 +158,12 @@ transExp venv tenv (AST.Branch exp1 exp2 (Just exp3)) = do
     -- Both branch types must match.
     checkMatchingTypes exptype2 exptype3
     return $ makeExpType () (ty exptype2)
+transExp venv tenv (AST.While exp1 exp2) = do
+    exptype1 <- transExp venv tenv exp1
+    checkInt' exptype1
+    exptype2 <- transExp venv tenv exp2
+    checkUnit exptype2
+    return $ makeExpType () T.UNIT
 
 testTrans :: String -> IO ()
 testTrans input = 
