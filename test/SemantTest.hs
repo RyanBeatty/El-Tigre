@@ -16,7 +16,8 @@ semantTests = testGroup "Semant.hs Tests" [
     , testCompOp
     , testLogOp
     , testLet
-    , testSeq]
+    , testSeq
+    , testIf]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
@@ -94,4 +95,16 @@ testSeq :: TestTree
 testSeq = testGroup "Seq Tests"
   [ testCase "Seq: Basic" $ yieldsInt "(\"hello\"; 1)"
   , testCase "Seq: Unit Result" $ yieldsUnit "(1; ())"
+  ]
+
+testIf :: TestTree
+testIf = testGroup "If Tests"
+  [ testCase "If: If-Then" $ yieldsString "if 1 then \"hell\""
+  , testCase "If: If-Then-Else" $ yieldsInt "if 1 then 2 else 3"
+  , testCase "If: If-Then Type Error" $
+      yieldsTypeError "if \"hello\" then 1" "If condition expects int. Got<STRING>"
+  , testCase "If: If-Then-Else Type Error" $
+      yieldsTypeError "if \"hello\" then 1 else 1" "If condition expects int. Got<STRING>"
+  , testCase "If: If-Then-Else Type Mismatch" $
+      yieldsTypeError "if 1 then 2 else ()" "If branches require same type. Got <INT> and <UNIT>"
   ]

@@ -126,7 +126,40 @@ transExp venv tenv (AST.LVal (AST.Var name)) =
     case Sym.lookName venv name of
         Just varEntry -> return $ makeExpType () (envty varEntry)
         Nothing       -> lift . Left $ "Undeclared variable <" ++ name ++ ">"
+-- The type of a Seq is the type of its last expression. If it has no
+-- expressions, then it has the UNIT type.
 transExp venv tenv (AST.Seq xs) = transSeq venv tenv xs
+transExp venv tenv (AST.Branch exp1 exp2 Nothing) = do
+    exptype1 <- transExp venv tenv exp1
+    if not (checkInt exptype1)
+        then lift . Left $ "If condition expects int. Got<" ++ 
+                           (show $ ty exptype1) ++ ">"
+        else do exptype2 <- transExp venv tenv exp2
+                return $ makeExpType () (ty exptype2)
+transExp venv tenv (AST.Branch exp1 exp2 (Just exp3)) = do
+    exptype1 <- transExp venv tenv exp1
+    if not (checkInt exptype1)
+        then lift . Left $ "If condition expects int. Got<" ++ 
+                           (show $ ty exptype1) ++ ">"
+        else do exptype2 <- transExp venv tenv exp2
+                exptype3 <- transExp venv tenv exp3
+                if (ty exptype2) /= (ty exptype3)
+                    then lift . Left $ "If branches require same type. Got <" ++
+                                       (show $ ty exptype2) ++ "> and <" ++
+                                       (show $ ty exptype3) ++ ">"
+                    else return $ makeExpType () (ty exptype2)
+    --exptype1 <- transExp venv tenv exp1
+    --if not checkInt exptype1
+    --    then lift . Left $ "If condition expects int. Got<" ++ 
+    --                       (show $ ty exptype1) ++ ">"
+    --    else do exptype2 <- transExp venv tenv exp2
+    --            case exp3 of
+    --                Nothing    -> return $ makeExpType () (ty exptype2)
+    --                Just exp3' -> do exptype3 <- transExp venv tenv exp3'
+    --                                 if ty exptype2 == ty exptype3
+    --                                    then return $ makeExpType () (ty exptype2)
+    --                                    else lift . Left $ "If "
+
 
 testTrans :: String -> IO ()
 testTrans input = 
