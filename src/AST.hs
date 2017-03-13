@@ -10,7 +10,7 @@ data Exp =
   | Nil
   | Seq [Exp]
   | IntLit Int
-  | StringLit Identifier
+  | StringLit String
   | Neg Int
   | FunCall Identifier [Exp]
   | ArithOp AOp Exp Exp
