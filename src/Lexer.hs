@@ -1,8 +1,9 @@
 {-# LANGUAGE CPP #-}
-{-# LINE 1 "Lexer.x" #-}
+{-# LINE 1 "src/Lexer.x" #-}
 
 module Lexer (main, lexer, P, runAlex) where
 
+import Symbol (SymbolMap, emptySymbolMap, symbol)
 import Tokens
 
 import Data.List (intercalate)
@@ -255,13 +256,15 @@ alex_deflt :: Array Int Int
 alex_deflt = listArray (0,120) [-1,117,111,-1,-1,-1,-1,-1,-1,15,15,17,17,19,19,23,23,26,26,29,29,120,120,120,117,117,117,111,111,111,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
 alex_accept = listArray (0::Int,120) [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[(AlexAcc (alex_action_0))],[(AlexAcc (alex_action_1))],[(AlexAcc (alex_action_2))],[(AlexAcc (alex_action_3))],[(AlexAcc (alex_action_4))],[(AlexAcc (alex_action_5))],[(AlexAcc (alex_action_6))],[(AlexAcc (alex_action_7))],[(AlexAcc (alex_action_8))],[(AlexAcc (alex_action_9))],[(AlexAcc (alex_action_10))],[(AlexAcc (alex_action_11))],[(AlexAcc (alex_action_12))],[(AlexAcc (alex_action_13))],[(AlexAcc (alex_action_14))],[(AlexAcc (alex_action_15))],[(AlexAcc (alex_action_16))],[(AlexAcc (alex_action_17))],[(AlexAcc (alex_action_18))],[(AlexAcc (alex_action_19))],[(AlexAcc (alex_action_20))],[(AlexAcc (alex_action_21))],[(AlexAcc (alex_action_22))],[(AlexAcc (alex_action_23))],[(AlexAcc (alex_action_24))],[(AlexAcc (alex_action_25))],[(AlexAcc (alex_action_26))],[(AlexAcc (alex_action_27))],[(AlexAcc (alex_action_28))],[(AlexAcc (alex_action_29))],[(AlexAcc (alex_action_30))],[(AlexAcc (alex_action_31))],[(AlexAcc (alex_action_32))],[(AlexAcc (alex_action_33))],[(AlexAcc (alex_action_34))],[(AlexAcc (alex_action_35))],[(AlexAcc (alex_action_36))],[(AlexAcc (alex_action_37))],[(AlexAcc (alex_action_38))],[(AlexAcc (alex_action_39))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_40))],[(AlexAcc (alex_action_41))],[(AlexAcc (alex_action_42))],[(AlexAcc (alex_action_43))],[(AlexAcc (alex_action_44))],[(AlexAcc (alex_action_45))],[(AlexAcc (alex_action_46))],[(AlexAcc (alex_action_47))],[(AlexAccSkip)],[(AlexAccSkip)],[(AlexAccSkip)],[(AlexAccSkip)],[(AlexAcc (alex_action_50))]]
-{-# LINE 76 "Lexer.x" #-}
+{-# LINE 77 "src/Lexer.x" #-}
 
 -----------------------------------------------------------
 -- Some action helpers.
 action f _ _ = return f
 
-identifierAction (_, _, _, s) len = return $ IdToken (take len s)
+identifierAction (_, _, _, s) len = do
+  s <- createSymbol (take len s)
+  return $ IdToken s
 
 intLiteralAction (_, _, _, s) len = return $ IntToken (read (take len s) :: Int)
 
@@ -279,13 +282,21 @@ alexEOF =
 data AlexUserState = AlexUserState {
     lexerCommentDepth  :: Int
   , lexerStringValue   :: String
+  , lexerSymbolMap     :: SymbolMap
 }
 
 alexInitUserState :: AlexUserState
 alexInitUserState = AlexUserState {
     lexerCommentDepth  = 0
   , lexerStringValue   = ""
+  , lexerSymbolMap     = emptySymbolMap
 }
+
+getLexerSymbolMap :: Alex SymbolMap
+getLexerSymbolMap = Alex $ \s@AlexState{alex_ust=ust} -> Right (s, lexerSymbolMap ust)
+
+setLexerSymbolMap :: SymbolMap -> Alex ()
+setLexerSymbolMap sm = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerSymbolMap=sm}}, ()) 
 
 getLexerStartCode :: Alex Int
 getLexerStartCode = Alex $ \as -> Right (as, alex_scd as)
@@ -341,6 +352,12 @@ endComment inp len =
                   begin 0 inp len
           else do setLexerCommentDepth (depth - 1)
                   alexMonadScan
+
+createSymbol name = do
+  sm <- getLexerSymbolMap
+  let (s, sm') = symbol name sm
+  setLexerSymbolMap sm'
+  return s
 
 -----------------------------------------------------------
 -- Lexing helpers.

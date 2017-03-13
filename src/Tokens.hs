@@ -1,5 +1,6 @@
-{-# LANGUAGE TypeFamilies, TypeSynonymInstances, FlexibleInstances #-}
 module Tokens (TigerToken(..)) where
+
+import Symbol (Symbol)
 
 -- ADT for Tokens in the Tiger language
 data TigerToken =
@@ -45,6 +46,6 @@ data TigerToken =
     | CommaToken
     | StringToken String
     | IntToken Int
-    | IdToken String
+    | IdToken Symbol
     | EofToken
     deriving (Show, Eq)

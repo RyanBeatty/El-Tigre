@@ -1,6 +1,7 @@
 {
 module Lexer (main, lexer, P, runAlex) where
 
+import Symbol (SymbolMap, emptySymbolMap, symbol)
 import Tokens
 
 import Data.List (intercalate)
@@ -78,7 +79,9 @@ tokens :-
 -- Some action helpers.
 action f _ _ = return f
 
-identifierAction (_, _, _, s) len = return $ IdToken (take len s)
+identifierAction (_, _, _, s) len = do
+  s <- createSymbol (take len s)
+  return $ IdToken s
 
 intLiteralAction (_, _, _, s) len = return $ IntToken (read (take len s) :: Int)
 
@@ -96,13 +99,21 @@ alexEOF =
 data AlexUserState = AlexUserState {
     lexerCommentDepth  :: Int
   , lexerStringValue   :: String
+  , lexerSymbolMap     :: SymbolMap
 }
 
 alexInitUserState :: AlexUserState
 alexInitUserState = AlexUserState {
     lexerCommentDepth  = 0
   , lexerStringValue   = ""
+  , lexerSymbolMap     = emptySymbolMap
 }
+
+getLexerSymbolMap :: Alex SymbolMap
+getLexerSymbolMap = Alex $ \s@AlexState{alex_ust=ust} -> Right (s, lexerSymbolMap ust)
+
+setLexerSymbolMap :: SymbolMap -> Alex ()
+setLexerSymbolMap sm = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerSymbolMap=sm}}, ()) 
 
 getLexerStartCode :: Alex Int
 getLexerStartCode = Alex $ \as -> Right (as, alex_scd as)
@@ -158,6 +169,12 @@ endComment inp len =
                   begin 0 inp len
           else do setLexerCommentDepth (depth - 1)
                   alexMonadScan
+
+createSymbol name = do
+  sm <- getLexerSymbolMap
+  let (s, sm') = symbol name sm
+  setLexerSymbolMap sm'
+  return s
 
 -----------------------------------------------------------
 -- Lexing helpers.
