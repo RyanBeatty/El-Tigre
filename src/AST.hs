@@ -3,7 +3,9 @@
 -- TODO: I can probably symplify a lot of the abstract syntax.
 module AST where
 
-type Identifier = String
+import Symbol (Symbol)
+
+type Identifier = Symbol
 
 data Exp =
     LVal LValue
