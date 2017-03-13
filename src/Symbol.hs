@@ -6,8 +6,6 @@ module Symbol (
     SymbolMap,
     emptySymbolMap,
     symbol,
-    --Symbol,
-    --SymTable(..),
     --Symbol.lookName,
     --Symbol.enterName,
     --Symbol.getSymbol,
