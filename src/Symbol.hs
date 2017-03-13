@@ -36,7 +36,7 @@ data SymMap = SymMap {
     , nextSym :: Symbol
 } deriving (Show)
 
-type SymState = State SymMap Symbol
+type SymState a = State SymMap a
 
 -- Construct a SymMap.
 makeSymMap :: SMap -> Symbol -> SymMap
@@ -48,7 +48,7 @@ newSymMap = makeSymMap Map.empty 0
 
 -- Return symbol that the identifier maps to if it exists.
 -- If it doesn't, create a new mapping.
-symbol :: Id -> SymState
+symbol :: Id -> SymState Symbol
 symbol name = do
     -- Get the current SymMap and try to lookup name.
     curState <- get
@@ -62,7 +62,7 @@ symbol name = do
             put $ makeSymMap sm' (succ sym')
             return sym'
 
-lookupSymbol :: Id -> State SymMap (Maybe Symbol)
+lookupSymbol :: Id -> SymState (Maybe Symbol)
 lookupSymbol s = do
     -- Get the current SymMap and try to lookup name.
     curState <- get
