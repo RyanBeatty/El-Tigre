@@ -4,11 +4,9 @@
 module Symbol (
     Symbol,
     SymTable(..),
-    Symbol.empty,
-    Symbol.look,
     Symbol.lookName,
-    Symbol.enter,
     Symbol.enterName,
+    Symbol.getSymbol,
     Symbol.fromList
 ) where
 
@@ -114,10 +112,6 @@ empty = makeSymTable newSymMap AVL.empty
 look :: SymTable a -> Symbol -> Maybe a
 look t sym = snd <$> AVL.tryRead (stable t) (symComp sym)
 
--- Return the binding of a name if it exists.
-lookName :: SymTable a -> Id -> Maybe a
-lookName t name = (fst $ runState (lookupSymbol name) (symMap t)) >>= look t
-
 -- Create a new binding with the given symbol.
 enter :: (Symbol, a) -> SymTable a -> SymTable a
 enter element t = makeSymTable m (AVL.push (elemComp element) element (stable t))
@@ -130,3 +124,10 @@ enterName (name, binding) t = enter (s, binding) (makeSymTable m' st)
     where m       = symMap t
           st      = stable t
           (s, m') = runState (symbol name) m 
+
+-- Return the binding of a name if it exists.
+lookName :: SymTable a -> Id -> Maybe a
+lookName t name = getSymbol t name >>= look t
+
+getSymbol :: SymTable a -> Id -> Maybe Symbol
+getSymbol t name = fst $ runState (lookupSymbol name) (symMap t)
