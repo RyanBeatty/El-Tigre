@@ -155,12 +155,6 @@ transExp venv tenv (AST.While exp1 exp2) = do
     checkUnit exptype2
     return $ makeExpType () T.UNIT
 
---testTrans :: String -> IO ()
---testTrans input = 
---    case runParser input of
---        Right e -> print $ ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet
---        Left msg -> print msg
-
 transProg input =
     case runParser input of
         Left msg   -> Left msg
