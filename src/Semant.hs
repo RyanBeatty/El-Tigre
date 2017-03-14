@@ -91,6 +91,9 @@ transDecs venv tenv (x:xs) = do
 -- TODO: This is sort of a hack because I didn't let the body of a 
 -- Let expression be an Exp so that Seq could be used. Figure out a more
 -- elegant solution than this.
+-- TODO: I think there is a bug when an expression that is not the last expression
+-- has a type error. Since this function only translates the last expression
+-- in the sequence, an early type error will not be propagated.
 transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> TransT ExpType
 transSeq venv tenv []     = return $ makeExpType () T.UNIT
 transSeq venv tenv [x]    = transExp venv tenv x
