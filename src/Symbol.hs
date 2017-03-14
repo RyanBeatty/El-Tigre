@@ -1,6 +1,9 @@
 -- Implements the symbol table interface that will be used 
 -- for type checking.
 
+-- TODO: See if I should add back StateT. I had to do alot of SymbolMap threading
+-- when to use this module outisde in other modules.
+
 module Symbol (
     makeSymbol,
     Symbol,

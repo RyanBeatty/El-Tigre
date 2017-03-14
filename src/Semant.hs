@@ -179,10 +179,3 @@ transProg input =
         Right prog -> case ST.evalStateT (uncurry transExp (buildBaseEnvs (symbolMap prog)) (rootExp prog)) T.uniqueSet of
                         Left b  -> Left $ show b
                         Right a -> Right a
-
---transProg input =
---    case runParser input of
---        Right e  -> case ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet of
---                        Right a -> Right a
---                        Left b  -> Left $ show b
---        Left msg -> Left msg
