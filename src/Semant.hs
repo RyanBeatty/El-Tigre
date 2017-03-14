@@ -155,11 +155,6 @@ transExp venv tenv (AST.While exp1 exp2) = do
     checkUnit exptype2
     return $ makeExpType () T.UNIT
 
-buildBaseEnvs :: Sym.SymbolMap -> (Env.VEnv, Env.TEnv)
-buildBaseEnvs sm = let (venv, sm') = Env.baseVEnv sm
-                       (tenv, sm'') = Env.baseTEnv sm'
-                   in (venv, tenv)
-
 --testTrans :: String -> IO ()
 --testTrans input = 
 --    case runParser input of
@@ -169,6 +164,6 @@ buildBaseEnvs sm = let (venv, sm') = Env.baseVEnv sm
 transProg input =
     case runParser input of
         Left msg   -> Left msg
-        Right prog -> case ST.evalStateT (uncurry transExp (buildBaseEnvs (symbolMap prog)) (rootExp prog)) T.uniqueSet of
+        Right prog -> case ST.evalStateT (uncurry transExp (Env.buildBaseEnvs (symbolMap prog)) (rootExp prog)) T.uniqueSet of
                         Left b  -> Left $ show b
                         Right a -> Right a

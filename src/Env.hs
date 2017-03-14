@@ -1,9 +1,9 @@
 module Env (
     TEnv,
     VEnv,
-    EnvEntry(..),
-    Env.baseTEnv,
-    Env.baseVEnv,
+    EnvEntry,
+    Env.envty,
+    Env.buildBaseEnvs,
     Env.makeVarEntry
 ) where
 
@@ -40,3 +40,8 @@ baseVEnv sm = Symbol.fromList [
     , ("concat", FuncEntry { formals = [Types.STRING, Types.STRING], result = Types.STRING })
     , ("not", FuncEntry { formals = [Types.INT], result = Types.INT })
     , ("exit", FuncEntry { formals = [Types.INT], result = Types.UNIT })] sm
+
+buildBaseEnvs :: Symbol.SymbolMap -> (Env.VEnv, Env.TEnv)
+buildBaseEnvs sm = let (venv, sm')  = baseVEnv sm
+                       (tenv, sm'') = baseTEnv sm'
+                   in (venv, tenv)
