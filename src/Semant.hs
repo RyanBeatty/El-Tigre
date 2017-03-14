@@ -3,7 +3,7 @@ module Semant (transProg, ExpType, ty) where
 import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
 
-import AST
+import qualified AST
 import qualified Env (VEnv, TEnv, buildBaseEnvs, varEntryType, addNewVarEntry, addNewTypeEntry) 
 import Parser (runParser)
 import qualified Symbol as Sym (look)
@@ -154,6 +154,6 @@ transExp venv tenv (AST.While exp1 exp2) = do
 transProg input =
     case runParser input of
         Left msg   -> Left msg
-        Right prog -> case ST.evalStateT (uncurry transExp (Env.buildBaseEnvs (symbolMap prog)) (rootExp prog)) T.uniqueSet of
+        Right prog -> case ST.evalStateT (uncurry transExp (Env.buildBaseEnvs (AST.symbolMap prog)) (AST.rootExp prog)) T.uniqueSet of
                         Left b  -> Left $ show b
                         Right a -> Right a

@@ -7,6 +7,7 @@ module Env (
     Env.makeVarEntry,
     Env.makeFuncEntry,
     addNewVarEntry,
+    addNewFuncEntry,
     addNewTypeEntry
 ) where
 
@@ -25,6 +26,9 @@ makeFuncEntry ts r = FuncEntry { formals = ts, result = r }
 
 addNewVarEntry :: Sym.Symbol -> T.Type -> VEnv -> VEnv
 addNewVarEntry sym t venv = Sym.enter sym (makeVarEntry t) venv
+
+addNewFuncEntry :: Sym.Symbol -> [T.Type] -> T.Type -> VEnv -> VEnv
+addNewFuncEntry sym ts t venv = Sym.enter sym (makeFuncEntry ts t) venv
 
 addNewTypeEntry :: Sym.Symbol -> T.Type -> TEnv -> TEnv
 addNewTypeEntry = Sym.enter
