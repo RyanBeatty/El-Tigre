@@ -97,6 +97,8 @@ testSeq :: TestTree
 testSeq = testGroup "Seq Tests"
   [ testCase "Seq: Basic" $ yieldsInt "(\"hello\"; 1)"
   , testCase "Seq: Unit Result" $ yieldsUnit "(1; ())"
+  , testCase "Seq: Early Type Error" $
+      yieldsTypeError "(1; foo; 3)" (T.makeUndeclaredVar (makeSymbol 0 "foo"))
   ]
 
 testIf :: TestTree

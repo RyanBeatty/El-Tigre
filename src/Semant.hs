@@ -86,18 +86,12 @@ transDecs venv tenv (x:xs) = do
     (venv', tenv') <- transDec venv tenv x
     transDecs venv' tenv' xs 
 
--- This is really only supposed to be used to translate a Seq expression
--- and the list of the expressions in the body of the Let expression.
--- TODO: This is sort of a hack because I didn't let the body of a 
--- Let expression be an Exp so that Seq could be used. Figure out a more
--- elegant solution than this.
--- TODO: I think there is a bug when an expression that is not the last expression
--- has a type error. Since this function only translates the last expression
--- in the sequence, an early type error will not be propagated.
+-- Translate a sequence of expressions. The type of the last expression
+-- is the type of the entire sequence.
 transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> TransT ExpType
 transSeq venv tenv []     = return $ makeExpType () T.UNIT
 transSeq venv tenv [x]    = transExp venv tenv x
-transSeq venv tenv (_:xs) = transSeq venv tenv xs  
+transSeq venv tenv (x:xs) = transExp venv tenv x >> transSeq venv tenv xs  
 
 -- TODO: Theres alot of code duplication/similar patterns here for the binary
 -- operation expressions. See if I can factor this out to make things simpler.
