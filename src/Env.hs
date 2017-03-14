@@ -9,6 +9,7 @@ module Env (
     addNewVarEntry,
     addNewFuncEntry,
     addNewTypeEntry,
+    lookupVarEntry,
     lookupTypeEntry
 ) where
 
@@ -33,6 +34,9 @@ addNewFuncEntry sym ts t venv = Sym.enter sym (makeFuncEntry ts t) venv
 
 addNewTypeEntry :: Sym.Symbol -> T.Type -> TEnv -> TEnv
 addNewTypeEntry = Sym.enter
+
+lookupVarEntry :: Sym.Symbol -> VEnv -> Maybe EnvEntry
+lookupVarEntry = Sym.look
 
 lookupTypeEntry :: Sym.Symbol -> TEnv -> Maybe T.Type
 lookupTypeEntry = Sym.look
