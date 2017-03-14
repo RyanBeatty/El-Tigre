@@ -6,7 +6,8 @@ module Env (
     Env.buildBaseEnvs,
     Env.makeVarEntry,
     Env.makeFuncEntry,
-    addNewVarEntry
+    addNewVarEntry,
+    addNewTypeEntry
 ) where
 
 import qualified Symbol as Sym (SymbolTable, SymbolMap, Symbol, fromList, enter)
@@ -24,6 +25,9 @@ makeFuncEntry ts r = FuncEntry { formals = ts, result = r }
 
 addNewVarEntry :: Sym.Symbol -> T.Type -> VEnv -> VEnv
 addNewVarEntry sym t venv = Sym.enter sym (makeVarEntry t) venv
+
+addNewTypeEntry :: Sym.Symbol -> T.Type -> TEnv -> TEnv
+addNewTypeEntry = Sym.enter
 
 -- Environment for tiger type bindings.
 type TEnv = Sym.SymbolTable T.Type

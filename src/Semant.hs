@@ -4,9 +4,9 @@ import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
 
 import AST
-import qualified Env (VEnv, TEnv, buildBaseEnvs, varEntryType, addNewVarEntry) 
+import qualified Env (VEnv, TEnv, buildBaseEnvs, varEntryType, addNewVarEntry, addNewTypeEntry) 
 import Parser (runParser)
-import qualified Symbol as Sym (enter, look)
+import qualified Symbol as Sym (look)
 import qualified Translate as Trans (Exp)
 import qualified Types as T
 
@@ -75,7 +75,7 @@ transDec venv tenv (AST.VarDec sym vty initializer) = do
 -- Type declarations are first translated to a T.Type and added to the type env.
 transDec venv tenv (AST.TypeDec sym t) = do
     t' <- transTy tenv t
-    return (venv, Sym.enter sym t' tenv)
+    return (venv, Env.addNewTypeEntry sym t' tenv)
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
 transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> TransT (Env.VEnv, Env.TEnv)
