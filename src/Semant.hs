@@ -5,7 +5,7 @@ import qualified Control.Monad.Trans.State as ST
 
 import qualified AST
 import qualified Env (VEnv, TEnv, buildBaseEnvs, varEntryType, addNewVarEntry, addNewTypeEntry, lookupVarEntry, lookupTypeEntry) 
-import Parser (runParser)
+import qualified Parser as P (runParser)
 import qualified Translate as Trans (Exp)
 import qualified Types as T
 
@@ -150,7 +150,7 @@ transExp venv tenv (AST.While exp1 exp2) = do
     return $ makeExpType () T.UNIT
 
 transProg input =
-    case runParser input of
+    case P.runParser input of
         Left msg   -> Left msg
         Right prog -> case ST.evalStateT (uncurry transExp (Env.buildBaseEnvs (AST.symbolMap prog)) (AST.rootExp prog)) T.uniqueSet of
                         Left b  -> Left $ show b
