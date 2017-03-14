@@ -4,7 +4,7 @@ import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
 
 import AST
-import qualified Env (VEnv, TEnv, buildBaseEnvs, makeVarEntry, varEntryType) 
+import qualified Env (VEnv, TEnv, buildBaseEnvs, varEntryType, addNewVarEntry) 
 import Parser (runParser)
 import qualified Symbol as Sym (enter, look)
 import qualified Translate as Trans (Exp)
@@ -65,14 +65,13 @@ transDec venv tenv (AST.VarDec sym vty initializer) = do
         -- TODO: Add handling NIL init expression type.
         Just t  -> case getType t of
                     Just t' -> if t' == ety
-                                then return (newVarEntry t', tenv)
+                                then return (Env.addNewVarEntry sym t' venv, tenv)
                                 else lift . Left $ T.makeUnexpectedType t' ety
                     Nothing -> lift . Left $ T.makeUndeclaredType t
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
-        Nothing -> return (newVarEntry ety, tenv)
-    where newVarEntry etype = Sym.enter sym (Env.makeVarEntry etype) venv
-          getType x = Sym.look x tenv
+        Nothing -> return (Env.addNewVarEntry sym ety venv, tenv)
+    where getType x = Sym.look x tenv
 -- Type declarations are first translated to a T.Type and added to the type env.
 transDec venv tenv (AST.TypeDec sym t) = do
     t' <- transTy tenv t
