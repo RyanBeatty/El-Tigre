@@ -5,6 +5,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Semant
+import Symbol (makeSymbol)
 import qualified Types as T
 
 semantTests :: TestTree
@@ -26,7 +27,7 @@ getType s = ty <$> transProg s
 assertEq :: (Eq a, Show a) => a -> a -> Assertion
 assertEq x y = x @?= y
 
-yieldsTypeError :: String -> TypeError -> Assertion
+yieldsTypeError :: String -> T.TypeError -> Assertion
 yieldsTypeError ex err = assertEq (getType ex) (Left $ show err)
 
 yieldsType :: String -> T.Type -> Assertion
@@ -58,7 +59,7 @@ testArithOp = testGroup "ArithOp Tests"
   , testCase "ArithOp: Mult" $ yieldsInt "1 + 1"
   , testCase "ArithOp: Div" $ yieldsInt "1 / 1"
   , testCase "ArithOp: Mismatch" $
-        yieldsTypeError "1 + \"hello\"" (TypeMismatch T.INT T.STRING)
+        yieldsTypeError "1 + \"hello\"" (T.makeTypeMismatch T.INT T.STRING)
   ]
 
 testCompOp :: TestTree
@@ -70,7 +71,7 @@ testCompOp = testGroup "CompOp Tests"
   , testCase "CompOp: EQ" $ yieldsInt "1 = 1"
   , testCase "CompOp: NEQ" $ yieldsInt "1 <> 1"
   , testCase "CompOp: Mismatch" $
-        yieldsTypeError "1 > \"hello\"" (TypeMismatch T.INT T.STRING)
+        yieldsTypeError "1 > \"hello\"" (T.makeTypeMismatch T.INT T.STRING)
   ]
 
 testLogOp :: TestTree
@@ -86,9 +87,9 @@ testLet = testGroup "Let Tests"
   , testCase "Let: UnTyped VarDec" $ yieldsInt "let var foo := 1 in foo end"
   , testCase "Let: Typed VarDec" $ yieldsInt "let var foo : int := 1 in foo end"
   , testCase "Let: Typed VarDec Mismatch" $
-        yieldsTypeError "let var foo : string := 1 in foo end" (UnexpectedType T.STRING T.INT)
+        yieldsTypeError "let var foo : string := 1 in foo end" (T.makeUnexpectedType T.STRING T.INT)
   , testCase "Let: Undeclared Typed VarDec" $
-        yieldsTypeError "let var foo : bar := 1 in foo end" (UndeclaredType "bar")
+        yieldsTypeError "let var foo : bar := 1 in foo end" (T.makeUndeclaredType (makeSymbol 0 "bar"))
   , testCase "Let: Empty Decs And Body" $ yieldsUnit "let in end"
   ]
 
@@ -103,18 +104,18 @@ testIf = testGroup "If Tests"
   [ testCase "If: If-Then" $ yieldsString "if 1 then \"hell\""
   , testCase "If: If-Then-Else" $ yieldsInt "if 1 then 2 else 3"
   , testCase "If: If-Then Type Error" $
-      yieldsTypeError "if \"hello\" then 1" (UnexpectedType T.INT T.STRING)
+      yieldsTypeError "if \"hello\" then 1" (T.makeUnexpectedType T.INT T.STRING)
   , testCase "If: If-Then-Else Type Error" $
-      yieldsTypeError "if \"hello\" then 1 else 1" (UnexpectedType T.INT T.STRING)
+      yieldsTypeError "if \"hello\" then 1 else 1" (T.makeUnexpectedType T.INT T.STRING)
   , testCase "If: If-Then-Else Type Mismatch" $
-      yieldsTypeError "if 1 then 2 else ()" (TypeMismatch T.INT T.UNIT)
+      yieldsTypeError "if 1 then 2 else ()" (T.makeTypeMismatch T.INT T.UNIT)
   ]
 
 testWhile :: TestTree
 testWhile = testGroup "While Tests"
   [ testCase "While" $ yieldsUnit "while 1 do (1; ())"
   , testCase "While: Unexpected Condition Type" $
-      yieldsTypeError "while \"hello\" do ()" (UnexpectedType T.INT T.STRING)
+      yieldsTypeError "while \"hello\" do ()" (T.makeUnexpectedType T.INT T.STRING)
   , testCase "While: Unexpected Body Type" $
-      yieldsTypeError "while 1 do 1" (UnexpectedType T.UNIT T.INT)
+      yieldsTypeError "while 1 do 1" (T.makeUnexpectedType T.UNIT T.INT)
   ]

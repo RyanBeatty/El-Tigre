@@ -1,4 +1,4 @@
-module Semant (transProg, ExpType(..), TypeError(..)) where
+module Semant (transProg, ExpType(..)) where
 
 import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
@@ -10,19 +10,12 @@ import qualified Symbol as Sym
 import qualified Translate as Trans
 import qualified Types as T
 
-data TypeError =
-      UndeclaredVar Identifier
-    | UndeclaredType Identifier
-    | UnexpectedType T.Type T.Type
-    | TypeMismatch T.Type T.Type
-    deriving (Show, Eq)
-
 data ExpType = ExpType {
       expr :: Trans.Exp
     , ty   :: T.Type
 } deriving (Show)
 
-type TransT a = ST.StateT [T.Unique] (Either TypeError) a
+type TransT a = ST.StateT [T.Unique] (Either T.TypeError) a
 
 -- Returns the next unique value to use for a RECORD, ARRAY, or NAME.
 genUnique :: TransT T.Unique
@@ -37,17 +30,17 @@ makeExpType e t = ExpType { expr = e, ty = t }
 checkInt :: ExpType -> TransT ()
 checkInt exptype
     | ty exptype == T.INT = return ()
-    | otherwise           = lift . Left $ UnexpectedType T.INT (ty exptype)
+    | otherwise           = lift . Left $ T.makeUnexpectedType T.INT (ty exptype)
 
 checkUnit :: ExpType -> TransT ()
 checkUnit exptype
     | ty exptype == T.UNIT = return ()
-    | otherwise            = lift . Left $ UnexpectedType T.UNIT (ty exptype)
+    | otherwise            = lift . Left $ T.makeUnexpectedType T.UNIT (ty exptype)
 
 checkMatchingTypes :: ExpType -> ExpType -> TransT ()
 checkMatchingTypes e1 e2
     | ty e1 == ty e2 = return ()
-    | otherwise      = lift . Left $ TypeMismatch (ty e1) (ty e2)
+    | otherwise      = lift . Left $ T.makeTypeMismatch (ty e1) (ty e2)
 
 --transVar :: Env.VEnv -> Env.TEnv -> AST.Var -> ExpType
 --transVar = undefined
@@ -56,7 +49,7 @@ transTy  :: Env.TEnv -> AST.Type -> TransT T.Type
 -- and returning a T.ARRAY.
 transTy tenv (AST.Array sym) =
     case Sym.look sym tenv of
-        Nothing -> lift . Left $ UndeclaredType (Sym.name sym)
+        Nothing -> lift . Left $ T.makeUndeclaredType sym
         Just t  -> do u <- genUnique
                       return $ T.ARRAY t u
 
@@ -73,8 +66,8 @@ transDec venv tenv (AST.VarDec sym vty initializer) = do
         Just t  -> case getType t of
                     Just t' -> if t' == ety
                                 then return (newVarEntry t', tenv)
-                                else lift . Left $ UnexpectedType t' ety
-                    Nothing -> lift . Left $ UndeclaredType (Sym.name t)
+                                else lift . Left $ T.makeUnexpectedType t' ety
+                    Nothing -> lift . Left $ T.makeUndeclaredType t
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
         Nothing -> return (newVarEntry ety, tenv)
@@ -134,7 +127,7 @@ transExp venv tenv (AST.Let decs body) = do
 transExp venv tenv (AST.LVal (AST.Var sym)) =
     case Sym.look sym venv of
         Just varEntry -> return $ makeExpType () (envty varEntry)
-        Nothing       -> lift . Left $ UndeclaredVar (Sym.name sym)
+        Nothing       -> lift . Left $ T.makeUndeclaredVar sym
 -- The type of a Seq is the type of its last expression. If it has no
 -- expressions, then it has the UNIT type.
 transExp venv tenv (AST.Seq xs) = transSeq venv tenv xs
