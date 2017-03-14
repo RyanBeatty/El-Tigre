@@ -5,6 +5,8 @@ module Symbol (
     Symbol,
     SymbolMap,
     SymbolTable,
+    uniqueId,
+    name,
     emptySymbolMap,
     symbol,
     look,
@@ -27,7 +29,11 @@ type Id = String
 -- Every identifier (variable, function, type names, etc...)
 -- maps to a symbol. Symbols are faster than strings to
 -- check for equality.
-type Symbol = (Int, Id)
+data Symbol = Symbol {
+    uniqueId :: Int
+  , name     :: String
+} deriving (Show, Eq, Ord)
+--type Symbol = (Int, Id)
 
 -- An SymbolMap maps identifiers to symbols
 type SMap = Map.Map Id Symbol
@@ -36,17 +42,17 @@ type SMap = Map.Map Id Symbol
 -- symbol that should be used for a new identifier.
 data SymbolMap = SymbolMap {
       smap :: SMap
-    , nextSym :: Int
+    , nextId :: Int
 } deriving (Show)
 
 --type SymState a = State SymMap a
 
 makeSymbol :: Int -> Id -> Symbol
-makeSymbol = (,)
+makeSymbol u n = Symbol { uniqueId = u, name = n}
 
 -- Construct a SymbolMap.
 makeSymbolMap :: SMap -> Int -> SymbolMap
-makeSymbolMap smap next = SymbolMap { smap = smap, nextSym = next }
+makeSymbolMap smap next = SymbolMap { smap = smap, nextId = next }
 
 -- Construct an empty SymbolMap.
 -- NOTE: 10 is used for initial next symbol value because built in function
@@ -61,9 +67,10 @@ symbol :: Id -> SymbolMap -> (Symbol, SymbolMap)
 symbol name sm =
   case Map.lookup name (smap sm) of
     Just s  -> (s, sm)
-    Nothing -> let s'  = nextSym sm
-                   sm' = Map.insert name (s', name) (smap sm)
-               in (makeSymbol s' name, makeSymbolMap sm' (succ s'))
+    Nothing -> let u  = nextId sm
+                   s' = makeSymbol u name
+                   sm' = Map.insert name s' (smap sm)
+               in (s', makeSymbolMap sm' (succ u))
 
 -- A SymbolTable maps Symbols to bindings.
 type SymbolTable a = Map.Map Symbol a
