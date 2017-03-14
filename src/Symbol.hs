@@ -56,11 +56,8 @@ makeSymbolMap :: SMap -> Int -> SymbolMap
 makeSymbolMap smap next = SymbolMap { smap = smap, nextId = next }
 
 -- Construct an empty SymbolMap.
--- NOTE: 10 is used for initial next symbol value because built in function
--- env in Env.hs has 10 elements that must first be populated. So when we are lexing
--- the first valid symbol int should be 10 to be safe.
 emptySymbolMap :: SymbolMap
-emptySymbolMap = makeSymbolMap Map.empty 10
+emptySymbolMap = makeSymbolMap Map.empty 0
 
 -- Return the Symbol for an identifier. If the identifier is not mapped,
 -- create a new mapping.
