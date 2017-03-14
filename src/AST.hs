@@ -5,7 +5,7 @@ module AST where
 
 import Symbol (Symbol)
 
-type Identifier = Symbol
+type Identifier = String
 
 data Exp =
     LVal LValue
@@ -14,16 +14,16 @@ data Exp =
   | IntLit Int
   | StringLit String
   | Neg Int
-  | FunCall Identifier [Exp]
+  | FunCall Symbol [Exp]
   | ArithOp AOp Exp Exp
   | CompOp COp Exp Exp
   | LogOp LOp Exp Exp
-  | RecExp Identifier [Field]
-  | ArrExp Identifier Exp Exp
+  | RecExp Symbol [Field]
+  | ArrExp Symbol Exp Exp
   | Assign LValue Exp
   | Branch Exp Exp (Maybe Exp)
   | While Exp Exp
-  | For Identifier Exp Exp Exp
+  | For Symbol Exp Exp Exp
   | Break
   | Let [Dec] [Exp]
   deriving (Show)
@@ -41,32 +41,32 @@ data LOp = And | Or
   deriving (Show)
 
 data LValue =
-    Var Identifier
-  | RecField LValue Identifier
+    Var Symbol
+  | RecField LValue Symbol
   | ArrSubscript LValue Exp
   deriving (Show)
 
 -- Represents an initialized field in a record.
-data Field = Field Identifier Exp
+data Field = Field Symbol Exp
   deriving (Show)
 
 -- A declaration.
 data Dec =
-    TypeDec Identifier Type
+    TypeDec Symbol Type
   -- A variable declaration can specify a explicit type.
-  | VarDec Identifier (Maybe Identifier) Exp
+  | VarDec Symbol (Maybe Symbol) Exp
   -- A function declaration can either be a procedure declaration (no return
   -- type) or a function declaration (has return type).
-  | FunDec Identifier [TyField] (Maybe Identifier) Exp
+  | FunDec Symbol [TyField] (Maybe Symbol) Exp
   deriving (Show)
 
 -- The type of a type declaration
 data Type =
-    Type Identifier
+    Type Symbol
   | Record [TyField]
-  | Array Identifier
+  | Array Symbol
   deriving (Show)
 
 -- Field in a Record
-data TyField = TyField Identifier Identifier
+data TyField = TyField Symbol Symbol
   deriving (Show)

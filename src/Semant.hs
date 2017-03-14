@@ -54,14 +54,14 @@ checkMatchingTypes e1 e2
 transTy  :: Env.TEnv -> AST.Type -> TransT T.Type
 -- Array type declarations are translated by looking up the name of their type
 -- and returning a T.ARRAY.
-transTy tenv (AST.Array name) =
-    case Sym.lookName tenv name of
-        Nothing -> lift . Left $ UndeclaredType name
+transTy tenv (AST.Array sym) =
+    case Sym.look sym tenv of
+        Nothing -> lift . Left $ UndeclaredType (Sym.name sym)
         Just t  -> do u <- genUnique
                       return $ T.ARRAY t u
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> TransT (Env.VEnv, Env.TEnv)
-transDec venv tenv (AST.VarDec name vty initializer) = do
+transDec venv tenv (AST.VarDec sym vty initializer) = do
     -- Translate initializer expression.
     exptype <- transExp venv tenv initializer
     let ety = ty exptype
@@ -74,16 +74,16 @@ transDec venv tenv (AST.VarDec name vty initializer) = do
                     Just t' -> if t' == ety
                                 then return (newVarEntry t', tenv)
                                 else lift . Left $ UnexpectedType t' ety
-                    Nothing -> lift . Left $ UndeclaredType t
+                    Nothing -> lift . Left $ UndeclaredType (Sym.name t)
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
         Nothing -> return (newVarEntry ety, tenv)
-    where newVarEntry etype = Sym.enterName (name, makeVarEntry etype) venv
-          getType x = Sym.lookName tenv x
+    where newVarEntry etype = Sym.enter sym (makeVarEntry etype) venv
+          getType x = Sym.look x tenv
 -- Type declarations are first translated to a T.Type and added to the type env.
-transDec venv tenv (AST.TypeDec name t) = do
+transDec venv tenv (AST.TypeDec sym t) = do
     t' <- transTy tenv t
-    return (venv, Sym.enterName (name, t') tenv)
+    return (venv, Sym.enter sym t' tenv)
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
 transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> TransT (Env.VEnv, Env.TEnv)
@@ -131,10 +131,10 @@ transExp venv tenv (AST.Let decs body) = do
     -- body is the result type for the entire Let expression.
     (venv', tenv') <- transDecs venv tenv decs
     transSeq venv' tenv' body
-transExp venv tenv (AST.LVal (AST.Var name)) =
-    case Sym.lookName venv name of
+transExp venv tenv (AST.LVal (AST.Var sym)) =
+    case Sym.look sym venv of
         Just varEntry -> return $ makeExpType () (envty varEntry)
-        Nothing       -> lift . Left $ UndeclaredVar name
+        Nothing       -> lift . Left $ UndeclaredVar (Sym.name sym)
 -- The type of a Seq is the type of its last expression. If it has no
 -- expressions, then it has the UNIT type.
 transExp venv tenv (AST.Seq xs) = transSeq venv tenv xs
