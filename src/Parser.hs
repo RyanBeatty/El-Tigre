@@ -2697,8 +2697,17 @@ happySeq = happyDontSeq
 -- Needs to be defined for Happy to compile
 happyError = error "Parser error!"
 
-runParser :: String -> Either String Exp
-runParser input = runAlex input parser
+runParser :: String -> Either String Program
+runParser input = runAlex input parseProgram
+
+-- Parse the Token stream and return a built Program syntax tree.
+parseProgram :: Lex.P AST.Program
+parseProgram = do
+  -- Get root expression.
+  exp <- parser
+  -- Get built SymbolMap
+  sm  <- Lex.getLexerSymbolMap
+  return $ AST.Program { rootExp = exp, symbolMap = sm }
 
 main = do
   s <- getContents
