@@ -7,6 +7,8 @@ module Symbol (
     SymbolTable,
     emptySymbolMap,
     symbol,
+    look,
+    enter,
     --Symbol.lookName,
     --Symbol.enterName,
     --Symbol.getSymbol,
@@ -63,6 +65,7 @@ symbol name sm =
                    sm' = Map.insert name (s', name) (smap sm)
                in (makeSymbol s' name, makeSymbolMap sm' (succ s'))
 
+-- A SymbolTable maps Symbols to bindings.
 type SymbolTable a = Map.Map Symbol a
 
 -- Build a SymbolTable from a list of String and binding pairs.
@@ -70,6 +73,14 @@ type SymbolTable a = Map.Map Symbol a
 fromList :: [(String, a)] -> SymbolTable a
 fromList xs = Map.fromList $ zipWith zipper xs [0..(pred $ length xs)]
   where zipper (name, binding) sym = (makeSymbol sym name, binding)
+
+-- Lookup the binding of a Symbol if it exists.
+look :: Symbol -> SymbolTable a -> Maybe a
+look = Map.lookup
+
+-- Map Symbol to the new binding.
+enter :: Symbol -> a -> SymbolTable a -> SymbolTable a
+enter = Map.insert
 
 ---- Return symbol that the identifier maps to if it exists.
 ---- If it doesn't, create a new mapping.
