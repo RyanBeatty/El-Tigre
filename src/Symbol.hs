@@ -15,18 +15,11 @@ module Symbol (
     symbol,
     look,
     enter,
-    --Symbol.lookName,
-    --Symbol.enterName,
-    --Symbol.getSymbol,
     Symbol.fromList
 ) where
 
-import Control.Applicative
-import Control.Monad.State
-import qualified Data.COrdering as COrd
 -- TODO: See if I can use a faster hash map library.
 import qualified Data.Map as Map
-import qualified Data.Tree.AVL as AVL
 
 type Id = String
 

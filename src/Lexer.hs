@@ -3,7 +3,7 @@
 
 module Lexer (main, lexer, P, runAlex, getLexerSymbolMap) where
 
-import Symbol (SymbolMap, emptySymbolMap, symbol)
+import qualified Symbol as Sym (SymbolMap, emptySymbolMap, symbol)
 import Tokens
 
 import Data.List (intercalate)
@@ -282,20 +282,20 @@ alexEOF =
 data AlexUserState = AlexUserState {
     lexerCommentDepth  :: Int
   , lexerStringValue   :: String
-  , lexerSymbolMap     :: SymbolMap
+  , lexerSymbolMap     :: Sym.SymbolMap
 }
 
 alexInitUserState :: AlexUserState
 alexInitUserState = AlexUserState {
     lexerCommentDepth  = 0
   , lexerStringValue   = ""
-  , lexerSymbolMap     = emptySymbolMap
+  , lexerSymbolMap     = Sym.emptySymbolMap
 }
 
-getLexerSymbolMap :: Alex SymbolMap
+getLexerSymbolMap :: Alex Sym.SymbolMap
 getLexerSymbolMap = Alex $ \s@AlexState{alex_ust=ust} -> Right (s, lexerSymbolMap ust)
 
-setLexerSymbolMap :: SymbolMap -> Alex ()
+setLexerSymbolMap :: Sym.SymbolMap -> Alex ()
 setLexerSymbolMap sm = Alex $ \s -> Right (s{alex_ust=(alex_ust s){lexerSymbolMap=sm}}, ()) 
 
 getLexerStartCode :: Alex Int
@@ -355,7 +355,7 @@ endComment inp len =
 
 createSymbol name = do
   sm <- getLexerSymbolMap
-  let (s, sm') = symbol name sm
+  let (s, sm') = Sym.symbol name sm
   setLexerSymbolMap sm'
   return s
 

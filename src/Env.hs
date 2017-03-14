@@ -7,7 +7,7 @@ module Env (
     Env.makeVarEntry
 ) where
 
-import Symbol (fromList, SymbolTable, SymbolMap)
+import qualified Symbol as Sym (fromList, SymbolTable, SymbolMap)
 import qualified Types as T
 
 data EnvEntry = VarEntry  { envty :: T.Type }
@@ -18,18 +18,18 @@ makeVarEntry :: T.Type -> EnvEntry
 makeVarEntry t = VarEntry { envty = t }
 
 -- Environment for tiger type bindings.
-type TEnv = Symbol.SymbolTable T.Type
+type TEnv = Sym.SymbolTable T.Type
 
 -- Environment for variable and function bindings.
-type VEnv = Symbol.SymbolTable EnvEntry
+type VEnv = Sym.SymbolTable EnvEntry
 
 -- The built in types environment for Tiger.
-baseTEnv :: Symbol.SymbolMap -> (TEnv, Symbol.SymbolMap)
-baseTEnv sm = Symbol.fromList [("int", T.INT), ("string", T.STRING)] sm
+baseTEnv :: Sym.SymbolMap -> (TEnv, Sym.SymbolMap)
+baseTEnv sm = Sym.fromList [("int", T.INT), ("string", T.STRING)] sm
 
 -- the built in functions environment for Tiger.
-baseVEnv :: Symbol.SymbolMap -> (VEnv, Symbol.SymbolMap)
-baseVEnv sm = Symbol.fromList [
+baseVEnv :: Sym.SymbolMap -> (VEnv, Sym.SymbolMap)
+baseVEnv sm = Sym.fromList [
       ("print", FuncEntry { formals = [T.STRING], result = T.UNIT })
     , ("flush", FuncEntry { formals = [], result = T.UNIT })
     , ("getchar", FuncEntry { formals = [], result = T.STRING })
@@ -41,7 +41,7 @@ baseVEnv sm = Symbol.fromList [
     , ("not", FuncEntry { formals = [T.INT], result = T.INT })
     , ("exit", FuncEntry { formals = [T.INT], result = T.UNIT })] sm
 
-buildBaseEnvs :: Symbol.SymbolMap -> (Env.VEnv, Env.TEnv)
+buildBaseEnvs :: Sym.SymbolMap -> (Env.VEnv, Env.TEnv)
 buildBaseEnvs sm = let (venv, sm')  = baseVEnv sm
                        (tenv, sm'') = baseTEnv sm'
                    in (venv, tenv)

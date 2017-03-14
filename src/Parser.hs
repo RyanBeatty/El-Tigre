@@ -1,8 +1,8 @@
 {-# OPTIONS_GHC -w #-}
 module Parser (parser, runParser) where
-import Lexer as Lex
+import qualified Lexer as Lex
 import AST
-import Tokens as Tok
+import qualified Tokens as Tok
 
 -- parser produced by Happy Version 1.18.9
 
@@ -2698,7 +2698,7 @@ happySeq = happyDontSeq
 happyError = error "Parser error!"
 
 runParser :: String -> Either String Program
-runParser input = runAlex input parseProgram
+runParser input = Lex.runAlex input parseProgram
 
 -- Parse the Token stream and return a built Program syntax tree.
 parseProgram :: Lex.P AST.Program

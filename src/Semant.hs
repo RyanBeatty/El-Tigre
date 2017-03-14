@@ -4,10 +4,10 @@ import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
 
 import AST
-import Env
+import qualified Env (VEnv, TEnv, buildBaseEnvs, makeVarEntry, envty) 
 import Parser (runParser)
-import qualified Symbol as Sym
-import qualified Translate as Trans
+import qualified Symbol as Sym (enter, look)
+import qualified Translate as Trans (Exp)
 import qualified Types as T
 
 data ExpType = ExpType {
@@ -71,7 +71,7 @@ transDec venv tenv (AST.VarDec sym vty initializer) = do
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
         Nothing -> return (newVarEntry ety, tenv)
-    where newVarEntry etype = Sym.enter sym (makeVarEntry etype) venv
+    where newVarEntry etype = Sym.enter sym (Env.makeVarEntry etype) venv
           getType x = Sym.look x tenv
 -- Type declarations are first translated to a T.Type and added to the type env.
 transDec venv tenv (AST.TypeDec sym t) = do
@@ -126,7 +126,7 @@ transExp venv tenv (AST.Let decs body) = do
     transSeq venv' tenv' body
 transExp venv tenv (AST.LVal (AST.Var sym)) =
     case Sym.look sym venv of
-        Just varEntry -> return $ makeExpType () (envty varEntry)
+        Just varEntry -> return $ makeExpType () (Env.envty varEntry)
         Nothing       -> lift . Left $ T.makeUndeclaredVar sym
 -- The type of a Seq is the type of its last expression. If it has no
 -- expressions, then it has the UNIT type.
