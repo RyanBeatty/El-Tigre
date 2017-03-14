@@ -73,11 +73,19 @@ symbol name sm =
 -- A SymbolTable maps Symbols to bindings.
 type SymbolTable a = Map.Map Symbol a
 
--- Build a SymbolTable from a list of String and binding pairs.
--- NOTE: This function assumes that all strings are unique.
-fromList :: [(String, a)] -> SymbolTable a
-fromList xs = Map.fromList $ zipWith zipper xs [0..(pred $ length xs)]
-  where zipper (name, binding) sym = (makeSymbol sym name, binding)
+-- Build a SymbolTable from a list of String and binding pairs. Uses the passed
+-- in SymbolMap to map all strings to Symbols.
+fromList :: [(String, a)] -> SymbolMap -> (SymbolTable a, SymbolMap)
+fromList xs sm = let (xs', sm') = helper xs sm
+                 in (Map.fromList xs', sm')
+
+-- Wrote this quickly to help with fromList.
+-- TODO: Refactor this later.
+helper :: [(String, a)] -> SymbolMap -> ([(Symbol, a)], SymbolMap)
+helper [] sm = ([], sm)
+helper ((n, a):xs) sm = let (s, sm') = symbol n sm
+                            (xs', sm'') = helper xs sm'
+                        in ((s, a) : xs', sm'')
 
 -- Lookup the binding of a Symbol if it exists.
 look :: Symbol -> SymbolTable a -> Maybe a
