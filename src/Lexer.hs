@@ -1,7 +1,7 @@
 {-# LANGUAGE CPP #-}
 {-# LINE 1 "src/Lexer.x" #-}
 
-module Lexer (main, lexer, P, runAlex) where
+module Lexer (main, lexer, P, runAlex, getLexerSymbolMap) where
 
 import Symbol (SymbolMap, emptySymbolMap, symbol)
 import Tokens

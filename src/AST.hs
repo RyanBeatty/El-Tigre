@@ -3,9 +3,14 @@
 -- TODO: I can probably symplify a lot of the abstract syntax.
 module AST where
 
-import Symbol (Symbol)
+import Symbol (Symbol, SymbolMap)
 
 type Identifier = String
+
+data Program = Program {
+    rootExp   :: Exp
+  , symbolMap :: SymbolMap
+} deriving (Show)
 
 data Exp =
     LVal LValue
