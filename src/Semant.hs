@@ -4,7 +4,7 @@ import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
 
 import qualified AST
-import qualified Env (VEnv, TEnv, buildBaseEnvs, varEntryType, addNewVarEntry, addNewTypeEntry) 
+import qualified Env (VEnv, TEnv, buildBaseEnvs, varEntryType, addNewVarEntry, addNewTypeEntry, lookupTypeEntry) 
 import Parser (runParser)
 import qualified Symbol as Sym (look)
 import qualified Translate as Trans (Exp)
@@ -48,7 +48,7 @@ transTy  :: Env.TEnv -> AST.Type -> TransT T.Type
 -- Array type declarations are translated by looking up the name of their type
 -- and returning a T.ARRAY.
 transTy tenv (AST.Array sym) =
-    case Sym.look sym tenv of
+    case Env.lookupTypeEntry sym tenv of
         Nothing -> lift . Left $ T.makeUndeclaredType sym
         Just t  -> do u <- genUnique
                       return $ T.ARRAY t u
@@ -63,7 +63,7 @@ transDec venv tenv (AST.VarDec sym vtype initializer) = do
         -- Typed variable declarations must have matching types between specified
         -- type and init expression type.
         -- TODO: Add handling NIL init expression type.
-        Just tsym  -> case getType tsym of
+        Just tsym  -> case Env.lookupTypeEntry tsym tenv of
                     Just t -> if t == ety
                                 then return (Env.addNewVarEntry sym t venv, tenv)
                                 else lift . Left $ T.makeUnexpectedType t ety
@@ -71,7 +71,6 @@ transDec venv tenv (AST.VarDec sym vtype initializer) = do
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
         Nothing -> return (Env.addNewVarEntry sym ety venv, tenv)
-    where getType x = Sym.look x tenv
 -- Type declarations are first translated to a T.Type and added to the type env.
 transDec venv tenv (AST.TypeDec sym t) = do
     t' <- transTy tenv t
