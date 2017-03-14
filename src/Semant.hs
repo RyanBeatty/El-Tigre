@@ -162,15 +162,27 @@ transExp venv tenv (AST.While exp1 exp2) = do
     checkUnit exptype2
     return $ makeExpType () T.UNIT
 
-testTrans :: String -> IO ()
-testTrans input = 
-    case runParser input of
-        Right e -> print $ ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet
-        Left msg -> print msg
+buildBaseEnvs :: Sym.SymbolMap -> (Env.VEnv, Env.TEnv)
+buildBaseEnvs sm = let (venv, sm') = Env.baseVEnv sm
+                       (tenv, sm'') = Env.baseTEnv sm'
+                   in (venv, tenv)
+
+--testTrans :: String -> IO ()
+--testTrans input = 
+--    case runParser input of
+--        Right e -> print $ ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet
+--        Left msg -> print msg
 
 transProg input =
     case runParser input of
-        Right e  -> case ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet of
-                        Right a -> Right a
+        Left msg   -> Left msg
+        Right prog -> case ST.evalStateT (uncurry transExp (buildBaseEnvs (symbolMap prog)) (rootExp prog)) T.uniqueSet of
                         Left b  -> Left $ show b
-        Left msg -> Left msg
+                        Right a -> Right a
+
+--transProg input =
+--    case runParser input of
+--        Right e  -> case ST.evalStateT (transExp Env.baseVEnv Env.baseTEnv e) T.uniqueSet of
+--                        Right a -> Right a
+--                        Left b  -> Left $ show b
+--        Left msg -> Left msg
