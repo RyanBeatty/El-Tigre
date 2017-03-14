@@ -4,12 +4,13 @@
 module Symbol (
     Symbol,
     SymbolMap,
+    SymbolTable,
     emptySymbolMap,
     symbol,
     --Symbol.lookName,
     --Symbol.enterName,
     --Symbol.getSymbol,
-    --Symbol.fromList
+    Symbol.fromList
 ) where
 
 import Control.Applicative
@@ -46,8 +47,11 @@ makeSymbolMap :: SMap -> Int -> SymbolMap
 makeSymbolMap smap next = SymbolMap { smap = smap, nextSym = next }
 
 -- Construct an empty SymbolMap.
+-- NOTE: 10 is used for initial next symbol value because built in function
+-- env in Env.hs has 10 elements that must first be populated. So when we are lexing
+-- the first valid symbol int should be 10 to be safe.
 emptySymbolMap :: SymbolMap
-emptySymbolMap = makeSymbolMap Map.empty 0
+emptySymbolMap = makeSymbolMap Map.empty 10
 
 -- Return the Symbol for an identifier. If the identifier is not mapped,
 -- create a new mapping.
@@ -58,6 +62,14 @@ symbol name sm =
     Nothing -> let s'  = nextSym sm
                    sm' = Map.insert name (s', name) (smap sm)
                in (makeSymbol s' name, makeSymbolMap sm' (succ s'))
+
+type SymbolTable a = Map.Map Symbol a
+
+-- Build a SymbolTable from a list of String and binding pairs.
+-- NOTE: This function assumes that all strings are unique.
+fromList :: [(String, a)] -> SymbolTable a
+fromList xs = Map.fromList $ zipWith zipper xs [0..(pred $ length xs)]
+  where zipper (name, binding) sym = (makeSymbol sym name, binding)
 
 ---- Return symbol that the identifier maps to if it exists.
 ---- If it doesn't, create a new mapping.

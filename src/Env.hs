@@ -7,7 +7,7 @@ module Env (
     Env.makeVarEntry
 ) where
 
-import Symbol (fromList, SymTable)
+import Symbol (fromList, SymbolTable)
 import Types
 
 data EnvEntry = VarEntry  { envty :: Types.Type }
@@ -18,10 +18,10 @@ makeVarEntry :: Types.Type -> EnvEntry
 makeVarEntry t = VarEntry { envty = t }
 
 -- Environment for tiger type bindings.
-type TEnv = Symbol.SymTable Types.Type
+type TEnv = Symbol.SymbolTable Types.Type
 
 -- Environment for variable and function bindings.
-type VEnv = Symbol.SymTable EnvEntry
+type VEnv = Symbol.SymbolTable EnvEntry
 
 -- The built in types environment for Tiger.
 baseTEnv :: TEnv
