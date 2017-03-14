@@ -54,23 +54,23 @@ transTy tenv (AST.Array sym) =
                       return $ T.ARRAY t u
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> TransT (Env.VEnv, Env.TEnv)
-transDec venv tenv (AST.VarDec idSym typeSym initializer) = do
+transDec venv tenv (AST.VarDec sym vtype initializer) = do
     -- Translate initializer expression.
     exptype <- transExp venv tenv initializer
     let ety = ty exptype
     -- Check if variable declaration has an explicit type.
-    case typeSym of
+    case vtype of
         -- Typed variable declarations must have matching types between specified
         -- type and init expression type.
         -- TODO: Add handling NIL init expression type.
-        Just tSym  -> case getType tSym of
-                    Just t' -> if t' == ety
-                                then return (Env.addNewVarEntry idSym t' venv, tenv)
-                                else lift . Left $ T.makeUnexpectedType t' ety
-                    Nothing -> lift . Left $ T.makeUndeclaredType tSym
+        Just tsym  -> case getType tsym of
+                    Just t -> if t == ety
+                                then return (Env.addNewVarEntry sym t venv, tenv)
+                                else lift . Left $ T.makeUnexpectedType t ety
+                    Nothing -> lift . Left $ T.makeUndeclaredType tsym
         -- Untyped variable declarations take the type of their init expression,
         -- So add new entry in var env with init expression type.
-        Nothing -> return (Env.addNewVarEntry idSym ety venv, tenv)
+        Nothing -> return (Env.addNewVarEntry sym ety venv, tenv)
     where getType x = Sym.look x tenv
 -- Type declarations are first translated to a T.Type and added to the type env.
 transDec venv tenv (AST.TypeDec sym t) = do
