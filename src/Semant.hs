@@ -4,7 +4,7 @@ import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
 
 import AST
-import qualified Env (VEnv, TEnv, buildBaseEnvs, makeVarEntry, envty) 
+import qualified Env (VEnv, TEnv, buildBaseEnvs, makeVarEntry, varEntryType) 
 import Parser (runParser)
 import qualified Symbol as Sym (enter, look)
 import qualified Translate as Trans (Exp)
@@ -126,7 +126,7 @@ transExp venv tenv (AST.Let decs body) = do
     transSeq venv' tenv' body
 transExp venv tenv (AST.LVal (AST.Var sym)) =
     case Sym.look sym venv of
-        Just varEntry -> return $ makeExpType () (Env.envty varEntry)
+        Just varEntry -> return $ makeExpType () (Env.varEntryType varEntry)
         Nothing       -> lift . Left $ T.makeUndeclaredVar sym
 -- The type of a Seq is the type of its last expression. If it has no
 -- expressions, then it has the UNIT type.
