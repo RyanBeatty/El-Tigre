@@ -69,7 +69,7 @@ transDec venv tenv (AST.VarDec sym vtype initializer) = do
         -- type and init expression type.
         -- TODO: Add handling NIL init expression type.
         Just tsym  -> case Env.lookupTypeEntry tsym tenv of
-                    Just t -> if t == ety
+                    Just t -> if T.checkCompatibleTypes t ety
                                 then return (Env.addNewVarEntry sym t venv, tenv)
                                 else lift . Left $ T.makeUnexpectedType t ety
                     Nothing -> lift . Left $ T.makeUndeclaredType tsym
