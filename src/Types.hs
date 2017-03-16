@@ -33,21 +33,7 @@ data Type =
     | NAME Symbol.Symbol (Maybe Type)
     deriving (Show)
 
-instance Eq Type where
-    (NAME _ t1)   == (NAME _ t2)     = t1 == t2
-    (NAME _ t1)   == INT             = t1 == return INT
-    INT           == (NAME _ t1)     = return INT == t1
-    (NAME _ t1)   == STRING          = t1 == return STRING
-    STRING        == (NAME _ t1)     = return STRING == t1
-    (RECORD _ u1) == (RECORD _ u2)   = u1 == u2
-    (RECORD _ _)  == NIL             = True
-    NIL           == (RECORD _ _)    = True
-    INT           == INT             = True
-    STRING        == STRING          = True
-    NIL           == NIL             = True
-    UNIT          == UNIT            = True
-    _             == _               = False
-
+-- Returns True if two Types can be used in the same expression.
 checkCompatibleTypes :: Type -> Type -> Bool
 checkCompatibleTypes INT INT                                = True
 checkCompatibleTypes STRING STRING                          = True
@@ -67,7 +53,6 @@ checkCompatibleTypes INT (ARRAY t _)                        = checkCompatibleTyp
 checkCompatibleTypes (ARRAY t _) STRING                     = checkCompatibleTypes t STRING
 checkCompatibleTypes STRING (ARRAY t _)                     = checkCompatibleTypes STRING t
 checkCompatibleTypes _ _                                    = False
-
 
 data TypeError =
       UndeclaredVar Identifier
