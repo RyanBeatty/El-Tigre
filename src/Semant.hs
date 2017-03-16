@@ -44,6 +44,12 @@ checkMatchingTypes e1 e2
 --transVar :: Env.VEnv -> Env.TEnv -> AST.Var -> ExpType
 --transVar = undefined
 transTy  :: Env.TEnv -> AST.Type -> TransT T.Type
+-- A type synonym is just looked up in the type environment.
+-- TODO: handle mutually recursive types.
+transTy tenv (AST.Type sym) =
+    case Env.lookupTypeEntry sym tenv of
+        Nothing -> lift . Left $ T.makeUndeclaredType sym
+        Just t  -> return $ T.NAME sym (return t)
 -- Array type declarations are translated by looking up the name of their type
 -- and returning a T.ARRAY.
 transTy tenv (AST.Array sym) =

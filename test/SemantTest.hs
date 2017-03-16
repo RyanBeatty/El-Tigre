@@ -17,6 +17,7 @@ semantTests = testGroup "Semant.hs Tests" [
     , testCompOp
     , testLogOp
     , testLet
+    , testDecs
     , testSeq
     , testIf
     , testWhile]
@@ -91,6 +92,11 @@ testLet = testGroup "Let Tests"
   , testCase "Let: Undeclared Typed VarDec" $
         yieldsTypeError "let var foo : bar := 1 in foo end" (T.makeUndeclaredType (makeSymbol 0 "bar"))
   , testCase "Let: Empty Decs And Body" $ yieldsUnit "let in end"
+  ]
+
+testDecs :: TestTree
+testDecs = testGroup "Decs Tests"
+  [ testCase "Decs: Type Dec" $ yieldsInt "let type foo = int var i : foo := 1 in i end"
   ]
 
 testSeq :: TestTree

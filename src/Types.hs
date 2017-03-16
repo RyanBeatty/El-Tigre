@@ -28,7 +28,22 @@ data Type =
     | UNIT
     -- TODO: Need to add Unique here. Use tuple, IORef, MVar, TVar?
     | NAME Symbol.Symbol (Maybe Type)
-    deriving (Show, Eq)
+    deriving (Show)
+
+instance Eq Type where
+    (NAME _ t1)   == (NAME _ t2)     = t1 == t2
+    (NAME _ t1)   == INT             = t1 == return INT
+    INT           == (NAME _ t1)     = return INT == t1
+    (NAME _ t1)   == STRING          = t1 == return STRING
+    STRING        == (NAME _ t1)     = return STRING == t1
+    (RECORD _ u1) == (RECORD _ u2)   = u1 == u2
+    (RECORD _ _)  == NIL             = True
+    NIL           == (RECORD _ _)    = True
+    INT           == INT             = True
+    STRING        == STRING          = True
+    NIL           == NIL             = True
+    UNIT          == UNIT            = True
+    _             == _               = False
 
 data TypeError =
       UndeclaredVar Identifier
