@@ -30,6 +30,7 @@ data Type =
     | NIL
     | UNIT
     -- TODO: Need to add Unique here. Use tuple, IORef, MVar, TVar?
+    -- TODO: Is this a necessary type?
     | NAME Symbol.Symbol (Maybe Type)
     deriving (Show, Eq)
 
