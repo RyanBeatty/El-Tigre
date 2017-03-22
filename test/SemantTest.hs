@@ -103,6 +103,8 @@ testDecs = testGroup "Decs Tests"
   [ testCase "Decs: Type Dec" $ yieldsInt "let type foo = int var i : foo := 1 in i end"
   , testCase "Decs: Type Dec Undeclared Type" $ 
       yieldsTypeError "let type foo = bar in 1 end" (T.makeUndeclaredType (makeSymbol 0 "bar"))
+  , testCase "Decs: Array Dec" $
+      yieldsArray "let type foo = array of int var i : foo := int [1] of 1 in i end" T.INT 0
   ]
 
 testSeq :: TestTree

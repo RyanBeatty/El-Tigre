@@ -39,7 +39,7 @@ checkCompatibleTypes :: Type -> Type -> Bool
 checkCompatibleTypes INT INT                                = True
 checkCompatibleTypes STRING STRING                          = True
 checkCompatibleTypes (RECORD _ u1) (RECORD _ u2)            = u1 == u2
-checkCompatibleTypes (ARRAY _ u1) (ARRAY _ u2)              = u1 == u2
+checkCompatibleTypes (ARRAY t1 _) (ARRAY t2 _)                  = t1 == t2
 checkCompatibleTypes NIL NIL                                = True
 checkCompatibleTypes UNIT UNIT                              = True
 checkCompatibleTypes (NAME _ (Just t1)) (NAME _ (Just t2))  = checkCompatibleTypes t1 t2
