@@ -20,7 +20,8 @@ semantTests = testGroup "Semant.hs Tests" [
     , testDecs
     , testSeq
     , testIf
-    , testWhile]
+    , testWhile
+    , testArrExp]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
@@ -39,6 +40,9 @@ yieldsInt s = yieldsType s T.INT
 
 yieldsString :: String -> Assertion
 yieldsString s = yieldsType s T.STRING
+
+yieldsArray :: String -> T.Type -> T.Unique -> Assertion
+yieldsArray s t u = yieldsType s (T.ARRAY t u)
 
 yieldsUnit :: String -> Assertion
 yieldsUnit s = yieldsType s T.UNIT
@@ -128,4 +132,15 @@ testWhile = testGroup "While Tests"
       yieldsTypeError "while \"hello\" do ()" (T.makeUnexpectedType T.INT T.STRING)
   , testCase "While: Unexpected Body Type" $
       yieldsTypeError "while 1 do 1" (T.makeUnexpectedType T.UNIT T.INT)
+  ]
+
+testArrExp :: TestTree
+testArrExp = testGroup "ArrExp Tests"
+  [ testCase "ArrExp" $ yieldsArray "int [3] of 5" T.INT 0
+  , testCase "ArrExp: Undeclared Array Type" $ 
+      yieldsTypeError "foo [3] of 3" (T.makeUndeclaredType (makeSymbol 0 "foo"))
+  , testCase "ArrExp: Non Int Length" $
+      yieldsTypeError "int [\"hello\"] of 3" (T.makeUnexpectedType T.INT T.STRING)
+  , testCase "ArrExp: Type Mismatch" $
+      yieldsTypeError "int [3] of \"hello\"" (T.makeTypeMismatch T.INT T.STRING)
   ]

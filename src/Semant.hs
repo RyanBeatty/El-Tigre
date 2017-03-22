@@ -155,6 +155,16 @@ transExp venv tenv (AST.While exp1 exp2) = do
     exptype2 <- transExp venv tenv exp2
     checkUnit exptype2
     return $ makeExpType () T.UNIT
+transExp venv tenv (AST.ArrExp sym lengthexp initexp) =
+    case Env.lookupTypeEntry sym tenv of
+        Nothing        -> lift . Left $ T.makeUndeclaredType sym
+        Just arraytype -> do len <- transExp venv tenv lengthexp
+                             checkInt len
+                             value <- transExp venv tenv initexp
+                             if T.checkCompatibleTypes arraytype (ty value)
+                                then genUnique >>= \u -> return $ makeExpType () (T.ARRAY arraytype u)
+                                else lift . Left $ T.makeTypeMismatch arraytype (ty value)
+
 
 transProg input =
     case P.runParser input of
