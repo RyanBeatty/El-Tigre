@@ -14,10 +14,10 @@ data ExpType = ExpType {
     , ty   :: T.Type
 } deriving (Show)
 
-type TransT a = ST.StateT [T.Unique] (Either T.TypeError) a
+type Trans a = ST.StateT [T.Unique] (Either T.TypeError) a
 
 -- Returns the next unique value to use for a RECORD, ARRAY, or NAME.
-genUnique :: TransT T.Unique
+genUnique :: Trans T.Unique
 genUnique = do
     xs <- get
     put $ tail xs
@@ -26,30 +26,30 @@ genUnique = do
 makeExpType :: Trans.Exp -> T.Type -> ExpType
 makeExpType e t = ExpType { expr = e, ty = t }
 
-checkInt :: ExpType -> TransT ()
+checkInt :: ExpType -> Trans ()
 checkInt exptype
     | ty exptype == T.INT = return ()
     | otherwise           = lift . Left $ T.makeUnexpectedType T.INT (ty exptype)
 
-checkUnit :: ExpType -> TransT ()
+checkUnit :: ExpType -> Trans ()
 checkUnit exptype
     | ty exptype == T.UNIT = return ()
     | otherwise            = lift . Left $ T.makeUnexpectedType T.UNIT (ty exptype)
 
-checkMatchingTypes :: ExpType -> ExpType -> TransT ()
+checkMatchingTypes :: ExpType -> ExpType -> Trans ()
 checkMatchingTypes e1 e2
     | ty e1 == ty e2 = return ()
     | otherwise      = lift . Left $ T.makeTypeMismatch (ty e1) (ty e2)
 
 --transVar :: Env.VEnv -> Env.TEnv -> AST.Var -> ExpType
 --transVar = undefined
-transTy  :: Env.TEnv -> AST.Type -> TransT T.Type
+transTy  :: Env.TEnv -> AST.Type -> Trans T.Type
 -- A type synonym is just looked up in the type environment.
 -- TODO: handle mutually recursive types.
 transTy tenv (AST.Type sym) =
     case Env.lookupTypeEntry sym tenv of
         Nothing -> lift . Left $ T.makeUndeclaredType sym
-        Just t  -> return $ T.NAME sym (return t)
+        Just t  -> return t
 -- Array type declarations are translated by looking up the name of their type
 -- and returning a T.ARRAY.
 transTy tenv (AST.Array sym) =
@@ -58,9 +58,10 @@ transTy tenv (AST.Array sym) =
         Just t  -> do u <- genUnique
                       return $ T.ARRAY t u
 
-transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> TransT (Env.VEnv, Env.TEnv)
+transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> Trans (Env.VEnv, Env.TEnv)
 transDec venv tenv (AST.VarDec sym vtype initializer) = do
     -- Translate initializer expression.
+    -- TODO: Should not do this here. Possible to override undeclared type error.
     exptype <- transExp venv tenv initializer
     let ety = ty exptype
     -- Check if variable declaration has an explicit type.
@@ -82,7 +83,7 @@ transDec venv tenv (AST.TypeDec sym t) = do
     return (venv, Env.addNewTypeEntry sym t' tenv)
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
-transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> TransT (Env.VEnv, Env.TEnv)
+transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> Trans (Env.VEnv, Env.TEnv)
 transDecs venv tenv []     = return (venv, tenv)
 transDecs venv tenv [x]    = transDec venv tenv x
 transDecs venv tenv (x:xs) = do
@@ -91,14 +92,14 @@ transDecs venv tenv (x:xs) = do
 
 -- Translate a sequence of expressions. The type of the last expression
 -- is the type of the entire sequence.
-transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> TransT ExpType
+transSeq :: Env.VEnv -> Env.TEnv -> [AST.Exp] -> Trans ExpType
 transSeq venv tenv []     = return $ makeExpType () T.UNIT
 transSeq venv tenv [x]    = transExp venv tenv x
 transSeq venv tenv (x:xs) = transExp venv tenv x >> transSeq venv tenv xs  
 
 -- TODO: Theres alot of code duplication/similar patterns here for the binary
 -- operation expressions. See if I can factor this out to make things simpler.
-transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> TransT ExpType
+transExp :: Env.VEnv -> Env.TEnv -> AST.Exp -> Trans ExpType
 transExp venv tenv (AST.IntLit _)    = return $ makeExpType () T.INT
 transExp venv tenv (AST.StringLit _) = return $ makeExpType () T.STRING
 transExp venv tenv (AST.Neg _)       = return $ makeExpType () T.INT

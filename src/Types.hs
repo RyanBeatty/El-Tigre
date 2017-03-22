@@ -31,7 +31,7 @@ data Type =
     | UNIT
     -- TODO: Need to add Unique here. Use tuple, IORef, MVar, TVar?
     | NAME Symbol.Symbol (Maybe Type)
-    deriving (Show)
+    deriving (Show, Eq)
 
 -- Returns True if two Types can be used in the same expression.
 checkCompatibleTypes :: Type -> Type -> Bool
