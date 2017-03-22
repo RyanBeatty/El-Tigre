@@ -38,22 +38,30 @@ data Type =
 checkCompatibleTypes :: Type -> Type -> Bool
 checkCompatibleTypes INT INT                                = True
 checkCompatibleTypes STRING STRING                          = True
-checkCompatibleTypes (RECORD _ u1) (RECORD _ u2)            = u1 == u2
+--checkCompatibleTypes (RECORD _ u1) (RECORD _ u2)            = u1 == u2
 checkCompatibleTypes (ARRAY t1 _) (ARRAY t2 _)                  = t1 == t2
 checkCompatibleTypes NIL NIL                                = True
 checkCompatibleTypes UNIT UNIT                              = True
-checkCompatibleTypes (NAME _ (Just t1)) (NAME _ (Just t2))  = checkCompatibleTypes t1 t2
-checkCompatibleTypes (RECORD _ u1) NIL                      = True
-checkCompatibleTypes NIL (RECORD _ u1)                      = True
-checkCompatibleTypes (NAME _ (Just t)) INT                  = checkCompatibleTypes t INT
-checkCompatibleTypes INT (NAME _ (Just t))                  = checkCompatibleTypes t INT
-checkCompatibleTypes (NAME _ (Just t)) STRING               = checkCompatibleTypes t STRING
-checkCompatibleTypes STRING (NAME _ (Just t))               = checkCompatibleTypes t STRING
-checkCompatibleTypes (ARRAY t _) INT                        = checkCompatibleTypes t INT
-checkCompatibleTypes INT (ARRAY t _)                        = checkCompatibleTypes INT t
-checkCompatibleTypes (ARRAY t _) STRING                     = checkCompatibleTypes t STRING
-checkCompatibleTypes STRING (ARRAY t _)                     = checkCompatibleTypes STRING t
 checkCompatibleTypes _ _                                    = False
+
+--checkCompatibleTypes INT INT                                = True
+--checkCompatibleTypes STRING STRING                          = True
+--checkCompatibleTypes (RECORD _ u1) (RECORD _ u2)            = u1 == u2
+--checkCompatibleTypes (ARRAY t1 _) (ARRAY t2 _)                  = t1 == t2
+--checkCompatibleTypes NIL NIL                                = True
+--checkCompatibleTypes UNIT UNIT                              = True
+--checkCompatibleTypes (NAME _ (Just t1)) (NAME _ (Just t2))  = checkCompatibleTypes t1 t2
+--checkCompatibleTypes (RECORD _ u1) NIL                      = True
+--checkCompatibleTypes NIL (RECORD _ u1)                      = True
+--checkCompatibleTypes (NAME _ (Just t)) INT                  = checkCompatibleTypes t INT
+--checkCompatibleTypes INT (NAME _ (Just t))                  = checkCompatibleTypes t INT
+--checkCompatibleTypes (NAME _ (Just t)) STRING               = checkCompatibleTypes t STRING
+--checkCompatibleTypes STRING (NAME _ (Just t))               = checkCompatibleTypes t STRING
+--checkCompatibleTypes (ARRAY t _) INT                        = checkCompatibleTypes t INT
+--checkCompatibleTypes INT (ARRAY t _)                        = checkCompatibleTypes INT t
+--checkCompatibleTypes (ARRAY t _) STRING                     = checkCompatibleTypes t STRING
+--checkCompatibleTypes STRING (ARRAY t _)                     = checkCompatibleTypes STRING t
+--checkCompatibleTypes _ _                                    = False
 
 data TypeError =
       UndeclaredVar Identifier
