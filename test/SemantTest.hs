@@ -105,6 +105,8 @@ testDecs = testGroup "Decs Tests"
       yieldsTypeError "let type foo = bar in 1 end" (T.makeUndeclaredType (makeSymbol 0 "bar"))
   , testCase "Decs: Array Dec" $
       yieldsArray "let type foo = array of int var i : foo := int [1] of 1 in i end" T.INT 0
+  , testCase "Decs: Array of Arrays" $
+      yieldsArray "let type foo = array of int in foo [1] of (int [1] of 1) end" (T.ARRAY T.INT 0) 2
   ]
 
 testSeq :: TestTree
@@ -144,5 +146,5 @@ testArrExp = testGroup "ArrExp Tests"
   , testCase "ArrExp: Non Int Length" $
       yieldsTypeError "int [\"hello\"] of 3" (T.makeUnexpectedType T.INT T.STRING)
   , testCase "ArrExp: Type Mismatch" $
-      yieldsTypeError "int [3] of \"hello\"" (T.makeTypeMismatch T.INT T.STRING)
+      yieldsTypeError "int [3] of \"hello\"" (T.makeUnexpectedType T.INT T.STRING)
   ]
