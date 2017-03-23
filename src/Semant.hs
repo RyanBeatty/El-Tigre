@@ -163,7 +163,7 @@ transExp venv tenv (AST.ArrExp sym lengthexp initexp) =
                              value <- transExp venv tenv initexp
                              if T.checkCompatibleTypes arraytype (ty value)
                                 then genUnique >>= \u -> return $ makeExpType () (T.ARRAY arraytype u)
-                                else lift . Left $ T.makeTypeMismatch arraytype (ty value)
+                                else lift . Left $ T.makeUnexpectedType arraytype (ty value)
 
 
 transProg input =
