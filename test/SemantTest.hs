@@ -166,5 +166,8 @@ testRecExp = testGroup "RecExp Tests"
   , testCase "RecExp: Undeclared Record Type" $
       yieldsTypeError "foo { x = 1 }" (T.makeUndeclaredType (makeSymbol 0 "foo"))
   , testCase "RecExp: Unexpect Type" $
-      yieldsTypeError "let type foo = { x : int, y : string } in foo { x = 1, y = 2 } end" (T.makeUnexpectedType (T.RECORD [(makeSymbol 1 "x", T.INT), (makeSymbol 3 "y", T.STRING)] 0) (T.RECORD [(makeSymbol 1 "x", T.INT), (makeSymbol 3 "y", T.INT)] 1))
+      yieldsTypeError "let type foo = { x : int, y : string } in foo { x = 1, y = 2 } end"
+        (T.makeUnexpectedType
+          (T.RECORD [(makeSymbol 1 "x", T.INT), (makeSymbol 3 "y", T.STRING)] 0)
+          (T.RECORD [(makeSymbol 1 "x", T.INT), (makeSymbol 3 "y", T.INT)] 1))
   ]
