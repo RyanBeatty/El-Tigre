@@ -164,6 +164,16 @@ transExp venv tenv (AST.ArrExp sym lengthexp initexp) =
                              if T.checkCompatibleTypes arraytype (ty value)
                                 then genUnique >>= \u -> return $ makeExpType () (T.ARRAY arraytype u)
                                 else lift . Left $ T.makeUnexpectedType arraytype (ty value)
+transExp venv tenv (AST.RecExp recsym fields) =
+    case Env.lookupTypeEntry recsym tenv of
+        Nothing      -> lift . Left $ T.makeUndeclaredType recsym
+        Just rectype -> do fields' <- mapM (\(AST.Field s e) -> transExp venv tenv e >>= \e' -> return (s, e')) fields
+                           let fields'' = map (\(s, e) -> (s, ty e)) fields'
+                           u <- genUnique
+                           let result = T.RECORD fields'' u
+                           if T.checkCompatibleTypes rectype result
+                            then return $ makeExpType () result
+                            else lift . Left $ T.makeUnexpectedType rectype result
 
 
 transProg input =

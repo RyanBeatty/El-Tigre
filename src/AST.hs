@@ -72,6 +72,6 @@ data Type =
   | Array Sym.Symbol
   deriving (Show)
 
--- Field in a Record
+-- Field in a Record. Id and Type-Id
 data TyField = TyField Sym.Symbol Sym.Symbol
   deriving (Show)
