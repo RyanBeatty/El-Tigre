@@ -38,8 +38,8 @@ data Type =
 checkCompatibleTypes :: Type -> Type -> Bool
 checkCompatibleTypes INT INT                                = True
 checkCompatibleTypes STRING STRING                          = True
---checkCompatibleTypes (RECORD _ u1) (RECORD _ u2)            = u1 == u2
-checkCompatibleTypes (ARRAY t1 _) (ARRAY t2 _)                  = t1 == t2
+checkCompatibleTypes (RECORD ts1 _) (RECORD ts2 _)          = ts1 == ts2
+checkCompatibleTypes (ARRAY t1 _) (ARRAY t2 _)              = t1 == t2
 checkCompatibleTypes NIL NIL                                = True
 checkCompatibleTypes UNIT UNIT                              = True
 checkCompatibleTypes _ _                                    = False

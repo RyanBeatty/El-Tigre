@@ -5,7 +5,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Semant
-import Symbol (makeSymbol)
+import Symbol (makeSymbol, Symbol)
 import qualified Types as T
 
 semantTests :: TestTree
@@ -21,7 +21,8 @@ semantTests = testGroup "Semant.hs Tests" [
     , testSeq
     , testIf
     , testWhile
-    , testArrExp]
+    , testArrExp
+    , testRecExp]
 
 getType :: String -> Either String T.Type
 getType s = ty <$> transProg s
@@ -43,6 +44,9 @@ yieldsString s = yieldsType s T.STRING
 
 yieldsArray :: String -> T.Type -> T.Unique -> Assertion
 yieldsArray s t u = yieldsType s (T.ARRAY t u)
+
+yieldsRecord :: String -> [(Symbol.Symbol, T.Type)] -> T.Unique -> Assertion
+yieldsRecord s f u = yieldsType s (T.RECORD f u)
 
 yieldsUnit :: String -> Assertion
 yieldsUnit s = yieldsType s T.UNIT
@@ -107,6 +111,8 @@ testDecs = testGroup "Decs Tests"
       yieldsArray "let type foo = array of int var i : foo := int [1] of 1 in i end" T.INT 0
   , testCase "Decs: Array of Arrays" $
       yieldsArray "let type foo = array of int in foo [1] of (int [1] of 1) end" (T.ARRAY T.INT 0) 2
+  , testCase "Record: Doesn't Fail" $ 
+      yieldsInt "let type foo = { x : int, y : string } in 1 end" 
   ]
 
 testSeq :: TestTree
@@ -147,4 +153,10 @@ testArrExp = testGroup "ArrExp Tests"
       yieldsTypeError "int [\"hello\"] of 3" (T.makeUnexpectedType T.INT T.STRING)
   , testCase "ArrExp: Type Mismatch" $
       yieldsTypeError "int [3] of \"hello\"" (T.makeUnexpectedType T.INT T.STRING)
+  ]
+
+testRecExp :: TestTree
+testRecExp = testGroup "RecExp Tests"
+  [ testCase "RecExp" $
+      yieldsRecord "let type foo = { x : int, y : string } in foo { x = 1, y = \"hello\" } end" [(makeSymbol 1 "x", T.INT), (makeSymbol 3 "y", T.STRING)] 1
   ]
