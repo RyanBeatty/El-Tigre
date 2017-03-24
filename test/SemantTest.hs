@@ -159,4 +159,8 @@ testRecExp :: TestTree
 testRecExp = testGroup "RecExp Tests"
   [ testCase "RecExp" $
       yieldsRecord "let type foo = { x : int, y : string } in foo { x = 1, y = \"hello\" } end" [(makeSymbol 1 "x", T.INT), (makeSymbol 3 "y", T.STRING)] 1
+  , testCase "RecExp: Empty" $
+      yieldsRecord "let type foo = { } in foo { } end" [] 1
+  , testCase "RecExp: Undeclared Record Type" $
+      yieldsTypeError "foo { x = 1 }" (T.makeUndeclaredType (makeSymbol 0 "foo"))
   ]
