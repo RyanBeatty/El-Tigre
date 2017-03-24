@@ -112,7 +112,9 @@ testDecs = testGroup "Decs Tests"
   , testCase "Decs: Array of Arrays" $
       yieldsArray "let type foo = array of int in foo [1] of (int [1] of 1) end" (T.ARRAY T.INT 0) 2
   , testCase "Record: Doesn't Fail" $ 
-      yieldsInt "let type foo = { x : int, y : string } in 1 end" 
+      yieldsInt "let type foo = { x : int, y : string } in 1 end"
+  , testCase "Record: Undeclared Field Type" $
+      yieldsTypeError "let type foo = { x : int, y : bar } in end" (T.makeUndeclaredType (makeSymbol 4 "bar"))
   ]
 
 testSeq :: TestTree
@@ -163,4 +165,6 @@ testRecExp = testGroup "RecExp Tests"
       yieldsRecord "let type foo = { } in foo { } end" [] 1
   , testCase "RecExp: Undeclared Record Type" $
       yieldsTypeError "foo { x = 1 }" (T.makeUndeclaredType (makeSymbol 0 "foo"))
+  , testCase "RecExp: Unexpect Type" $
+      yieldsTypeError "let type foo = { x : int, y : string } in foo { x = 1, y = 2 } end" (T.makeUnexpectedType (T.RECORD [(makeSymbol 1 "x", T.INT), (makeSymbol 3 "y", T.STRING)] 0) (T.RECORD [(makeSymbol 1 "x", T.INT), (makeSymbol 3 "y", T.INT)] 1))
   ]
