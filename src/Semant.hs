@@ -57,6 +57,14 @@ transTy tenv (AST.Array sym) =
         Nothing -> lift . Left $ T.makeUndeclaredType sym
         Just t  -> do u <- genUnique
                       return $ T.ARRAY t u
+transTy tenv (AST.Record tyfields) = do
+    tyfields' <- mapM (\(AST.TyField s ts) -> helper ts >>= \t -> return (s, t)) tyfields
+    u <- genUnique
+    return $ T.RECORD tyfields' u
+    where helper tsym =
+            case Env.lookupTypeEntry tsym tenv of
+                Nothing -> lift . Left $ T.makeUndeclaredType tsym
+                Just tt -> return tt
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> Trans (Env.VEnv, Env.TEnv)
 transDec venv tenv (AST.VarDec sym vtype initializer) = do
