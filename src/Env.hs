@@ -10,8 +10,11 @@ module Env (
     addNewFuncEntry,
     addNewTypeEntry,
     lookupVarEntry,
+    lookupFuncEntry,
     lookupTypeEntry
 ) where
+
+import Control.Monad
 
 import qualified Symbol as Sym (SymbolTable, SymbolMap, Symbol, fromList, enter, look)
 import qualified Types as T
@@ -26,6 +29,14 @@ makeVarEntry t = VarEntry { varEntryType = t }
 makeFuncEntry :: [T.Type] -> T.Type -> EnvEntry
 makeFuncEntry ts r = FuncEntry { formals = ts, result = r }
 
+isVarEntry :: EnvEntry -> Maybe EnvEntry
+isVarEntry v@(VarEntry _) = Just v
+isVarEntry _              = Nothing
+
+isFuncEntry :: EnvEntry -> Maybe EnvEntry
+isFuncEntry f@(FuncEntry _ _) = Just f
+isFuncEntry _                 = Nothing
+
 addNewVarEntry :: Sym.Symbol -> T.Type -> VEnv -> VEnv
 addNewVarEntry sym t venv = Sym.enter sym (makeVarEntry t) venv
 
@@ -36,7 +47,10 @@ addNewTypeEntry :: Sym.Symbol -> T.Type -> TEnv -> TEnv
 addNewTypeEntry = Sym.enter
 
 lookupVarEntry :: Sym.Symbol -> VEnv -> Maybe EnvEntry
-lookupVarEntry = Sym.look
+lookupVarEntry sym venv = Sym.look sym venv >>= isVarEntry
+
+lookupFuncEntry :: Sym.Symbol -> VEnv -> Maybe EnvEntry
+lookupFuncEntry sym venv = Sym.look sym venv >>= isFuncEntry
 
 lookupTypeEntry :: Sym.Symbol -> TEnv -> Maybe T.Type
 lookupTypeEntry = Sym.look
