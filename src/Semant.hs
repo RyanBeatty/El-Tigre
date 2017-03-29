@@ -58,13 +58,14 @@ transTy tenv (AST.Array sym) =
         Just t  -> do u <- genUnique
                       return $ T.ARRAY t u
 transTy tenv (AST.Record tyfields) = do
-    tyfields' <- mapM (\(AST.TyField s ts) -> helper ts >>= \t -> return (s, t)) tyfields
+    tyfields' <- mapM (\(AST.TyField s ts) -> helper ts tenv >>= \t -> return (s, t)) tyfields
     u <- genUnique
     return $ T.RECORD tyfields' u
-    where helper tsym =
-            case Env.lookupTypeEntry tsym tenv of
-                Nothing -> lift . Left $ T.makeUndeclaredType tsym
-                Just tt -> return tt
+
+helper tsym tenv =
+    case Env.lookupTypeEntry tsym tenv of
+        Nothing -> lift . Left $ T.makeUndeclaredType tsym
+        Just t  -> return t
 
 transDec :: Env.VEnv -> Env.TEnv -> AST.Dec -> Trans (Env.VEnv, Env.TEnv)
 transDec venv tenv (AST.VarDec sym vtype initializer) = do
@@ -89,6 +90,10 @@ transDec venv tenv (AST.VarDec sym vtype initializer) = do
 transDec venv tenv (AST.TypeDec sym t) = do
     t' <- transTy tenv t
     return (venv, Env.addNewTypeEntry sym t' tenv)
+--transDec venv tenv (AST.FunDec funsym params retsym body) =
+--    case Env.lookupFuncEntry funsym venv of
+--        Nothing       -> lift . Left $ T.makeUndeclaredType funsym
+--        Just funentry -> 
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
 transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> Trans (Env.VEnv, Env.TEnv)
