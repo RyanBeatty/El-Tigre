@@ -4,7 +4,16 @@ import Control.Monad.State
 import qualified Control.Monad.Trans.State as ST
 
 import qualified AST
-import qualified Env (VEnv, TEnv, buildBaseEnvs, varEntryType, addNewVarEntry, addNewTypeEntry, lookupVarEntry, lookupTypeEntry) 
+import qualified Env (
+    VEnv,
+    TEnv,
+    buildBaseEnvs,
+    varEntryType,
+    addNewVarEntry,
+    addNewFuncEntry,
+    addNewTypeEntry,
+    lookupVarEntry,
+    lookupTypeEntry) 
 import qualified Parser as P (runParser)
 import qualified Translate as Trans (Exp)
 import qualified Types as T
@@ -90,10 +99,14 @@ transDec venv tenv (AST.VarDec sym vtype initializer) = do
 transDec venv tenv (AST.TypeDec sym t) = do
     t' <- transTy tenv t
     return (venv, Env.addNewTypeEntry sym t' tenv)
---transDec venv tenv (AST.FunDec funsym params retsym body) =
---    case Env.lookupFuncEntry funsym venv of
---        Nothing       -> lift . Left $ T.makeUndeclaredType funsym
---        Just funentry -> 
+transDec venv tenv (AST.FunDec funsym params retsym body) = do
+    params' <- mapM (\(AST.TyField s ts) -> helper ts tenv >>= \t -> return (s, t)) params
+    body'   <- transExp venv tenv body
+    case retsym of
+        Nothing -> return (Env.addNewFuncEntry funsym (map snd params') T.UNIT venv, tenv)
+        Just rtsym -> case Env.lookupTypeEntry rtsym tenv of
+                        Nothing -> lift . Left $ T.makeUndeclaredType rtsym
+                        Just rt -> return (Env.addNewFuncEntry funsym (map snd params') rt venv, tenv)
 
 -- Translate a list of declrations and modify the var env and type env accordingly.
 transDecs :: Env.VEnv -> Env.TEnv -> [AST.Dec] -> Trans (Env.VEnv, Env.TEnv)
