@@ -2,6 +2,8 @@ module Env (
     TEnv,
     VEnv,
     EnvEntry,
+    formals,
+    result,
     Env.varEntryType,
     Env.buildBaseEnvs,
     Env.makeVarEntry,

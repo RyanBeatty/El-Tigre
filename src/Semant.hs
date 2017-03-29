@@ -7,12 +7,15 @@ import qualified AST
 import qualified Env (
     VEnv,
     TEnv,
+    formals,
+    result,
     buildBaseEnvs,
     varEntryType,
     addNewVarEntry,
     addNewFuncEntry,
     addNewTypeEntry,
     lookupVarEntry,
+    lookupFuncEntry,
     lookupTypeEntry) 
 import qualified Parser as P (runParser)
 import qualified Translate as Trans (Exp)
@@ -200,6 +203,14 @@ transExp venv tenv (AST.RecExp recsym fields) =
                            if T.checkCompatibleTypes rectype result
                             then return $ makeExpType () result
                             else lift . Left $ T.makeUnexpectedType rectype result
+transExp venv tenv (AST.FunCall funsym params) = do
+    params' <- mapM (transExp venv tenv) params
+    case Env.lookupFuncEntry funsym venv of
+        Nothing       -> lift . Left $ T.makeUndeclaredType funsym
+        Just funentry -> do if and $ zipWith T.checkCompatibleTypes (Env.formals funentry) (map ty params')
+                                then return $ makeExpType () (Env.result funentry)
+                                -- TODO: Make a new error type for this case.
+                                else error "I need to add an exception here"
 
 
 transProg input =

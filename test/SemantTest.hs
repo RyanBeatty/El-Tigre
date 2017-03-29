@@ -115,6 +115,7 @@ testDecs = testGroup "Decs Tests"
       yieldsInt "let type foo = { x : int, y : string } in 1 end"
   , testCase "Record: Undeclared Field Type" $
       yieldsTypeError "let type foo = { x : int, y : bar } in end" (T.makeUndeclaredType (makeSymbol 4 "bar"))
+  , testCase "FunDec: Procedure" $ yieldsUnit "let function foo () = 1 + 1 in foo() end"
   ]
 
 testSeq :: TestTree
